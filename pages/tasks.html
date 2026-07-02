@@ -422,7 +422,7 @@
           .from('ecm_tasks')
           .select(`
             *,
-            assignee:profiles(full_name),
+            assignee:profiles!ecm_tasks_assignee_id_fkey(full_name),
             ecm:ecm_requests(ecm_number, title)
           `);
 

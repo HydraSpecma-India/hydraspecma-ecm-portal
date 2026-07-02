@@ -1306,7 +1306,7 @@
           .from('approval_assignments')
           .select(`
             *,
-            approver:profiles(full_name),
+            approver:profiles!approval_assignments_approver_id_fkey(full_name),
             delegated:profiles!delegated_to(full_name)
           `)
           .eq('approval_request_id', req.id)
@@ -1647,7 +1647,7 @@
           .from('task_checklist_items')
           .select(`
             *,
-            assignee:profiles(full_name)
+            assignee:profiles!done_by(full_name)
           `)
           .eq('ecm_request_id', ecmId)
           .eq('state_id', stateId);
