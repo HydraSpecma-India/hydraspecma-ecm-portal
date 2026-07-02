@@ -50,7 +50,7 @@ export const FEATURES = Object.freeze({
 /** Approved CDN libraries (pinned). Loaded lazily per page — see js/loader.js (Module 4). */
 export const CDN = Object.freeze({
   tailwind: 'https://cdn.tailwindcss.com',
-  chartjs: 'https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.3/chart.umd.min.js',
+  chartjs: 'https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js',
   lucide: 'https://unpkg.com/lucide@0.462.0/dist/umd/lucide.min.js',
   gsap: 'https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js',
   sortable: 'https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.2/Sortable.min.js',
