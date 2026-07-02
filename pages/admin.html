@@ -335,7 +335,7 @@
           .select(`
             id,
             full_name,
-            department:departments!profiles_department_id_fkey (
+            department:departments!fk_profiles_department (
               name
             ),
             job_title,
