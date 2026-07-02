@@ -6,7 +6,7 @@
  * you prefer to self-host (see docs/SETUP-GUIDE.md).
  * @module config/supabase
  */
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.45.0';
+import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.0/+esm';
 import { env } from './app.config.js';
 
 let _client = null;

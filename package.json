@@ -19,7 +19,7 @@
     "gen:types": "supabase gen types typescript --local > services/db.types.d.ts",
     "lint": "eslint \"js/**/*.js\" \"services/**/*.js\" \"components/**/*.js\"",
     "format": "prettier --write .",
-    "build": "node scripts/gen-env.js"
+    "build": "node scripts/gen-env.js && tailwindcss -i ./css/tailwind.input.css -o ./css/app.css --minify"
   },
   "devDependencies": {
     "@supabase/supabase-js": "^2.45.0",
