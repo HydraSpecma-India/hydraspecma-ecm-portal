@@ -1,0 +1,37 @@
+# Dependencies
+node_modules/
+.pnp
+.pnp.js
+
+# Env & secrets
+.env
+.env.*
+!.env.example
+*.pem
+
+# Build output
+css/app.css
+dist/
+.vercel/
+
+# Supabase local
+supabase/.branches/
+supabase/.temp/
+**/.DS_Store
+
+# Logs
+*.log
+npm-debug.log*
+
+# Editor
+.idea/
+.vscode/*
+!.vscode/extensions.json
+
+# Python (workflow tooling)
+__pycache__/
+*.pyc
+.venv/
+
+# generated public env
+env.js

@@ -1,0 +1,32 @@
+{
+  "name": "hydraspecma-ecm-portal",
+  "version": "0.1.0",
+  "private": true,
+  "description": "HydraSpecma ECM Portal \u2014 Engineering Change Management System. Vanilla JS + Tailwind + Supabase, deployed on Vercel.",
+  "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "dev": "vercel dev",
+    "build:css": "tailwindcss -i ./css/tailwind.input.css -o ./css/app.css --minify",
+    "watch:css": "tailwindcss -i ./css/tailwind.input.css -o ./css/app.css --watch",
+    "db:reset": "supabase db reset",
+    "db:push": "supabase db push",
+    "db:diff": "supabase db diff",
+    "db:lint": "supabase db lint",
+    "workflow:build": "python3 workflow/build_workflow.py && python3 workflow/build_workflow_seed.py",
+    "gen:types": "supabase gen types typescript --local > services/db.types.d.ts",
+    "lint": "eslint \"js/**/*.js\" \"services/**/*.js\" \"components/**/*.js\"",
+    "format": "prettier --write .",
+    "build": "node scripts/gen-env.js"
+  },
+  "devDependencies": {
+    "@supabase/supabase-js": "^2.45.0",
+    "eslint": "^9.9.0",
+    "prettier": "^3.3.0",
+    "supabase": "^1.191.0",
+    "tailwindcss": "^3.4.0",
+    "vercel": "^37.0.0"
+  }
+}

@@ -1,0 +1,52 @@
+# Supabase local development configuration — HydraSpecma ECM Portal
+# Docs: https://supabase.com/docs/guides/cli/config
+project_id = "hydraspecma-ecm-portal"
+
+[api]
+enabled = true
+port = 54321
+schemas = ["public", "storage", "graphql_public"]
+extra_search_path = ["public", "extensions"]
+max_rows = 1000
+
+[db]
+port = 54322
+shadow_port = 54320
+major_version = 15
+
+[db.seed]
+enabled = true
+# Ordered seed files: RBAC -> org -> workflow (generated) -> templates.
+sql_paths = ["./seed/10_rbac.sql", "./seed/20_org.sql", "./seed/30_workflow.sql", "./seed/40_templates.sql"]
+
+[realtime]
+enabled = true
+
+[studio]
+enabled = true
+port = 54323
+
+[storage]
+enabled = true
+file_size_limit = "250MiB"
+
+[auth]
+enabled = true
+site_url = "http://localhost:5173"
+additional_redirect_urls = ["https://your-app.vercel.app"]
+jwt_expiry = 3600
+enable_refresh_token_rotation = true
+enable_signup = true
+
+[auth.email]
+enable_confirmations = true
+
+# Azure AD / Microsoft Entra ID SSO (Module 3 & 13). Secrets come from env.
+[auth.external.azure]
+enabled = true
+client_id = "env(AZURE_AD_CLIENT_ID)"
+secret = "env(AZURE_AD_CLIENT_SECRET)"
+url = "https://login.microsoftonline.com/env(AZURE_AD_TENANT_ID)/v2.0"
+
+[edge_runtime]
+enabled = true

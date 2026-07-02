@@ -1,0 +1,12 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Brand CSS variables — consumed by components and non-Tailwind styles (Module 4). */
+:root {
+  --brand-primary: #003A70;
+  --brand-secondary: #00A3E0;
+  --brand-accent: #0EA5E9;
+  --brand-bg: #F8FAFC;
+  --radius-card: 16px;
+}
