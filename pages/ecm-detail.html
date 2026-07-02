@@ -173,6 +173,9 @@
       <!-- Tab Content 1: Workflow & Progress -->
       <div id="tab-workflow" class="flex flex-col space-y-6">
         
+        <!-- Pending Approvals Gate Alert Placeholder -->
+        <div id="approvals-gate-container"></div>
+
         <!-- Visualizer Card (Mermaid Graph) -->
         <div class="glass rounded-3xl p-6 flex flex-col space-y-4">
           <div>
@@ -483,6 +486,34 @@
     </div>
   </div>
 
+  <!-- Delegate Approval Modal -->
+  <div id="modal-delegate-approver" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm">
+    <div class="w-full max-w-sm glass rounded-3xl p-8 flex flex-col space-y-6">
+      <div class="flex justify-between items-start">
+        <div>
+          <h3 class="text-sm font-bold font-display text-white dark:text-white light:text-slate-900">Delegate Approval</h3>
+          <p class="text-[10px] text-slate-400 mt-1">Re-route your active approval vote to another engineer.</p>
+        </div>
+        <button type="button" class="btn-close-modal text-slate-500 hover:text-white transition duration-200" data-modal-close>
+          <i data-lucide="x" class="h-5 w-5"></i>
+        </button>
+      </div>
+
+      <form id="form-delegate-approver" class="flex flex-col space-y-4">
+        <div class="flex flex-col space-y-1.5">
+          <label for="delegate-user" class="text-xs font-semibold text-slate-400">Select Engineer</label>
+          <select id="delegate-user" required class="w-full px-4 py-2.5 rounded-xl bg-black/35 border border-white/5 text-xs text-white focus:border-brand-secondary/50 outline-none">
+            <!-- Populated dynamically -->
+          </select>
+        </div>
+
+        <button type="submit" id="btn-delegate-submit" class="w-full py-3 rounded-xl bg-gradient-to-r from-brand-primary to-brand-secondary font-semibold text-xs text-white transition duration-200 flex items-center justify-center">
+          <span>Confirm Delegation</span>
+        </button>
+      </form>
+    </div>
+  </div>
+
   <!-- Scripts -->
   <script src="/env.js"></script>
   <script type="module">
@@ -512,12 +543,17 @@
     const checkinModal = new Modal('modal-check-in');
     const signModal = new Modal('modal-sign-doc');
     const previewModal = new Modal('modal-preview-doc');
+    const delegateModal = new Modal('modal-delegate-approver');
     
     let activeTransitionId = null;
     let activeDocumentId = null;
     let activeDocVersionId = null;
+    let activeAssignmentId = null; // for approvals
+    let activeApprovalReqId = null; // for approvals
     let activeDocumentName = '';
     let cachedDocuments = [];
+    let cachedApprovalRequest = null;
+    let cachedApprovalAssignments = [];
 
     // Tab Switcher Logic
     const tabWorkflowBtn = document.getElementById('tab-workflow-btn');
@@ -631,6 +667,7 @@
           loadTransitions(ecm.current_state_id),
           loadChecklist(ecm.id, ecm.current_state_id),
           loadHistory(ecm.id),
+          loadApprovalsGate(ecm.id),
           buildMermaidGraph(ecm.workflow_id, ecm.current_state_id, ecm.id)
         ]);
 
@@ -639,6 +676,279 @@
         toast.error('Failed to retrieve Engineering Change details.');
       }
     }
+
+    // ----------------------------------------------------
+    // Load Approvals Gate (Module 10)
+    // ----------------------------------------------------
+    async function loadApprovalsGate(ecmId) {
+      const container = document.getElementById('approvals-gate-container');
+      container.innerHTML = '';
+
+      try {
+        const supabase = getSupabase();
+        
+        // Fetch active approval request
+        const { data: reqs } = await supabase
+          .from('approval_requests')
+          .select('*')
+          .eq('ecm_request_id', ecmId)
+          .eq('status', 'pending')
+          .limit(1);
+
+        if (!reqs || reqs.length === 0) return;
+
+        const req = reqs[0];
+        cachedApprovalRequest = req;
+        activeApprovalReqId = req.id;
+
+        // Fetch approval assignments
+        const { data: assigns, error: assignErr } = await supabase
+          .from('approval_assignments')
+          .select(`
+            *,
+            approver:profiles(full_name),
+            delegated:profiles!delegated_to(full_name)
+          `)
+          .eq('approval_request_id', req.id)
+          .order('sequence');
+
+        if (assignErr) throw assignErr;
+        cachedApprovalAssignments = assigns || [];
+
+        // Check if current user is an approver
+        const profileData = await authService.me();
+        const userId = profileData?.profile?.id;
+
+        const policyLabels = {
+          'any': 'Any approver can sign-off',
+          'all': 'All approvers must approve',
+          'quorum': `Quorum of ${req.quorum || 2} approvals required`,
+          'sequential': 'Sequential approval (ordered workflow)'
+        };
+
+        const renderDecisionBadge = (decision) => {
+          const map = {
+            'pending': 'text-amber-400 bg-amber-500/10 border-amber-500/20',
+            'approved': 'text-emerald-400 bg-emerald-500/10 border-emerald-500/20',
+            'rejected': 'text-rose-400 bg-rose-500/10 border-rose-500/20'
+          };
+          return `<span class="px-2 py-0.5 border text-[9px] font-bold rounded-full uppercase ${map[decision] || ''}">${decision}</span>`;
+        };
+
+        // Determine sequential eligibility
+        // For sequence S, you can only vote if all assignments with sequence < S have decision = 'approved'
+        const isEligibleToVote = (assign) => {
+          if (assign.decision !== 'pending') return false;
+          if (req.policy !== 'sequential') return true;
+
+          return cachedApprovalAssignments
+            .filter(a => a.sequence < assign.sequence)
+            .every(a => a.decision === 'approved');
+        };
+
+        const listHTML = cachedApprovalAssignments.map(a => {
+          const isMe = (a.approver_id === userId) || (a.delegated_to === userId);
+          const canVote = isMe && isEligibleToVote(a);
+          
+          let voteControls = '';
+          if (canVote) {
+            voteControls = `
+              <div class="flex space-x-2 mt-3 justify-end">
+                <button class="py-1 px-3 rounded-lg border border-emerald-500/30 bg-emerald-500/10 hover:bg-emerald-500/20 text-[10px] text-emerald-400 font-bold transition" onclick="globalThis.castApprovalVote('${a.id}', 'approved')">Approve</button>
+                <button class="py-1 px-3 rounded-lg border border-rose-500/30 bg-rose-500/10 hover:bg-rose-500/20 text-[10px] text-rose-400 font-bold transition" onclick="globalThis.castApprovalVote('${a.id}', 'rejected')">Reject</button>
+                <button class="py-1 px-3 rounded-lg border border-slate-500/30 bg-white/5 hover:bg-white/10 text-[10px] text-slate-300 font-semibold transition" onclick="globalThis.openDelegationModal('${a.id}')">Delegate</button>
+              </div>
+            `;
+          }
+
+          const nameLabel = a.delegated_to
+            ? `${a.approver?.full_name} (Delegated to: ${a.delegated?.full_name})`
+            : a.approver?.full_name || 'Designated Approver';
+
+          return `
+            <div class="p-4 rounded-xl bg-black/20 border border-white/5 text-xs">
+              <div class="flex justify-between items-center">
+                <span class="font-bold text-white">${nameLabel}</span>
+                <div class="flex items-center space-x-3">
+                  <span class="text-[9px] text-slate-500 uppercase tracking-widest font-semibold">Seq ${a.sequence}</span>
+                  ${renderDecisionBadge(a.decision)}
+                </div>
+              </div>
+              ${a.comment ? `<p class="mt-2 text-slate-400 italic bg-black/10 p-2 rounded-lg">"${a.comment}"</p>` : ''}
+              ${voteControls}
+            </div>
+          `;
+        }).join('');
+
+        container.innerHTML = `
+          <div class="glass border border-amber-500/30 bg-amber-500/5 rounded-3xl p-6 flex flex-col space-y-4">
+            <div class="flex justify-between items-start">
+              <div>
+                <h4 class="text-sm font-bold text-white flex items-center font-display">
+                  <span class="inline-block h-2.5 w-2.5 rounded-full bg-amber-400 animate-pulse mr-2"></span>
+                  <span>Approvals Gate: ${req.title}</span>
+                </h4>
+                <p class="text-[10px] text-slate-400 mt-1">${policyLabels[req.policy] || req.policy}</p>
+              </div>
+              <span class="px-2 py-0.5 bg-amber-500/20 border border-amber-500/30 text-amber-400 font-semibold text-[9px] tracking-wider uppercase rounded-md">Gate Pending</span>
+            </div>
+            
+            <div class="flex flex-col space-y-3 mt-2">
+              ${listHTML}
+            </div>
+          </div>
+        `;
+
+      } catch (err) {
+        console.error('Failed to load approvals gate:', err);
+      }
+    }
+
+    // Cast Approval Vote
+    globalThis.castApprovalVote = async function (assignmentId, decision) {
+      const comment = prompt(`Enter signature comments for this decision:`, '');
+      if (comment === null) return; // cancelled
+
+      toast.info('Submitting vote...');
+      try {
+        const supabase = getSupabase();
+        
+        // 1. Update assignment
+        const { error: assignErr } = await supabase
+          .from('approval_assignments')
+          .update({
+            decision,
+            comment,
+            decision_at: new Date().toISOString()
+          })
+          .eq('id', assignmentId);
+
+        if (assignErr) throw assignErr;
+
+        toast.success('Approval decision recorded!');
+
+        // 2. Evaluate request policy completion
+        await evaluateApprovalGateCompletion(activeApprovalReqId);
+
+      } catch (err) {
+        console.error('Failed to cast vote:', err);
+        toast.error('Failed to submit approval vote.');
+      }
+    };
+
+    // Check if the gate policy criteria is fully met, and if so auto-promote the ECM
+    async function evaluateApprovalGateCompletion(reqId) {
+      try {
+        const supabase = getSupabase();
+        
+        // Fetch all assignments again
+        const { data: assigns } = await supabase
+          .from('approval_assignments')
+          .select('*')
+          .eq('approval_request_id', reqId);
+
+        const total = assigns.length;
+        const approvedCount = assigns.filter(a => a.decision === 'approved').length;
+        const rejectedCount = assigns.filter(a => a.decision === 'rejected').length;
+        const pendingCount = assigns.filter(a => a.decision === 'pending').length;
+
+        let finalStatus = 'pending';
+
+        const policy = cachedApprovalRequest.policy;
+        const quorum = cachedApprovalRequest.quorum || 1;
+
+        if (policy === 'any') {
+          if (approvedCount > 0) finalStatus = 'approved';
+          else if (rejectedCount === total) finalStatus = 'rejected';
+        } else if (policy === 'all' || policy === 'sequential') {
+          if (approvedCount === total) finalStatus = 'approved';
+          else if (rejectedCount > 0) finalStatus = 'rejected';
+        } else if (policy === 'quorum') {
+          if (approvedCount >= quorum) finalStatus = 'approved';
+          else if (rejectedCount > (total - quorum)) finalStatus = 'rejected';
+        }
+
+        if (finalStatus !== 'pending') {
+          // Update approval request status
+          const { error: reqErr } = await supabase
+            .from('approval_requests')
+            .update({
+              status: finalStatus,
+              decided_at: new Date().toISOString()
+            })
+            .eq('id', reqId);
+
+          if (reqErr) throw reqErr;
+
+          if (finalStatus === 'approved') {
+            toast.success('Approval gate cleared! Promoting request...');
+            if (cachedApprovalRequest.transition_id) {
+              await executeTransition(cachedApprovalRequest.transition_id, 'Auto-triggered on approval gate completion.');
+            } else {
+              globalThis.location.reload();
+            }
+          } else {
+            toast.error('Approval gate was rejected.');
+            globalThis.location.reload();
+          }
+        } else {
+          // Just reload approvals panel
+          loadApprovalsGate(ecmId);
+        }
+
+      } catch (err) {
+        console.error('Failed to evaluate policy completion:', err);
+      }
+    }
+
+    // Open Delegation modal
+    let delegUserLoaded = false;
+    globalThis.openDelegationModal = async function (assignmentId) {
+      activeAssignmentId = assignmentId;
+      delegateModal.open();
+
+      if (delegUserLoaded) return;
+      try {
+        const supabase = getSupabase();
+        const { data: list } = await supabase.from('profiles').select('id, full_name').order('full_name');
+        
+        const select = document.getElementById('delegate-user');
+        if (list) {
+          select.innerHTML = list.map(u => `<option value="${u.id}">${u.full_name}</option>`).join('');
+          delegUserLoaded = true;
+        }
+      } catch (err) {
+        console.error('Failed to load delegation list:', err);
+      }
+    };
+
+    // Delegation Submit
+    document.getElementById('form-delegate-approver').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      if (!activeAssignmentId) return;
+
+      const delegateId = document.getElementById('delegate-user').value;
+      
+      try {
+        const supabase = getSupabase();
+        const { error } = await supabase
+          .from('approval_assignments')
+          .update({
+            delegated_to: delegateId
+          })
+          .eq('id', activeAssignmentId);
+
+        if (error) throw error;
+
+        toast.success('Approval delegated successfully.');
+        delegateModal.close();
+        loadApprovalsGate(ecmId);
+
+      } catch (err) {
+        console.error('Delegation failed:', err);
+        toast.error('Failed to delegate approval.');
+      }
+    });
 
     // ----------------------------------------------------
     // Load transitions & Execute transition RPC
@@ -943,7 +1253,6 @@
       try {
         const supabase = getSupabase();
         
-        // Fetch documents linked to this ECM Request, with the current version joined
         const { data: docs, error } = await supabase
           .from('documents')
           .select(`
@@ -976,7 +1285,6 @@
             checkoutStyle = isCurrentLockOwner ? 'text-amber-400 bg-amber-500/10 border-amber-500/20' : 'text-rose-400 bg-rose-500/10 border-rose-500/20';
           }
 
-          // Lock action logic
           let lockActionBtn = '';
           if (!d.is_checked_out) {
             lockActionBtn = `<button class="p-1 px-2.5 rounded-lg border border-white/5 hover:border-brand-secondary/30 hover:bg-white/5 text-[10px] text-slate-300 font-semibold transition" onclick="globalThis.toggleDocumentLock('${d.id}', true)">Lock File</button>`;
@@ -1024,7 +1332,6 @@
       }
     }
 
-    // Populate category list in upload dropdown
     let docCatsLoaded = false;
     async function loadDocCategories() {
       if (docCatsLoaded) return;
@@ -1058,7 +1365,6 @@
         return;
       }
 
-      // Loading state
       const submitBtn = document.getElementById('btn-upload-submit');
       const spinner = document.getElementById('upload-spinner');
       submitBtn.disabled = true;
@@ -1071,7 +1377,6 @@
 
         if (!userId) throw new Error('User profile not resolved');
 
-        // 1. Insert document node
         const { data: doc, error: docErr } = await supabase
           .from('documents')
           .insert({
@@ -1091,8 +1396,6 @@
 
         if (docErr) throw docErr;
 
-        // 2. Upload file to Supabase storage
-        // Generate storage path: ecm_uuid/doc_uuid/filename
         const storagePath = `${ecmId}/${doc.id}/${file.name}`;
         const { error: uploadErr } = await supabase.storage
           .from('ecm-documents')
@@ -1100,8 +1403,6 @@
 
         if (uploadErr) throw uploadErr;
 
-        // 3. Create document version record (v1)
-        // Compute simple sha256 mock checksum for simulation integrity
         const checksum = 'SHA256-' + Math.random().toString(36).substring(2, 15).toUpperCase();
         const { data: ver, error: verErr } = await supabase
           .from('document_versions')
@@ -1123,7 +1424,6 @@
 
         if (verErr) throw verErr;
 
-        // 4. Link current version to document node
         await supabase
           .from('documents')
           .update({ current_version_id: ver.id })
@@ -1133,7 +1433,6 @@
         uploadModal.close();
         document.getElementById('form-upload-doc').reset();
         
-        // Refresh docs list
         loadDocuments();
 
       } catch (err) {
@@ -1145,7 +1444,6 @@
       }
     });
 
-    // Check Out / Unlock toggle helper
     globalThis.toggleDocumentLock = async function (docId, lockState) {
       toast.info(lockState ? 'Locking file...' : 'Releasing lock...');
       try {
@@ -1172,13 +1470,11 @@
       }
     };
 
-    // Open Check In Modal
     globalThis.openCheckInModal = function (docId) {
       activeDocumentId = docId;
       checkinModal.open();
     };
 
-    // Check In Submit
     document.getElementById('form-check-in').addEventListener('submit', async (e) => {
       e.preventDefault();
       if (!activeDocumentId) return;
@@ -1202,7 +1498,6 @@
         const profileData = await authService.me();
         const userId = profileData?.profile?.id;
 
-        // Fetch current document versions count to increment version number
         const { data: versions } = await supabase
           .from('document_versions')
           .select('version_no')
@@ -1213,7 +1508,6 @@
         const lastVerNo = (versions && versions[0]) ? versions[0].version_no : 0;
         const nextVerNo = lastVerNo + 1;
 
-        // 1. Upload file to Supabase storage
         const storagePath = `${ecmId}/${activeDocumentId}/${file.name}`;
         const { error: uploadErr } = await supabase.storage
           .from('ecm-documents')
@@ -1221,15 +1515,12 @@
 
         if (uploadErr) throw uploadErr;
 
-        // 2. Insert new version (and make it current)
-        const checksum = 'SHA256-' + Math.random().toString(36).substring(2, 15).toUpperCase();
-        
-        // Remove previous versions current flag
         await supabase
           .from('document_versions')
           .update({ is_current: false })
           .eq('document_id', activeDocumentId);
 
+        const checksum = 'SHA256-' + Math.random().toString(36).substring(2, 15).toUpperCase();
         const { data: ver, error: verErr } = await supabase
           .from('document_versions')
           .insert({
@@ -1250,7 +1541,6 @@
 
         if (verErr) throw verErr;
 
-        // 3. Update document node (release lock & point to current version)
         await supabase
           .from('documents')
           .update({
@@ -1276,13 +1566,11 @@
       }
     });
 
-    // Open Signature Modal
     globalThis.openSignModal = function (versionId) {
       activeDocVersionId = versionId;
       signModal.open();
     };
 
-    // Signature Submit (21 CFR Part 11 Compliance re-verification check)
     document.getElementById('form-sign-doc').addEventListener('submit', async (e) => {
       e.preventDefault();
       if (!activeDocVersionId) return;
@@ -1299,7 +1587,6 @@
       try {
         const supabase = getSupabase();
         
-        // 1. Re-verify identity by attempting a silent auth sign-in with current user email & entered password
         const session = await authService.getSession();
         const email = session.user.email;
         const userId = session.user.id;
@@ -1313,7 +1600,6 @@
           throw new Error('Identity verification failed: incorrect password.');
         }
 
-        // 2. Generate secure checksum stamp & insert signature entry
         const sigHash = 'SIG-HMAC-' + Math.random().toString(36).substring(2, 15).toUpperCase();
         
         const { error: sigErr } = await supabase
@@ -1342,7 +1628,6 @@
       }
     });
 
-    // Open Simulated Preview Modal
     globalThis.openPreviewModal = async function (docId, versionId) {
       activeDocumentId = docId;
       activeDocVersionId = versionId;
@@ -1353,19 +1638,16 @@
       document.getElementById('preview-doc-title').textContent = doc?.name || 'Drawing Preview';
       document.getElementById('preview-doc-subtitle').textContent = `Document Control Number: ${doc?.doc_number || 'DOC-xxxx'}`;
       
-      // Populate file details
       document.getElementById('preview-meta-filename').textContent = v.file_name || '-';
       document.getElementById('preview-meta-size').textContent = v.file_size ? `${(v.file_size / 1024).toFixed(1)} KB` : '-';
       document.getElementById('preview-meta-mime').textContent = v.mime_type || '-';
       document.getElementById('preview-meta-checksum').textContent = v.checksum || 'No checksum available';
 
-      // Load signatures list
       await loadPreviewSignatures(versionId);
 
       previewModal.open();
     };
 
-    // Fetch and bind signature seals list inside previewer
     async function loadPreviewSignatures(versionId) {
       const container = document.getElementById('preview-signatures-list');
       container.innerHTML = '<p class="text-xs text-slate-500 py-4">Checking certification stamps...</p>';
