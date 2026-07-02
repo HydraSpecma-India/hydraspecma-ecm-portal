@@ -6,44 +6,25 @@ const THEME_KEY = 'ecm.theme';
 
 export const themeService = {
   init() {
-    const stored = globalThis.localStorage?.getItem(THEME_KEY);
-    const darkPreferred = globalThis.matchMedia?.('(prefers-color-scheme: dark)').matches;
-    
-    const theme = stored || (darkPreferred ? 'dark' : 'light');
-    this.apply(theme);
-    
-    // Listen for OS system theme changes
-    globalThis.matchMedia?.('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
-      if (!globalThis.localStorage?.getItem(THEME_KEY)) {
-        this.apply(e.matches ? 'dark' : 'light');
-      }
-    });
+    this.apply('dark');
   },
 
   get() {
-    return document.documentElement.classList.contains('dark') ? 'dark' : 'light';
+    return 'dark';
   },
 
   set(theme) {
-    globalThis.localStorage?.setItem(THEME_KEY, theme);
-    this.apply(theme);
+    this.apply('dark');
   },
 
   toggle() {
-    const current = this.get();
-    const next = current === 'dark' ? 'light' : 'dark';
-    this.set(next);
-    return next;
+    this.apply('dark');
+    return 'dark';
   },
 
   apply(theme) {
-    if (theme === 'dark') {
-      document.documentElement.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-    }
-    // Dispatch custom event for dynamic components (like charts) to react
-    globalThis.dispatchEvent(new CustomEvent('ecm-theme-change', { detail: theme }));
+    document.documentElement.classList.add('dark');
+    globalThis.dispatchEvent(new CustomEvent('ecm-theme-change', { detail: 'dark' }));
   }
 };
 

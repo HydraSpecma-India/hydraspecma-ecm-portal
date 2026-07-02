@@ -2,11 +2,73 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Brand CSS variables — consumed by components and non-Tailwind styles (Module 4). */
 :root {
-  --brand-primary: #003A70;
-  --brand-secondary: #00A3E0;
-  --brand-accent: #0EA5E9;
-  --brand-bg: #F8FAFC;
-  --radius-card: 16px;
+  --brand-primary: #575757;
+  --brand-secondary: #FFCC00;
+  --brand-accent: #B3B3B3;
+  --brand-bg: #1a1a1a;
+  --radius-card: 20px;
+}
+
+/* Force dark theme default backgrounds and colors */
+html {
+  background-color: #1a1a1a !important;
+  color-scheme: dark !important;
+}
+
+body {
+  background-color: #1a1a1a !important;
+  color: #B3B3B3 !important;
+  font-family: 'Inter', sans-serif;
+  overflow-x: hidden;
+}
+
+/* Smooth glass card styling with gold accent on hover */
+.glass {
+  background: rgba(42, 42, 42, 0.75) !important;
+  backdrop-filter: blur(12px) !important;
+  -webkit-backdrop-filter: blur(12px) !important;
+  border: 1px solid rgba(87, 87, 87, 0.3) !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+.glass:hover {
+  border-color: rgba(255, 204, 0, 0.3) !important;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4), 0 0 15px rgba(255, 204, 0, 0.05) !important;
+  transform: translateY(-2px);
+}
+
+/* Rebranded primary gold buttons with hover glow */
+.btn-primary {
+  background: linear-gradient(135deg, #FFCC00, #E0B400) !important;
+  color: #1a1a1a !important;
+  font-weight: 700 !important;
+  box-shadow: 0 4px 14px rgba(255, 204, 0, 0.2) !important;
+  transition: all 0.3s ease !important;
+}
+
+.btn-primary:hover {
+  box-shadow: 0 6px 20px rgba(255, 204, 0, 0.4) !important;
+  transform: translateY(-1px);
+}
+
+/* Interactive animations and transitions */
+@keyframes pulse-glow {
+  0%, 100% {
+    box-shadow: 0 0 15px rgba(255, 204, 0, 0.15);
+  }
+  50% {
+    box-shadow: 0 0 25px rgba(255, 204, 0, 0.35);
+  }
+}
+
+.pulse-glow {
+  animation: pulse-glow 3s infinite ease-in-out;
+}
+
+/* Rebranded status badges */
+.status-badge {
+  border-color: rgba(255, 204, 0, 0.2) !important;
+  background-color: rgba(255, 204, 0, 0.05) !important;
+  color: #FFCC00 !important;
 }
