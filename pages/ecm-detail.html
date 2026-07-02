@@ -345,6 +345,86 @@
 
       </div>
 
+      <!-- Tab Content 4: Collaboration Hub (Discussion) -->
+      <div id="tab-collab" class="hidden flex flex-col space-y-6">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          
+          <!-- Comments / Threaded messaging Board -->
+          <div class="lg:col-span-2 glass p-6 rounded-3xl flex flex-col space-y-4">
+            <div class="flex justify-between items-center border-b border-white/5 pb-3">
+              <div>
+                <h4 class="text-sm font-bold font-display text-white">Discussion Thread</h4>
+                <p class="text-[10px] text-slate-400">Collaboration updates, design clarifications, and team questions</p>
+              </div>
+              
+              <button id="btn-share-request" class="py-1.5 px-3 rounded-lg border border-brand-secondary/35 hover:bg-brand-secondary/10 text-[10px] text-brand-secondary font-bold transition flex items-center space-x-1">
+                <i data-lucide="share-2" class="h-3.5 w-3.5"></i>
+                <span>Share Request</span>
+              </button>
+            </div>
+
+            <!-- Thread list container -->
+            <div class="space-y-4 max-h-[400px] overflow-y-auto pr-2 scrollbar-thin divide-y divide-white/5" id="collab-comments-list">
+              <!-- Dynamically populated comments hierarchy -->
+            </div>
+
+            <!-- Add new comment form -->
+            <form id="form-collab-comment" class="flex flex-col space-y-3 border-t border-white/5 pt-4">
+              <input type="hidden" id="collab-parent-id" value="">
+              
+              <div class="flex items-center justify-between text-[10px] text-slate-400">
+                <span id="reply-indicator" class="hidden text-brand-secondary font-semibold flex items-center">
+                  Replying to thread... <button type="button" class="ml-1 text-rose-400 hover:underline" onclick="globalThis.cancelCommentReply()">Cancel</button>
+                </span>
+                <span></span>
+              </div>
+
+              <div class="flex flex-col space-y-1.5">
+                <textarea id="collab-comment-body" required rows="2" placeholder="Write a comment or design query..."
+                          class="w-full px-4 py-2.5 rounded-xl bg-black/35 border border-white/5 text-xs text-white focus:border-brand-secondary/50 outline-none placeholder-slate-600 transition"></textarea>
+              </div>
+
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 items-center">
+                <!-- Mention users selector -->
+                <div class="flex flex-col space-y-1">
+                  <label for="collab-mention" class="text-[9px] font-semibold text-slate-400 uppercase">Mention User (@)</label>
+                  <select id="collab-mention" class="px-3 py-1.5 rounded-lg bg-black/35 border border-white/5 text-xs text-white outline-none">
+                    <option value="">No Mention</option>
+                    <!-- Populated dynamically -->
+                  </select>
+                </div>
+
+                <!-- Internal Lock Toggle -->
+                <div class="flex items-center space-x-2 mt-4 sm:mt-0 justify-end">
+                  <input type="checkbox" id="collab-is-internal" class="h-4 w-4 rounded bg-black/30 border border-white/10 text-brand-secondary focus:ring-0 outline-none cursor-pointer">
+                  <label for="collab-is-internal" class="text-xs font-semibold text-slate-300 cursor-pointer select-none flex items-center">
+                    <i data-lucide="lock" class="h-3 w-3 mr-1 text-slate-500"></i>
+                    <span>Internal Staff Only</span>
+                  </label>
+                </div>
+              </div>
+
+              <button type="submit" class="py-2.5 px-4 rounded-xl bg-gradient-to-r from-brand-primary to-brand-secondary font-semibold text-xs text-white transition duration-200 flex items-center justify-center space-x-1.5 self-end mt-2">
+                <i data-lucide="send" class="h-3.5 w-3.5"></i>
+                <span>Post Comment</span>
+              </button>
+            </form>
+          </div>
+
+          <!-- Users session Presence panel -->
+          <div class="lg:col-span-1 glass p-6 rounded-3xl flex flex-col space-y-4 self-start border border-white/5">
+            <h4 class="text-xs font-bold text-emerald-400 uppercase tracking-wider flex items-center border-b border-white/5 pb-3">
+              <span class="h-2 w-2 rounded-full bg-emerald-400 animate-pulse mr-2"></span>
+              <span>Reviewing Session Presence</span>
+            </h4>
+            <div class="space-y-3" id="collab-presence-list">
+              <!-- Dynamically populated online users -->
+            </div>
+          </div>
+
+        </div>
+      </div>
+
     </div>
 
   </main>
@@ -699,27 +779,33 @@
     const tabWorkflowBtn = document.getElementById('tab-workflow-btn');
     const tabDocsBtn = document.getElementById('tab-docs-btn');
     const tabAiBtn = document.getElementById('tab-ai-btn');
+    const tabCollabBtn = document.getElementById('tab-collab-btn');
     
     const tabWorkflow = document.getElementById('tab-workflow');
     const tabDocs = document.getElementById('tab-docs');
     const tabAi = document.getElementById('tab-ai');
+    const tabCollab = document.getElementById('tab-collab');
 
     tabWorkflowBtn.addEventListener('click', () => {
       tabWorkflow.classList.remove('hidden');
       tabDocs.classList.add('hidden');
       tabAi.classList.add('hidden');
+      tabCollab.classList.add('hidden');
       tabWorkflowBtn.className = 'px-4 py-2 rounded-xl text-xs font-semibold bg-white/5 border border-brand-secondary/30 text-white transition duration-200';
       tabDocsBtn.className = 'px-4 py-2 rounded-xl text-xs font-semibold text-slate-400 hover:text-white hover:bg-white/5 transition duration-200';
       tabAiBtn.className = 'px-4 py-2 rounded-xl text-xs font-semibold text-slate-400 hover:text-white hover:bg-white/5 transition duration-200 flex items-center space-x-1';
+      tabCollabBtn.className = 'px-4 py-2 rounded-xl text-xs font-semibold text-slate-400 hover:text-white hover:bg-white/5 transition duration-200 flex items-center space-x-1';
     });
 
     tabDocsBtn.addEventListener('click', () => {
       tabWorkflow.classList.add('hidden');
       tabDocs.classList.remove('hidden');
       tabAi.classList.add('hidden');
+      tabCollab.classList.add('hidden');
       tabDocsBtn.className = 'px-4 py-2 rounded-xl text-xs font-semibold bg-white/5 border border-brand-secondary/30 text-white transition duration-200';
       tabWorkflowBtn.className = 'px-4 py-2 rounded-xl text-xs font-semibold text-slate-400 hover:text-white hover:bg-white/5 transition duration-200';
       tabAiBtn.className = 'px-4 py-2 rounded-xl text-xs font-semibold text-slate-400 hover:text-white hover:bg-white/5 transition duration-200 flex items-center space-x-1';
+      tabCollabBtn.className = 'px-4 py-2 rounded-xl text-xs font-semibold text-slate-400 hover:text-white hover:bg-white/5 transition duration-200 flex items-center space-x-1';
       loadDocuments();
     });
 
@@ -727,10 +813,26 @@
       tabWorkflow.classList.add('hidden');
       tabDocs.classList.add('hidden');
       tabAi.classList.remove('hidden');
+      tabCollab.classList.add('hidden');
       tabAiBtn.className = 'px-4 py-2 rounded-xl text-xs font-semibold bg-white/5 border border-brand-secondary/30 text-white transition duration-200 flex items-center space-x-1';
       tabWorkflowBtn.className = 'px-4 py-2 rounded-xl text-xs font-semibold text-slate-400 hover:text-white hover:bg-white/5 transition duration-200';
       tabDocsBtn.className = 'px-4 py-2 rounded-xl text-xs font-semibold text-slate-400 hover:text-white hover:bg-white/5 transition duration-200';
+      tabCollabBtn.className = 'px-4 py-2 rounded-xl text-xs font-semibold text-slate-400 hover:text-white hover:bg-white/5 transition duration-200 flex items-center space-x-1';
       loadAICopilotInsights();
+    });
+
+    tabCollabBtn.addEventListener('click', () => {
+      tabWorkflow.classList.add('hidden');
+      tabDocs.classList.add('hidden');
+      tabAi.classList.add('hidden');
+      tabCollab.classList.remove('hidden');
+      tabCollabBtn.className = 'px-4 py-2 rounded-xl text-xs font-semibold bg-white/5 border border-brand-secondary/30 text-white transition duration-200 flex items-center space-x-1';
+      tabWorkflowBtn.className = 'px-4 py-2 rounded-xl text-xs font-semibold text-slate-400 hover:text-white hover:bg-white/5 transition duration-200';
+      tabDocsBtn.className = 'px-4 py-2 rounded-xl text-xs font-semibold text-slate-400 hover:text-white hover:bg-white/5 transition duration-200';
+      tabAiBtn.className = 'px-4 py-2 rounded-xl text-xs font-semibold text-slate-400 hover:text-white hover:bg-white/5 transition duration-200 flex items-center space-x-1';
+      loadCollabComments();
+      loadCollabMentionUsers();
+      loadCollabPresence();
     });
 
     // Chatbot Slider Drawer toggles
@@ -2169,6 +2271,261 @@
       } catch (err) {
         console.error('Failed to load signatures for preview:', err);
         container.innerHTML = '<p class="text-xs text-rose-400 py-4">Failed to load certification details</p>';
+      }
+    }
+
+    // ----------------------------------------------------
+    // Collaboration Hub - Comments & Presence (Module 15)
+    // ----------------------------------------------------
+    async function loadCollabComments() {
+      const container = document.getElementById('collab-comments-list');
+      container.innerHTML = '<p class="text-xs text-slate-500 p-4">Loading comments thread...</p>';
+
+      try {
+        const supabase = getSupabase();
+        
+        // Fetch all comments linked to this ECM request
+        const { data: list, error } = await supabase
+          .from('comments')
+          .select(`
+            *,
+            author:profiles(full_name, avatar_url)
+          `)
+          .eq('entity_type', 'ecm')
+          .eq('entity_id', ecmId)
+          .eq('is_deleted', false)
+          .order('created_at', { ascending: true });
+
+        if (error) throw error;
+
+        if (!list || list.length === 0) {
+          container.innerHTML = '<p class="text-xs text-slate-500 py-6 text-center italic">No comments posted yet. Start the discussion!</p>';
+          return;
+        }
+
+        // Fetch user profiles to display mentions correctly
+        const { data: profiles } = await supabase.from('profiles').select('id, full_name');
+        const profilesMap = new Map((profiles || []).map(p => [p.id, p.full_name]));
+
+        // Build threaded comments hierarchy (nested rendering)
+        // Group by parent_comment_id
+        const commentsByParent = new Map();
+        const rootComments = [];
+
+        list.forEach(c => {
+          if (c.parent_comment_id) {
+            if (!commentsByParent.has(c.parent_comment_id)) {
+              commentsByParent.set(c.parent_comment_id, []);
+            }
+            commentsByParent.get(c.parent_comment_id).push(c);
+          } else {
+            rootComments.push(c);
+          }
+        });
+
+        const renderCommentNode = (c, depth = 0) => {
+          const date = new Date(c.created_at).toLocaleDateString(undefined, {
+            month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit'
+          });
+          const avatarUrl = c.author?.avatar_url;
+          const authorName = c.author?.full_name || 'System User';
+          const initial = authorName[0].toUpperCase();
+
+          const avatarHTML = avatarUrl 
+            ? `<img src="${avatarUrl}" class="h-6 w-6 rounded-full object-cover">`
+            : `<div class="h-6 w-6 rounded-full bg-brand-secondary/20 flex items-center justify-center text-[10px] font-bold text-brand-secondary font-display">${initial}</div>`;
+
+          // Format @mentions text
+          let bodyText = c.body;
+          if (c.mentions && c.mentions.length > 0) {
+            c.mentions.forEach(mId => {
+              const name = profilesMap.get(mId);
+              if (name) {
+                bodyText = bodyText.replace(new RegExp(`@${name}`, 'g'), `<span class="text-brand-secondary font-bold font-sans">@${name}</span>`);
+              }
+            });
+          }
+
+          // Secure lock indicator
+          const internalBadge = c.is_internal 
+            ? `<span class="px-1.5 py-0.5 bg-rose-500/10 border border-rose-500/20 text-rose-400 font-semibold text-[8px] tracking-wider uppercase rounded flex items-center"><i data-lucide="lock" class="h-2 w-2 mr-0.5 animate-pulse text-rose-400"></i>Internal</span>`
+            : '';
+
+          // Replies list
+          const children = commentsByParent.get(c.id) || [];
+          const childrenHTML = children.map(child => renderCommentNode(child, depth + 1)).join('');
+
+          const indentStyle = depth > 0 ? `margin-left: ${Math.min(depth * 24, 72)}px;` : '';
+          const borderStyle = depth > 0 ? 'border-l border-white/5 pl-4' : '';
+
+          return `
+            <div class="py-3 ${borderStyle} text-xs" style="${indentStyle}">
+              <div class="flex items-start space-x-3">
+                ${avatarHTML}
+                <div class="flex-grow space-y-1">
+                  <div class="flex justify-between items-center">
+                    <div class="flex items-center space-x-2">
+                      <span class="font-bold text-white">${authorName}</span>
+                      ${internalBadge}
+                    </div>
+                    <span class="text-[9px] text-slate-500 font-medium">${date}</span>
+                  </div>
+                  <p class="text-slate-300 leading-relaxed font-sans">${bodyText}</p>
+                  
+                  <div class="flex items-center space-x-3 pt-1">
+                    <button class="text-[10px] text-slate-500 hover:text-brand-secondary transition font-semibold" onclick="globalThis.setCommentReply('${c.id}', '${authorName.replace(/'/g, "\\'")}')">Reply</button>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Child replies nested -->
+              <div class="space-y-3 mt-3">
+                ${childrenHTML}
+              </div>
+            </div>
+          `;
+        };
+
+        container.innerHTML = rootComments.map(c => renderCommentNode(c, 0)).join('');
+        lucide.createIcons();
+
+      } catch (err) {
+        console.error('Failed to load comments:', err);
+        container.innerHTML = '<p class="text-xs text-rose-400 p-4">Failed to load discussion thread</p>';
+      }
+    }
+
+    // Set reply state
+    globalThis.setCommentReply = function(parentId, authorName) {
+      document.getElementById('collab-parent-id').value = parentId;
+      document.getElementById('reply-indicator').classList.remove('hidden');
+      document.getElementById('reply-indicator').innerHTML = `Replying to <strong>${authorName}</strong>... <button type="button" class="ml-2 text-rose-400 hover:underline" onclick="globalThis.cancelCommentReply()">Cancel</button>`;
+      document.getElementById('collab-comment-body').focus();
+    };
+
+    globalThis.cancelCommentReply = function() {
+      document.getElementById('collab-parent-id').value = '';
+      document.getElementById('reply-indicator').classList.add('hidden');
+    };
+
+    // Load Mention Users List
+    let collabUsersLoaded = false;
+    async function loadCollabMentionUsers() {
+      if (collabUsersLoaded) return;
+      try {
+        const supabase = getSupabase();
+        const { data: list } = await supabase.from('profiles').select('id, full_name').order('full_name');
+        
+        const select = document.getElementById('collab-mention');
+        if (list) {
+          select.innerHTML = '<option value="">No Mention</option>' + 
+            list.map(u => `<option value="${u.id}">${u.full_name}</option>`).join('');
+          collabUsersLoaded = true;
+        }
+      } catch (err) {
+        console.error('Failed to load profiles for mentions:', err);
+      }
+    }
+
+    // Comment submission handler
+    document.getElementById('form-collab-comment').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      const bodyInput = document.getElementById('collab-comment-body');
+      let bodyText = bodyInput.value.trim();
+      const parentId = document.getElementById('collab-parent-id').value || null;
+      const mentionUserId = document.getElementById('collab-mention').value;
+      const isInternal = document.getElementById('collab-is-internal').checked;
+
+      if (!bodyText) return;
+
+      try {
+        const supabase = getSupabase();
+        const profileData = await authService.me();
+        const userId = profileData?.profile?.id;
+
+        if (!userId) throw new Error('User profile not resolved');
+
+        // Formulate mention list
+        const mentions = [];
+        if (mentionUserId) {
+          mentions.push(mentionUserId);
+          const mentionSelect = document.getElementById('collab-mention');
+          const mentionName = mentionSelect.options[mentionSelect.selectedIndex].text;
+          bodyText = `@${mentionName} ${bodyText}`;
+        }
+
+        const { error } = await supabase
+          .from('comments')
+          .insert({
+            entity_type: 'ecm',
+            entity_id: ecmId,
+            parent_comment_id: parentId,
+            author_id: userId,
+            body: bodyText,
+            mentions,
+            is_internal: isInternal
+          });
+
+        if (error) throw error;
+
+        toast.success('Comment posted successfully.');
+        bodyInput.value = '';
+        globalThis.cancelCommentReply();
+        document.getElementById('collab-mention').value = '';
+        document.getElementById('collab-is-internal').checked = false;
+
+        loadCollabComments();
+
+      } catch (err) {
+        console.error('Failed to post comment:', err);
+        toast.error('Failed to post comment.');
+      }
+    });
+
+    // Share link copier
+    document.getElementById('btn-share-request').addEventListener('click', () => {
+      const shareUrl = globalThis.location.href;
+      navigator.clipboard.writeText(shareUrl)
+        .then(() => toast.success('Link copied to clipboard!'))
+        .catch(() => toast.error('Failed to copy share link.'));
+    });
+
+    // Mock Presence Loader
+    async function loadCollabPresence() {
+      const container = document.getElementById('collab-presence-list');
+      
+      try {
+        const supabase = getSupabase();
+        const { data: profiles } = await supabase.from('profiles').select('full_name').limit(6);
+        
+        if (!profiles || profiles.length === 0) {
+          container.innerHTML = '<p class="text-[10px] text-slate-500 italic">No reviewers present.</p>';
+          return;
+        }
+
+        // Randomize active states for simulation
+        container.innerHTML = profiles.map((p, index) => {
+          const isActive = index === 0 || index === 2; // Mock active statuses
+          const statusDot = isActive 
+            ? '<span class="h-2 w-2 bg-emerald-400 rounded-full shrink-0"></span>'
+            : '<span class="h-2 w-2 bg-amber-500 rounded-full shrink-0"></span>';
+          const statusText = isActive ? 'Active Now' : 'Idle (12m)';
+          const statusColor = isActive ? 'text-emerald-400' : 'text-amber-500';
+
+          return `
+            <div class="flex items-center justify-between bg-white/5 p-2 rounded-xl border border-white/5 text-xs">
+              <span class="font-semibold text-white truncate max-w-[120px]">${p.full_name}</span>
+              <div class="flex items-center space-x-1.5">
+                ${statusDot}
+                <span class="text-[9px] font-semibold ${statusColor}">${statusText}</span>
+              </div>
+            </div>
+          `;
+        }).join('');
+
+      } catch (err) {
+        console.error('Presence rendering failed:', err);
       }
     }
 
