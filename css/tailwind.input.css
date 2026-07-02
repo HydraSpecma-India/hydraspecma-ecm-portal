@@ -133,3 +133,13 @@ tr:hover {
   color: #FFFFFF !important;
   border: 1px solid #FFCC00 !important;
 }
+
+/* Prevent global text styles from overriding Mermaid text colors */
+.mermaid, .mermaid *, .mermaid span, .mermaid div, .mermaid p, .mermaid text {
+  color: inherit !important;
+  font-family: 'Inter', sans-serif !important;
+}
+
+#modal-fullscreen-workflow {
+  background-color: rgba(10, 10, 10, 0.96) !important;
+}

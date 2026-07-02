@@ -218,6 +218,10 @@
             </div>
             <!-- Zoom Toolbar -->
             <div class="flex items-center space-x-1.5 bg-black/25 rounded-xl p-1 border border-white/5" id="zoom-toolbar">
+              <button onclick="globalThis.openFullscreenWorkflow()" class="p-1.5 hover:bg-white/10 rounded-lg text-slate-400 hover:text-white transition flex items-center justify-center border-r border-white/10 mr-1 pr-2" title="View Fullscreen">
+                <i data-lucide="maximize" class="h-3.5 w-3.5 text-brand-secondary"></i>
+                <span class="text-[9px] font-bold ml-1">Fullscreen</span>
+              </button>
               <button onclick="globalThis.zoomWorkflow(0.15)" class="p-1.5 hover:bg-white/10 rounded-lg text-slate-400 hover:text-white transition flex items-center justify-center" title="Zoom In">
                 <i data-lucide="zoom-in" class="h-3.5 w-3.5"></i>
               </button>
@@ -229,7 +233,12 @@
               </button>
             </div>
           </div>
-          <div id="mermaid-graph-container" class="w-full flex items-center justify-start p-6 rounded-2xl overflow-x-auto min-h-[300px] relative bg-[#1a1a1a] border border-[#575757]">
+          <div id="mermaid-graph-container" class="w-full flex items-center justify-start p-6 rounded-2xl overflow-auto min-h-[320px] relative bg-[#1a1a1a] border border-[#575757] cursor-grab active:cursor-grabbing select-none" style="max-height: 450px;">
+            <!-- Floating Scroll Up Button -->
+            <button onclick="globalThis.scrollWorkflow('up')" class="absolute top-3 left-1/2 -translate-x-1/2 h-8 w-8 rounded-full bg-[#575757] border border-[#FFCC00] text-[#FFCC00] hover:bg-[#FFCC00] hover:text-[#1a1a1a] transition flex items-center justify-center z-10 shadow-lg" title="Scroll Up">
+              <i data-lucide="chevron-up" class="h-4 w-4"></i>
+            </button>
+
             <!-- Floating Scroll Left Button -->
             <button onclick="globalThis.scrollWorkflow('left')" class="absolute left-3 top-1/2 -translate-y-1/2 h-8 w-8 rounded-full bg-[#575757] border border-[#FFCC00] text-[#FFCC00] hover:bg-[#FFCC00] hover:text-[#1a1a1a] transition flex items-center justify-center z-10 shadow-lg" title="Scroll Left">
               <i data-lucide="chevron-left" class="h-4 w-4"></i>
@@ -242,6 +251,11 @@
             <!-- Floating Scroll Right Button -->
             <button onclick="globalThis.scrollWorkflow('right')" class="absolute right-3 top-1/2 -translate-y-1/2 h-8 w-8 rounded-full bg-[#575757] border border-[#FFCC00] text-[#FFCC00] hover:bg-[#FFCC00] hover:text-[#1a1a1a] transition flex items-center justify-center z-10 shadow-lg" title="Scroll Right">
               <i data-lucide="chevron-right" class="h-4 w-4"></i>
+            </button>
+
+            <!-- Floating Scroll Down Button -->
+            <button onclick="globalThis.scrollWorkflow('down')" class="absolute bottom-3 left-1/2 -translate-x-1/2 h-8 w-8 rounded-full bg-[#575757] border border-[#FFCC00] text-[#FFCC00] hover:bg-[#FFCC00] hover:text-[#1a1a1a] transition flex items-center justify-center z-10 shadow-lg" title="Scroll Down">
+              <i data-lucide="chevron-down" class="h-4 w-4"></i>
             </button>
           </div>
         </div>
@@ -731,6 +745,38 @@
     </div>
   </div>
 
+  <!-- Fullscreen Workflow Modal -->
+  <div id="modal-fullscreen-workflow" class="hidden fixed inset-0 z-50 flex flex-col p-6 bg-black/95 backdrop-blur-md">
+    <!-- Header -->
+    <div class="flex justify-between items-center pb-4 border-b border-white/10 shrink-0">
+      <div>
+        <h3 class="text-sm font-bold text-white font-display">Workflow Visualizer (Fullscreen Preview)</h3>
+        <p class="text-[10px] text-slate-400 mt-0.5">Interact, drag, zoom and click nodes to view details</p>
+      </div>
+      <div class="flex items-center space-x-4">
+        <div class="flex items-center space-x-1.5 bg-[#575757] rounded-xl p-1 border border-white/5">
+          <button onclick="globalThis.zoomWorkflow(0.15)" class="p-1.5 hover:bg-white/10 rounded-lg text-slate-400 hover:text-white transition flex items-center justify-center" title="Zoom In">
+            <i data-lucide="zoom-in" class="h-4 w-4 text-[#FFCC00]"></i>
+          </button>
+          <button onclick="globalThis.zoomWorkflow(-0.15)" class="p-1.5 hover:bg-white/10 rounded-lg text-slate-400 hover:text-white transition flex items-center justify-center" title="Zoom Out">
+            <i data-lucide="zoom-out" class="h-4 w-4 text-[#FFCC00]"></i>
+          </button>
+          <button onclick="globalThis.resetWorkflowZoom()" class="px-2.5 py-1 hover:bg-white/10 rounded-lg text-xs font-bold text-[#FFCC00] hover:text-white transition" title="Reset Zoom">
+            100%
+          </button>
+        </div>
+        <button type="button" onclick="globalThis.closeFullscreenWorkflow()" class="text-slate-400 hover:text-white transition duration-200">
+          <i data-lucide="x" class="h-6 w-6"></i>
+        </button>
+      </div>
+    </div>
+    
+    <!-- Canvas container -->
+    <div id="fullscreen-graph-container" class="flex-grow w-full overflow-auto flex items-center justify-center relative cursor-grab active:cursor-grabbing select-none bg-[#121212] rounded-2xl mt-4">
+      <div id="fullscreen-target" class="transition-transform duration-200 origin-center scale-100"></div>
+    </div>
+  </div>
+
   <!-- Workflow State Detail Modal -->
   <div id="modal-state-detail" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm">
     <div class="w-full max-w-md glass rounded-3xl p-8 flex flex-col space-y-6">
@@ -845,6 +891,7 @@
     const previewModal = new Modal('modal-preview-doc');
     const delegateModal = new Modal('modal-delegate-approver');
     const stateDetailModal = new Modal('modal-state-detail');
+    const fullscreenWorkflowModal = new Modal('modal-fullscreen-workflow');
     
     let activeTransitionId = null;
     let activeDocumentId = null;
@@ -1842,30 +1889,116 @@
     // ----------------------------------------------------
     // Build Mermaid Visualizer
     // ----------------------------------------------------
+    // Drag-to-pan / scroll controller helper
+    function setupDragPan(containerId) {
+      const container = document.getElementById(containerId);
+      if (!container) return;
+
+      let isDown = false;
+      let startX;
+      let startY;
+      let scrollLeft;
+      let scrollTop;
+
+      container.addEventListener('mousedown', (e) => {
+        if (e.button !== 0) return; // left click only
+        isDown = true;
+        container.style.cursor = 'grabbing';
+        startX = e.pageX - container.offsetLeft;
+        startY = e.pageY - container.offsetTop;
+        scrollLeft = container.scrollLeft;
+        scrollTop = container.scrollTop;
+      });
+
+      container.addEventListener('mouseleave', () => {
+        isDown = false;
+        container.style.cursor = 'grab';
+      });
+
+      container.addEventListener('mouseup', () => {
+        isDown = false;
+        container.style.cursor = 'grab';
+      });
+
+      container.addEventListener('mousemove', (e) => {
+        if (!isDown) return;
+        e.preventDefault();
+        const x = e.pageX - container.offsetLeft;
+        const y = e.pageY - container.offsetTop;
+        const walkX = (x - startX) * 1.5;
+        const walkY = (y - startY) * 1.5;
+        container.scrollLeft = scrollLeft - walkX;
+        container.scrollTop = scrollTop - walkY;
+      });
+    }
+
     // Zoom controller functions
     globalThis.zoomWorkflow = function (delta) {
       currentZoom = Math.min(Math.max(0.4, currentZoom + delta), 2.5);
       const target = document.getElementById('mermaid-target');
-      if (target) {
-        target.style.transform = `scale(${currentZoom})`;
-      }
+      if (target) target.style.transform = `scale(${currentZoom})`;
+
+      const fullscreenTarget = document.getElementById('fullscreen-target');
+      if (fullscreenTarget) fullscreenTarget.style.transform = `scale(${currentZoom})`;
     };
+
     globalThis.resetWorkflowZoom = function () {
       currentZoom = 1.0;
       const target = document.getElementById('mermaid-target');
-      if (target) {
-        target.style.transform = `scale(1.0)`;
-      }
+      if (target) target.style.transform = `scale(1.0)`;
+
+      const fullscreenTarget = document.getElementById('fullscreen-target');
+      if (fullscreenTarget) fullscreenTarget.style.transform = `scale(1.0)`;
     };
+
     globalThis.scrollWorkflow = function (direction) {
       const container = document.getElementById('mermaid-graph-container');
-      if (container) {
-        const scrollAmount = 250;
-        container.scrollBy({
-          left: direction === 'left' ? -scrollAmount : scrollAmount,
-          behavior: 'smooth'
+      const fullscreenContainer = document.getElementById('fullscreen-graph-container');
+      const isFullscreenOpen = !document.getElementById('modal-fullscreen-workflow').classList.contains('hidden');
+      const targetContainer = isFullscreenOpen ? fullscreenContainer : container;
+      
+      if (targetContainer) {
+        const scrollAmount = 200;
+        let scrollOptions = { behavior: 'smooth' };
+        if (direction === 'left') scrollOptions.left = -scrollAmount;
+        else if (direction === 'right') scrollOptions.left = scrollAmount;
+        else if (direction === 'up') scrollOptions.top = -scrollAmount;
+        else if (direction === 'down') scrollOptions.top = scrollAmount;
+        
+        targetContainer.scrollBy(scrollOptions);
+      }
+    };
+
+    // Fullscreen workflow toggle actions
+    globalThis.openFullscreenWorkflow = function () {
+      const src = document.getElementById('mermaid-target');
+      const dest = document.getElementById('fullscreen-target');
+      if (src && dest) {
+        dest.innerHTML = src.innerHTML;
+        dest.className = src.className;
+        dest.style.cssText = src.style.cssText;
+        
+        const nodes = dest.querySelectorAll('g.node');
+        const nodeId = (uuid) => 's' + uuid.replace(/-/g, '');
+        nodes.forEach(node => {
+          node.style.cursor = 'pointer';
+          node.addEventListener('click', () => {
+            const cleanId = node.id.replace('flowchart-', '').split('-')[0];
+            const state = loadedWorkflowStates.find(s => nodeId(s.id) === cleanId);
+            if (state) {
+              showStatePopup(state);
+            }
+          });
         });
       }
+      fullscreenWorkflowModal.open();
+      setupDragPan('fullscreen-graph-container');
+    };
+
+    globalThis.closeFullscreenWorkflow = function () {
+      fullscreenWorkflowModal.close();
+      const dest = document.getElementById('fullscreen-target');
+      if (dest) dest.innerHTML = '';
     };
 
     // Node click handlers
@@ -1982,6 +2115,9 @@
             }
           });
         });
+
+        // Initialize drag-to-scroll panning on the visualizer container
+        setupDragPan('mermaid-graph-container');
 
       } catch (err) {
         console.error('Failed to construct Mermaid visualizer:', err);
