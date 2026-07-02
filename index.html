@@ -268,7 +268,7 @@
         connIconBg.classList.add('bg-emerald-500/20');
         
         connIcon.setAttribute('data-lucide', 'check-circle-2');
-        connIcon.className = 'h-5 w-5 text-emerald-400';
+        connIcon.setAttribute('class', 'h-5 w-5 text-emerald-400');
         connIcon.classList.remove('animate-spin');
 
         connTitle.textContent = 'Supabase Connected';
@@ -285,7 +285,7 @@
         connIconBg.classList.add('bg-rose-500/20');
         
         connIcon.setAttribute('data-lucide', 'x-circle');
-        connIcon.className = 'h-5 w-5 text-rose-400';
+        connIcon.setAttribute('class', 'h-5 w-5 text-rose-400');
         connIcon.classList.remove('animate-spin');
 
         connTitle.textContent = 'Connection Failed';
