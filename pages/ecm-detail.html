@@ -1789,15 +1789,22 @@
         }
 
         const nodeId = (uuid) => 's' + uuid.replace(/-/g, '');
+        const sanitizeLabel = (str) => {
+          if (!str) return '';
+          return str
+            .replace(/&/g, 'and')
+            .replace(/"/g, "'")
+            .replace(/[()\[\]{}]/g, '');
+        };
         let graphDef = 'graph TD;\n';
         
         states.forEach(s => {
-          graphDef += `  ${nodeId(s.id)}["${s.name}"]\n`;
+          graphDef += `  ${nodeId(s.id)}["${sanitizeLabel(s.name)}"]\n`;
         });
 
         transitions.forEach(t => {
           if (t.from_state_id) {
-            graphDef += `  ${nodeId(t.from_state_id)}-->|"${t.action_label}"|${nodeId(t.to_state_id)}\n`;
+            graphDef += `  ${nodeId(t.from_state_id)}-->|"${sanitizeLabel(t.action_label)}"|${nodeId(t.to_state_id)}\n`;
           }
         });
 
@@ -1985,7 +1992,7 @@
         const storagePath = `${ecmId}/${doc.id}/${file.name}`;
         const { error: uploadErr } = await supabase.storage
           .from('ecm-documents')
-          .upload(storagePath, file);
+          .upload(storagePath, file, { cacheControl: '3600', upsert: true });
 
         if (uploadErr) throw uploadErr;
 
@@ -2097,7 +2104,7 @@
         const storagePath = `${ecmId}/${activeDocumentId}/${file.name}`;
         const { error: uploadErr } = await supabase.storage
           .from('ecm-documents')
-          .upload(storagePath, file);
+          .upload(storagePath, file, { cacheControl: '3600', upsert: true });
 
         if (uploadErr) throw uploadErr;
 
