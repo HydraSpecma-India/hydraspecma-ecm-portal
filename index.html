@@ -236,9 +236,9 @@
 
   <!-- Environment loader and Supabase connectivity script -->
   <script src="/env.js"></script>
-  <!-- Supabase JS Client UMD -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script type="module">
+    import { getSupabase } from './config/supabase.config.js';
+
     // Initialize Lucide icons
     lucide.createIcons();
 
@@ -251,19 +251,7 @@
       const connDesc = document.getElementById('conn-status-desc');
 
       try {
-        if (typeof supabase === 'undefined') {
-          throw new Error('Supabase script failed to load. Check your network/CDN connection.');
-        }
-
-        const url = (globalThis.__ENV__ && globalThis.__ENV__.VITE_SUPABASE_URL) || '';
-        const anon = (globalThis.__ENV__ && globalThis.__ENV__.VITE_SUPABASE_ANON_KEY) || '';
-
-        if (!url || !anon) {
-          throw new Error('Missing VITE_SUPABASE_URL or VITE_SUPABASE_ANON_KEY in Vercel settings.');
-        }
-
-        // Initialize client using global supabase
-        const client = supabase.createClient(url, anon);
+        const client = getSupabase();
         
         // Query the roles table counts (seeded with 13 items)
         const { data, count, error } = await client
