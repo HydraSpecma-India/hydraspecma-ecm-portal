@@ -1,0 +1,686 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Request Details - HydraSpecma ECM Portal</title>
+  <!-- Route Guard -->
+  <script type="module" src="/js/auth-guard.js"></script>
+  <!-- Initialize Theme -->
+  <script type="module" src="/js/theme.js"></script>
+  <!-- Modern Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            display: ['Outfit', 'sans-serif'],
+          },
+          colors: {
+            brand: {
+              primary: '#003A70',
+              secondary: '#00A3E0',
+              accent: '#0EA5E9',
+              background: '#0B0F19',
+              card: '#161F30',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@0.462.0/dist/umd/lucide.min.js"></script>
+  <!-- Mermaid.js -->
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+  <style>
+    body {
+      background: radial-gradient(circle at top right, rgba(0, 163, 224, 0.08), transparent 45%),
+                  radial-gradient(circle at bottom left, rgba(0, 58, 112, 0.15), transparent 50%),
+                  #0B0F19;
+      transition: background-color 0.3s ease;
+    }
+    html.light body {
+      background: radial-gradient(circle at top right, rgba(0, 163, 224, 0.06), transparent 45%),
+                  radial-gradient(circle at bottom left, rgba(0, 58, 112, 0.08), transparent 50%),
+                  #F8FAFC;
+    }
+    .glass {
+      background: rgba(22, 31, 48, 0.65);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      transition: background-color 0.3s, border-color 0.3s;
+    }
+    html.light .glass {
+      background: rgba(255, 255, 255, 0.75);
+      border: 1px solid rgba(0, 0, 0, 0.06);
+    }
+  </style>
+</head>
+<body class="text-slate-200 dark:text-slate-200 light:text-slate-700 min-h-screen flex flex-col font-sans selection:bg-brand-secondary/30 selection:text-white">
+
+  <!-- Header -->
+  <header class="w-full max-w-7xl mx-auto px-6 py-6 flex justify-between items-center border-b border-white/5 dark:border-white/5 light:border-black/5">
+    <div class="flex items-center space-x-3">
+      <a href="/" class="h-10 w-10 rounded-xl bg-gradient-to-tr from-brand-primary to-brand-secondary flex items-center justify-center shadow-lg shadow-brand-secondary/20 hover:scale-105 transition-transform">
+        <i data-lucide="arrow-left" class="h-5 w-5 text-white"></i>
+      </a>
+      <div>
+        <h1 class="text-lg font-bold font-display tracking-tight text-white dark:text-white light:text-slate-900" id="header-ecm-number">ECM Request</h1>
+        <p class="text-[10px] text-slate-400">Engineering Change Detail Portal</p>
+      </div>
+    </div>
+    
+    <div class="flex items-center space-x-6">
+      <div id="user-badge" class="hidden flex items-center space-x-3">
+        <div class="h-8 w-8 rounded-full bg-brand-secondary/20 border border-brand-secondary/30 flex items-center justify-center text-xs font-semibold text-brand-secondary font-display" id="user-avatar-placeholder">U</div>
+        <div class="text-left">
+          <p class="text-xs font-semibold text-white dark:text-white light:text-slate-900 leading-tight" id="user-name">Loading...</p>
+          <p class="text-[10px] text-slate-400 dark:text-slate-400 light:text-slate-500 leading-none" id="user-role">Viewer</p>
+        </div>
+        <div id="theme-toggle-container"></div>
+        <button id="btn-signout" class="h-8 w-8 rounded-lg hover:bg-white/5 dark:hover:bg-white/5 light:hover:bg-black/5 border border-transparent hover:border-white/10 flex items-center justify-center text-slate-400 hover:text-slate-700 transition duration-200" title="Sign Out">
+          <i data-lucide="log-out" class="h-4 w-4"></i>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Body -->
+  <main class="flex-grow w-full max-w-7xl mx-auto px-6 py-10 grid grid-cols-1 lg:grid-cols-3 gap-8">
+    
+    <!-- Left Column: Details & Parameters -->
+    <div class="lg:col-span-1 flex flex-col space-y-6">
+      
+      <!-- General Metadata Card -->
+      <div class="glass rounded-3xl p-6 flex flex-col space-y-6">
+        <div>
+          <span id="badge-category" class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold border">
+            <!-- Dynamic Status Badge -->
+          </span>
+          <h2 class="text-xl font-bold font-display mt-4 text-white dark:text-white light:text-slate-900" id="ecm-title">Loading...</h2>
+          <p class="text-xs text-slate-400 mt-2" id="ecm-desc">Description...</p>
+        </div>
+
+        <div class="border-t border-white/5 dark:border-white/5 light:border-black/5 pt-4 space-y-3 text-xs">
+          <div class="flex justify-between">
+            <span class="text-slate-400">Change Type</span>
+            <span class="font-semibold text-white dark:text-white light:text-slate-900 uppercase" id="param-change-type">-</span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-slate-400">Priority</span>
+            <span class="font-semibold text-white dark:text-white light:text-slate-900 uppercase" id="param-priority">-</span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-slate-400">Risk Level</span>
+            <span class="font-semibold text-white dark:text-white light:text-slate-900 uppercase" id="param-risk">-</span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-slate-400">Plant / Site</span>
+            <span class="font-semibold text-white dark:text-white light:text-slate-900" id="param-plant">-</span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-slate-400">Department</span>
+            <span class="font-semibold text-white dark:text-white light:text-slate-900" id="param-dept">-</span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-slate-400">Reason</span>
+            <span class="text-right text-slate-300 dark:text-slate-300 light:text-slate-600 max-w-[150px] truncate" id="param-reason">-</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Action Transition Panel Card -->
+      <div class="glass rounded-3xl p-6 flex flex-col space-y-4">
+        <div>
+          <h3 class="text-sm font-bold font-display text-white dark:text-white light:text-slate-900">Workflow Transitions</h3>
+          <p class="text-[10px] text-slate-400 mt-1">Available actions for the current state</p>
+        </div>
+
+        <div class="flex flex-col space-y-3" id="transitions-container">
+          <!-- Action Buttons rendered dynamically -->
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Right Column: Visualizer, Checklist & Timeline -->
+    <div class="lg:col-span-2 flex flex-col space-y-6">
+      
+      <!-- Visualizer Card (Mermaid Graph) -->
+      <div class="glass rounded-3xl p-6 flex flex-col space-y-4">
+        <div>
+          <h3 class="text-sm font-bold font-display text-white dark:text-white light:text-slate-900">Live Workflow Visualizer</h3>
+          <p class="text-[10px] text-slate-400 mt-1">Status node tracking in the data-driven engine</p>
+        </div>
+        <div id="mermaid-graph-container" class="w-full flex items-center justify-center p-4 bg-black/10 rounded-2xl overflow-x-auto min-h-[250px]">
+          <div id="mermaid-target" class="mermaid">
+            <!-- Mermaid flowchart markup -->
+          </div>
+        </div>
+      </div>
+
+      <!-- State Tasks Checklist -->
+      <div class="glass rounded-3xl p-6 flex flex-col space-y-4">
+        <div>
+          <h3 class="text-sm font-bold font-display text-white dark:text-white light:text-slate-900">State Tasks Checklist</h3>
+          <p class="text-[10px] text-slate-400 mt-1">Items required to transition out of the current state</p>
+        </div>
+        <div class="divide-y divide-white/5 dark:divide-white/5 light:divide-black/5" id="checklist-container">
+          <!-- Checklist Items dynamic -->
+        </div>
+      </div>
+
+      <!-- History Timeline Audit Log -->
+      <div class="glass rounded-3xl p-6 flex flex-col space-y-4">
+        <div>
+          <h3 class="text-sm font-bold font-display text-white dark:text-white light:text-slate-900">Workflow History</h3>
+          <p class="text-[10px] text-slate-400 mt-1">Audit log of all transitions, comments, and actors</p>
+        </div>
+        <div class="relative border-l border-white/10 pl-6 ml-3 space-y-6 text-xs text-slate-400" id="history-timeline">
+          <!-- Timeline elements dynamic -->
+        </div>
+      </div>
+
+    </div>
+
+  </main>
+
+  <!-- Comment Modal for transition requirements -->
+  <div id="modal-comment" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm">
+    <div class="w-full max-w-md glass rounded-3xl p-8 flex flex-col space-y-6">
+      <div class="flex justify-between items-start">
+        <div>
+          <h3 class="text-lg font-bold font-display text-white dark:text-white light:text-slate-900">Transition Comment</h3>
+          <p class="text-xs text-slate-400 mt-1" id="comment-modal-subtitle">A comment is required for this action.</p>
+        </div>
+        <button type="button" class="btn-close-modal text-slate-500 hover:text-white transition duration-200" data-modal-close>
+          <i data-lucide="x" class="h-5 w-5"></i>
+        </button>
+      </div>
+
+      <form id="form-comment" class="flex flex-col space-y-4">
+        <div class="flex flex-col space-y-1.5">
+          <label for="comment-text" class="text-xs font-semibold text-slate-400">Action Comment</label>
+          <textarea id="comment-text" required rows="3" placeholder="Enter details about this decision..." 
+                    class="w-full px-4 py-3 rounded-xl bg-black/35 border border-white/5 focus:border-brand-secondary/50 focus:ring-0 outline-none text-sm text-white placeholder-slate-600 transition duration-200"></textarea>
+        </div>
+
+        <button type="submit" id="btn-comment-submit" class="w-full py-3 rounded-xl bg-gradient-to-r from-brand-primary to-brand-secondary font-semibold text-sm text-white transition duration-200 flex items-center justify-center">
+          <span>Confirm Action</span>
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="w-full max-w-7xl mx-auto px-6 py-6 border-t border-white/5 dark:border-white/5 light:border-black/5 text-center text-xs text-slate-500">
+    <p>&copy; 2026 HydraSpecma India. Secure workflow processing channel.</p>
+  </footer>
+
+  <script src="/env.js"></script>
+  <script type="module">
+    import { getSupabase } from '../config/supabase.config.js';
+    import { authService } from '../services/auth/authService.js';
+    import { mountThemeToggle } from '../components/theme-toggle.js';
+    import { toast } from '../components/toast.js';
+    import { Modal } from '../components/modal.js';
+
+    // Initialize Lucide Icons
+    lucide.createIcons();
+
+    // Mount theme toggle
+    mountThemeToggle('theme-toggle-container');
+
+    // Retrieve ECM Request ID from URL query parameters
+    const urlParams = new URLSearchParams(globalThis.location.search);
+    const ecmId = urlParams.get('id');
+
+    if (!ecmId) {
+      toast.error('No ECM ID provided. Redirecting to dashboard...');
+      setTimeout(() => globalThis.location.href = '/', 2000);
+    }
+
+    // Modal instantiation
+    const commentModal = new Modal('modal-comment');
+    let activeTransitionId = null;
+
+    // Load User and Profile details
+    async function loadUserProfile() {
+      try {
+        const session = await authService.getSession();
+        if (session) {
+          const profileData = await authService.me();
+          const profile = profileData?.profile || {};
+          const roles = profileData?.roles || ['VIEWER'];
+
+          document.getElementById('user-badge').classList.remove('hidden');
+          document.getElementById('user-name').textContent = profile.full_name || session.user.email;
+          document.getElementById('user-role').textContent = roles.join(', ');
+          
+          if (profile.avatar_url) {
+            const avatarDiv = document.getElementById('user-avatar-placeholder');
+            avatarDiv.innerHTML = `<img src="${profile.avatar_url}" class="h-full w-full rounded-full object-cover">`;
+          } else {
+            const initial = (profile.full_name || session.user.email)[0].toUpperCase();
+            document.getElementById('user-avatar-placeholder').textContent = initial;
+          }
+        }
+      } catch (err) {
+        console.error('Failed to load profile:', err);
+      }
+    }
+
+    // Sign out handler
+    document.getElementById('btn-signout').addEventListener('click', async () => {
+      try {
+        await authService.signOut();
+        globalThis.location.href = '/login.html';
+      } catch (err) {
+        console.error('Sign out failed:', err);
+      }
+    });
+
+    // ----------------------------------------------------
+    // Load ECM Data and build page elements
+    // ----------------------------------------------------
+    async function loadECMDetails() {
+      try {
+        const supabase = getSupabase();
+
+        // 1. Fetch ECM record with joined lookups
+        const { data: ecm, error: fetchErr } = await supabase
+          .from('ecm_requests')
+          .select(`
+            *,
+            plant:plants(name),
+            department:departments(name)
+          `)
+          .eq('id', ecmId)
+          .single();
+
+        if (fetchErr || !ecm) throw fetchErr || new Error('Request not found');
+
+        // Populate metadata elements
+        document.getElementById('header-ecm-number').textContent = ecm.ecm_number || 'ECM Request';
+        document.getElementById('ecm-title').textContent = ecm.title;
+        document.getElementById('ecm-desc').textContent = ecm.description || 'No description provided.';
+        
+        document.getElementById('param-change-type').textContent = ecm.change_type;
+        document.getElementById('param-priority').textContent = ecm.priority;
+        document.getElementById('param-risk').textContent = ecm.risk_level;
+        document.getElementById('param-plant').textContent = ecm.plant?.name || '-';
+        document.getElementById('param-dept').textContent = ecm.department?.name || '-';
+        document.getElementById('param-reason').textContent = ecm.reason || '-';
+        document.getElementById('param-reason').title = ecm.reason || '';
+
+        // Status category badge
+        const badge = document.getElementById('badge-category');
+        const catMap = {
+          'draft': { color: 'text-slate-400 border-slate-500/20 bg-slate-500/5', label: 'Draft' },
+          'screening': { color: 'text-amber-400 border-amber-500/20 bg-amber-500/5', label: 'Screening' },
+          'in_progress': { color: 'text-sky-400 border-sky-500/20 bg-sky-500/5', label: 'In Progress' },
+          'approval': { color: 'text-violet-400 border-violet-500/20 bg-violet-500/5', label: 'Approval' },
+          'resolved': { color: 'text-emerald-400 border-emerald-500/20 bg-emerald-500/5', label: 'Resolved' },
+          'completed': { color: 'text-green-400 border-green-500/20 bg-green-500/5', label: 'Completed' },
+          'rejected': { color: 'text-rose-400 border-rose-500/20 bg-rose-500/5', label: 'Rejected' },
+          'cancelled': { color: 'text-pink-400 border-pink-500/20 bg-pink-500/5', label: 'Cancelled' }
+        };
+        const badgeStyle = catMap[ecm.status_category] || { color: 'text-slate-400 border-slate-400/20', label: ecm.status_category };
+        badge.className = `inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold border ${badgeStyle.color}`;
+        badge.textContent = badgeStyle.label;
+
+        // Load workflow elements
+        await Promise.all([
+          loadTransitions(ecm.current_state_id),
+          loadChecklist(ecm.id, ecm.current_state_id),
+          loadHistory(ecm.id),
+          buildMermaidGraph(ecm.workflow_id, ecm.current_state_id, ecm.id)
+        ]);
+
+      } catch (err) {
+        console.error('Failed to load ECM details:', err);
+        toast.error('Failed to retrieve Engineering Change details.');
+      }
+    }
+
+    // ----------------------------------------------------
+    // Load transitions and bind triggers
+    // ----------------------------------------------------
+    async function loadTransitions(currentStateId) {
+      const container = document.getElementById('transitions-container');
+      container.innerHTML = '<p class="text-xs text-slate-500">Checking actions...</p>';
+
+      try {
+        const supabase = getSupabase();
+        
+        // Fetch transitions out of current state
+        const { data: list } = await supabase
+          .from('wf_transitions')
+          .select('*')
+          .eq('from_state_id', currentStateId)
+          .eq('is_active', true)
+          .order('sort_order');
+
+        if (!list || list.length === 0) {
+          container.innerHTML = '<p class="text-xs text-slate-500">No available actions (terminal state)</p>';
+          return;
+        }
+
+        // Fetch user permissions
+        const profileData = await authService.me();
+        const userPerms = profileData?.permissions || [];
+        const userRoles = profileData?.roles || [];
+        const isAdmin = userRoles.includes('SUPER_ADMIN');
+
+        container.innerHTML = list.map(t => {
+          // Check permission guard
+          const isPermitted = !t.required_permission || isAdmin || userPerms.includes(t.required_permission);
+          
+          return `
+            <button class="w-full py-3 px-4 rounded-xl font-semibold text-xs transition duration-200 flex items-center justify-between group ${
+              isPermitted 
+                ? 'bg-white/5 hover:bg-brand-secondary/15 hover:text-white border border-white/5 hover:border-brand-secondary/30 text-slate-300' 
+                : 'bg-black/20 border border-white/5 text-slate-600 cursor-not-allowed'
+            }" data-transition-id="${t.id}" data-requires-comment="${t.requires_comment}" ${isPermitted ? '' : 'disabled'}>
+              <span>${t.action_label}</span>
+              <div class="flex items-center space-x-2">
+                ${t.required_permission ? `<span class="text-[9px] text-slate-500 uppercase tracking-widest pl-2">${t.required_permission}</span>` : ''}
+                <i data-lucide="chevron-right" class="h-4 w-4 text-slate-500 group-hover:text-brand-secondary transition duration-200"></i>
+              </div>
+            </button>
+          `;
+        }).join('');
+
+        lucide.createIcons();
+
+        // Bind transition buttons click listeners
+        container.querySelectorAll('button[data-transition-id]').forEach(btn => {
+          btn.addEventListener('click', async (e) => {
+            const btnEl = e.currentTarget;
+            const transitionId = btnEl.getAttribute('data-transition-id');
+            const reqComment = btnEl.getAttribute('data-requires-comment') === 'true';
+
+            activeTransitionId = transitionId;
+            if (reqComment) {
+              commentModal.open();
+            } else {
+              await executeTransition(transitionId);
+            }
+          });
+        });
+
+      } catch (err) {
+        console.error('Failed to load transitions:', err);
+        container.innerHTML = '<p class="text-xs text-rose-400">Failed to load actions</p>';
+      }
+    }
+
+    // Trigger Transition Function via Supabase RPC
+    async function executeTransition(transitionId, comment = null) {
+      toast.info('Processing transition...');
+      try {
+        const supabase = getSupabase();
+        const { data: nextStateId, error } = await supabase.rpc('fn_execute_transition', {
+          p_entity_type: 'ecm',
+          p_entity_id: ecmId,
+          p_transition_id: transitionId,
+          p_comment: comment
+        });
+
+        if (error) throw error;
+
+        toast.success('Workflow state updated!');
+        setTimeout(() => globalThis.location.reload(), 1500);
+
+      } catch (err) {
+        console.error('Transition execution failed:', err);
+        toast.error(err.message || 'Workflow transition failed.');
+      }
+    }
+
+    // Modal submit handler
+    document.getElementById('form-comment').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const comment = document.getElementById('comment-text').value.trim();
+      
+      commentModal.close();
+      document.getElementById('form-comment').reset();
+
+      if (activeTransitionId) {
+        await executeTransition(activeTransitionId, comment);
+      }
+    });
+
+    // ----------------------------------------------------
+    // Load Checklist Items
+    // ----------------------------------------------------
+    async function loadChecklist(ecmId, stateId) {
+      const container = document.getElementById('checklist-container');
+      container.innerHTML = '<p class="text-xs text-slate-500 p-4">Loading tasks...</p>';
+
+      try {
+        const supabase = getSupabase();
+        
+        // Fetch checklist items for the current state
+        const { data: list } = await supabase
+          .from('task_checklist_items')
+          .select(`
+            *,
+            assignee:profiles(full_name)
+          `)
+          .eq('ecm_request_id', ecmId)
+          .eq('state_id', stateId);
+
+        if (!list || list.length === 0) {
+          container.innerHTML = '<p class="text-xs text-slate-500 p-4">No checklist tasks required for this state</p>';
+          return;
+        }
+
+        container.innerHTML = list.map(item => `
+          <div class="flex items-center space-x-3 p-4 hover:bg-white/5 dark:hover:bg-white/5 light:hover:bg-black/5 transition duration-150 rounded-xl">
+            <input type="checkbox" id="task-${item.id}" data-item-id="${item.id}" ${item.is_completed ? 'checked' : ''} 
+                   class="h-4 w-4 rounded bg-black/30 border border-white/10 text-brand-secondary focus:ring-0 outline-none cursor-pointer">
+            <div class="flex-grow">
+              <label for="task-${item.id}" class="text-xs font-semibold text-slate-200 dark:text-slate-200 light:text-slate-800 cursor-pointer select-none ${item.is_completed ? 'line-through text-slate-500' : ''}">
+                ${item.description}
+              </label>
+              <div class="flex items-center space-x-3 text-[9px] text-slate-500 mt-1">
+                <span>Assignee: ${item.assignee?.full_name || 'Unassigned'}</span>
+                ${item.due_date ? `<span>Due: ${item.due_date}</span>` : ''}
+              </div>
+            </div>
+          </div>
+        `).join('');
+
+        // Bind checklist checkboxes change event
+        container.querySelectorAll('input[type="checkbox"]').forEach(check => {
+          check.addEventListener('change', async (e) => {
+            const checkEl = e.currentTarget;
+            const itemId = checkEl.getAttribute('data-item-id');
+            const isCompleted = checkEl.checked;
+            
+            try {
+              const supabase = getSupabase();
+              const profileData = await authService.me();
+              
+              const { error } = await supabase
+                .from('task_checklist_items')
+                .update({
+                  is_completed: isCompleted,
+                  completed_by: isCompleted ? (profileData?.profile?.id || null) : null,
+                  completed_at: isCompleted ? new Date().toISOString() : null
+                })
+                .eq('id', itemId);
+
+              if (error) throw error;
+              toast.success(isCompleted ? 'Task completed' : 'Task reopened');
+              
+              // Reload checklist in background
+              loadChecklist(ecmId, stateId);
+
+            } catch (err) {
+              console.error('Failed to update task checklist:', err);
+              toast.error('Failed to update task status.');
+              checkEl.checked = !isCompleted; // revert UI
+            }
+          });
+        });
+
+      } catch (err) {
+        console.error('Failed to load checklist:', err);
+        container.innerHTML = '<p class="text-xs text-rose-400 p-4">Failed to load checklist items</p>';
+      }
+    }
+
+    // ----------------------------------------------------
+    // Load History Timeline
+    // ----------------------------------------------------
+    async function loadHistory(ecmId) {
+      const container = document.getElementById('history-timeline');
+      container.innerHTML = '<p class="text-xs text-slate-500 pl-4">Loading history...</p>';
+
+      try {
+        const supabase = getSupabase();
+        
+        // Query ecm_state_history
+        const { data: list } = await supabase
+          .from('ecm_state_history')
+          .select(`
+            *,
+            actor:profiles(full_name),
+            from_state:wf_states!from_state_id(name),
+            to_state:wf_states!to_state_id(name)
+          `)
+          .eq('ecm_request_id', ecmId)
+          .order('performed_at', { ascending: false });
+
+        if (!list || list.length === 0) {
+          container.innerHTML = '<p class="text-xs text-slate-500 pl-4">No transition history recorded yet</p>';
+          return;
+        }
+
+        container.innerHTML = list.map(h => {
+          const date = new Date(h.performed_at).toLocaleDateString(undefined, {
+            month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit'
+          });
+          const hoursSpent = h.dwell_seconds ? (h.dwell_seconds / 3600).toFixed(1) : null;
+          
+          return `
+            <div class="relative">
+              <div class="absolute -left-[31px] top-0 h-4 w-4 rounded-full bg-slate-700 ring-4 ring-slate-800 border border-slate-600 flex items-center justify-center text-[8px] font-bold text-slate-400">
+                H
+              </div>
+              <div class="flex justify-between text-xs">
+                <h5 class="font-semibold text-white dark:text-white light:text-slate-800">
+                  Moved to <span class="text-brand-secondary">${h.to_state?.name || 'Unknown'}</span>
+                </h5>
+                <span class="text-[10px] text-slate-500 font-medium">${date}</span>
+              </div>
+              <p class="text-[10px] text-slate-500 mt-1">
+                Action: <span class="font-semibold text-slate-400">${h.action_code}</span> &bull; 
+                By: <span class="text-slate-400">${h.actor?.full_name || 'System'}</span>
+                ${hoursSpent ? ` &bull; Time spent: <span class="text-slate-400">${hoursSpent} hrs</span>` : ''}
+              </p>
+              ${h.comment ? `<p class="mt-2 text-slate-300 dark:text-slate-300 light:text-slate-600 italic bg-white/5 p-2.5 rounded-xl border border-white/5 font-sans">"${h.comment}"</p>` : ''}
+            </div>
+          `;
+        }).join('');
+
+      } catch (err) {
+        console.error('Failed to load history:', err);
+        container.innerHTML = '<p class="text-xs text-rose-400 pl-4">Failed to load workflow history</p>';
+      }
+    }
+
+    // ----------------------------------------------------
+    // Build Mermaid Flowchart diagram
+    // ----------------------------------------------------
+    async function buildMermaidGraph(workflowId, currentStateId, ecmId) {
+      const container = document.getElementById('mermaid-target');
+      
+      try {
+        const supabase = getSupabase();
+
+        // 1. Fetch workflow states and transitions
+        const [statesData, transData, histData] = await Promise.all([
+          supabase.from('wf_states').select('*').eq('workflow_id', workflowId).order('sequence'),
+          supabase.from('wf_transitions').select('*').eq('workflow_id', workflowId).eq('is_active', true),
+          supabase.from('ecm_state_history').select('to_state_id').eq('ecm_request_id', ecmId)
+        ]);
+
+        const states = statesData.data || [];
+        const transitions = transData.data || [];
+        const historyIds = new Set((histData.data || []).map(h => h.to_state_id));
+
+        if (states.length === 0) {
+          document.getElementById('mermaid-graph-container').innerHTML = '<p class="text-xs text-slate-500">No workflow steps configured</p>';
+          return;
+        }
+
+        // 2. Build Mermaid flow syntax
+        // Use clean letters for nodes (s0, s1...) since UUIDs contain dashes and break Mermaid syntax
+        const nodeId = (uuid) => 's' + uuid.replace(/-/g, '');
+        
+        let graphDef = 'graph TD;\n';
+        
+        // Define node labels
+        states.forEach(s => {
+          graphDef += `  ${nodeId(s.id)}["${s.name}"]\n`;
+        });
+
+        // Define transition arrows
+        transitions.forEach(t => {
+          if (t.from_state_id) {
+            graphDef += `  ${nodeId(t.from_state_id)}-->|"${t.action_label}"|${nodeId(t.to_state_id)}\n`;
+          }
+        });
+
+        // Add visual styles to nodes
+        states.forEach(s => {
+          if (s.id === currentStateId) {
+            // Current Active node (sky blue)
+            graphDef += `  style ${nodeId(s.id)} fill:#00A3E0,stroke:#fff,stroke-width:2px,color:#fff;\n`;
+          } else if (historyIds.has(s.id)) {
+            // Visited/Completed nodes (green)
+            graphDef += `  style ${nodeId(s.id)} fill:#16A34A,stroke:#fff,stroke-width:1px,color:#fff;\n`;
+          } else {
+            // Unvisited nodes (dark gray)
+            graphDef += `  style ${nodeId(s.id)} fill:#1E293B,stroke:#334155,stroke-width:1px,color:#64748B;\n`;
+          }
+        });
+
+        // Update target container text and invoke Mermaid compiler
+        container.textContent = graphDef;
+        container.removeAttribute('data-processed'); // force re-render
+        
+        // Initialize Mermaid with custom clean styles
+        mermaid.initialize({
+          startOnLoad: false,
+          theme: 'dark',
+          flowchart: { useMaxWidth: true, htmlLabels: true, curve: 'basis' },
+          securityLevel: 'loose'
+        });
+
+        await mermaid.run();
+
+      } catch (err) {
+        console.error('Failed to construct Mermaid visualizer:', err);
+        document.getElementById('mermaid-graph-container').innerHTML = '<p class="text-xs text-rose-400">Failed to render workflow graph</p>';
+      }
+    }
+
+    // Run Profile & Details load on startup
+    loadUserProfile();
+    loadECMDetails();
+  </script>
+</body>
+</html>

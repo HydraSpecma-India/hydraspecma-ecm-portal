@@ -103,13 +103,19 @@
   <main class="flex-grow w-full max-w-7xl mx-auto px-6 py-10 flex flex-col space-y-8">
     
     <!-- Title / Dashboard Welcome -->
-    <div class="flex justify-between items-center">
+    <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
       <div>
         <h2 class="text-2xl font-bold font-display text-white dark:text-white light:text-slate-900">Executive KPI Dashboard</h2>
         <p class="text-xs text-slate-400 dark:text-slate-400 light:text-slate-500 mt-1">Real-time Engineering Change Management portfolio analytics</p>
       </div>
-      <div class="text-xs text-slate-400" id="live-indicator">
-        <span class="inline-block h-2 w-2 rounded-full bg-emerald-400 animate-pulse mr-2"></span>Live data active
+      <div class="flex items-center space-x-4 shrink-0">
+        <button id="btn-create-ecm" class="py-2.5 px-5 rounded-xl bg-gradient-to-r from-brand-primary to-brand-secondary hover:shadow-lg hover:shadow-brand-secondary/20 font-semibold text-xs text-white transition duration-200 flex items-center space-x-2">
+          <i data-lucide="plus" class="h-4 w-4"></i>
+          <span>Create Request</span>
+        </button>
+        <div class="text-xs text-slate-400 shrink-0" id="live-indicator">
+          <span class="inline-block h-2 w-2 rounded-full bg-emerald-400 animate-pulse mr-2"></span>Live data active
+        </div>
       </div>
     </div>
 
@@ -145,9 +151,48 @@
 
     </div>
 
-    <!-- 3. Bottom Grid: Leaderboards, Funnels, and Department Workload -->
+    <!-- 3. Middle Grid: Recent Requests & Funnel -->
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
       
+      <!-- Table: Recent ECM Requests -->
+      <div class="glass rounded-3xl p-6 lg:col-span-2 flex flex-col space-y-4">
+        <div>
+          <h3 class="text-sm font-bold text-white dark:text-white light:text-slate-900 font-display">Recent Change Requests</h3>
+          <p class="text-[10px] text-slate-400 dark:text-slate-400 light:text-slate-500 mt-1">Engineering Change requests submitted to the system</p>
+        </div>
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-xs border-collapse">
+            <thead>
+              <tr class="text-slate-400 border-b border-white/5">
+                <th class="py-3 px-4 font-semibold">ECM #</th>
+                <th class="py-3 px-4 font-semibold">Title</th>
+                <th class="py-3 px-4 font-semibold">Priority</th>
+                <th class="py-3 px-4 font-semibold">Status</th>
+                <th class="py-3 px-4 font-semibold text-right">Created</th>
+              </tr>
+            </thead>
+            <tbody id="table-recent-body">
+              <!-- Loaders/Rows dynamic -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Funnel Chart: Workflow funnel stages -->
+      <div class="glass rounded-3xl p-6 lg:col-span-1 flex flex-col justify-between space-y-4">
+        <div>
+          <h3 class="text-sm font-bold text-white dark:text-white light:text-slate-900 font-display">Workflow Funnel</h3>
+          <p class="text-[10px] text-slate-400 dark:text-slate-400 light:text-slate-500 mt-1">Count of records currently moving in each stage</p>
+        </div>
+        <div id="funnel-container" class="space-y-4 flex-grow flex flex-col justify-center">
+          <!-- Funnel Progress bars dynamic -->
+        </div>
+      </div>
+
+    </div>
+
+    <!-- 4. Bottom Grid: Leaderboards and Guides -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
       <!-- Table: User Workload Leaderboard -->
       <div class="glass rounded-3xl p-6 lg:col-span-2 flex flex-col space-y-4">
         <div>
@@ -171,22 +216,102 @@
         </div>
       </div>
 
-      <!-- Funnel Chart: Workflow funnel stages -->
-      <div class="glass rounded-3xl p-6 lg:col-span-1 flex flex-col justify-between space-y-4">
+      <!-- Quick Guide Card -->
+      <div class="glass rounded-3xl p-6 lg:col-span-1 flex flex-col justify-between space-y-4 bg-gradient-to-br from-brand-primary/10 to-brand-secondary/5 border border-white/5">
         <div>
-          <h3 class="text-sm font-bold text-white dark:text-white light:text-slate-900 font-display">Workflow Funnel</h3>
-          <p class="text-[10px] text-slate-400 dark:text-slate-400 light:text-slate-500 mt-1">Count of records currently moving in each stage</p>
+          <h3 class="text-xs font-bold font-display text-white">System Guide</h3>
+          <p class="text-[10px] text-slate-400 mt-1">Quick operational tips for ECM flows</p>
         </div>
-        <div id="funnel-container" class="space-y-4 flex-grow flex flex-col justify-center">
-          <!-- Funnel Progress bars dynamic -->
+        <div class="space-y-3 text-[11px] text-slate-300">
+          <p>&bull; <strong>Create:</strong> Click "Create Request" to start a new change flow in Draft state.</p>
+          <p>&bull; <strong>Checklist:</strong> Open any request detail to check off tasks required for state exit.</p>
+          <p>&bull; <strong>Promote:</strong> Trigger transition gates (e.g. Screen, Approve) to advance the request.</p>
         </div>
+        <div class="text-[10px] text-brand-secondary font-medium tracking-wide">Ready for Engineering changes.</div>
       </div>
-
     </div>
 
   </main>
 
-  <!-- System details Modal (Original Roadmap + connection check) -->
+  <!-- Create ECM Modal -->
+  <div id="modal-create-ecm" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm">
+    <div class="w-full max-w-xl glass rounded-3xl p-8 flex flex-col space-y-6 max-h-[90vh] overflow-y-auto">
+      <div class="flex justify-between items-start">
+        <div>
+          <h3 class="text-lg font-bold font-display text-white dark:text-white light:text-slate-900">Create ECM Request</h3>
+          <p class="text-xs text-slate-400 mt-1">Submit a new Engineering Change Management record.</p>
+        </div>
+        <button type="button" class="btn-close-modal text-slate-500 hover:text-white transition duration-200" data-modal-close>
+          <i data-lucide="x" class="h-5 w-5"></i>
+        </button>
+      </div>
+
+      <form id="form-create-ecm" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <!-- Title (full width) -->
+        <div class="md:col-span-2 flex flex-col space-y-1.5">
+          <label for="create-title" class="text-xs font-semibold text-slate-400">Request Title</label>
+          <input type="text" id="create-title" required placeholder="e.g. Upgrade hydraulic hose assembly specification" 
+                 class="w-full px-4 py-2.5 rounded-xl bg-black/35 border border-white/5 focus:border-brand-secondary/50 focus:ring-0 outline-none text-xs text-white transition duration-200">
+        </div>
+
+        <!-- Description (full width) -->
+        <div class="md:col-span-2 flex flex-col space-y-1.5">
+          <label for="create-desc" class="text-xs font-semibold text-slate-400">Description</label>
+          <textarea id="create-desc" rows="3" placeholder="Describe the change scope and details..." 
+                    class="w-full px-4 py-2.5 rounded-xl bg-black/35 border border-white/5 focus:border-brand-secondary/50 focus:ring-0 outline-none text-xs text-white transition duration-200"></textarea>
+        </div>
+
+        <!-- Reason (full width) -->
+        <div class="md:col-span-2 flex flex-col space-y-1.5">
+          <label for="create-reason" class="text-xs font-semibold text-slate-400">Reason for Change</label>
+          <input type="text" id="create-reason" required placeholder="e.g. Field failures observed under high pressure" 
+                 class="w-full px-4 py-2.5 rounded-xl bg-black/35 border border-white/5 focus:border-brand-secondary/50 focus:ring-0 outline-none text-xs text-white transition duration-200">
+        </div>
+
+        <!-- Change Type & Priority -->
+        <div class="flex flex-col space-y-1.5">
+          <label for="create-type" class="text-xs font-semibold text-slate-400">Change Type</label>
+          <select id="create-type" class="w-full px-4 py-2.5 rounded-xl bg-black/35 border border-white/5 text-xs text-white focus:border-brand-secondary/50 outline-none">
+            <option value="standard">Standard</option>
+            <option value="emergency">Emergency</option>
+            <option value="deviation">Deviation</option>
+            <option value="pre_series">Pre-Series</option>
+            <option value="cost_down">Cost-Down</option>
+          </select>
+        </div>
+        <div class="flex flex-col space-y-1.5">
+          <label for="create-priority" class="text-xs font-semibold text-slate-400">Priority</label>
+          <select id="create-priority" class="w-full px-4 py-2.5 rounded-xl bg-black/35 border border-white/5 text-xs text-white focus:border-brand-secondary/50 outline-none">
+            <option value="low">Low</option>
+            <option value="medium" selected>Medium</option>
+            <option value="high">High</option>
+            <option value="critical">Critical</option>
+          </select>
+        </div>
+
+        <!-- Plant & Department Selection -->
+        <div class="flex flex-col space-y-1.5">
+          <label for="create-plant" class="text-xs font-semibold text-slate-400">Plant / Site</label>
+          <select id="create-plant" required class="w-full px-4 py-2.5 rounded-xl bg-black/35 border border-white/5 text-xs text-white focus:border-brand-secondary/50 outline-none">
+            <!-- Populated dynamically -->
+          </select>
+        </div>
+        <div class="flex flex-col space-y-1.5">
+          <label for="create-dept" class="text-xs font-semibold text-slate-400">Department</label>
+          <select id="create-dept" required class="w-full px-4 py-2.5 rounded-xl bg-black/35 border border-white/5 text-xs text-white focus:border-brand-secondary/50 outline-none">
+            <!-- Populated dynamically -->
+          </select>
+        </div>
+
+        <button type="submit" id="btn-create-submit" class="md:col-span-2 w-full py-3 mt-2 rounded-xl bg-gradient-to-r from-brand-primary to-brand-secondary font-semibold text-xs text-white transition duration-200 flex items-center justify-center space-x-2">
+          <span>Submit Change Request</span>
+          <i id="create-spinner" data-lucide="loader" class="hidden h-4 w-4 animate-spin text-white"></i>
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- System details Modal -->
   <div id="modal-system-details" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm">
     <div class="w-full max-w-4xl glass rounded-3xl p-8 flex flex-col space-y-6 max-h-[85vh] overflow-y-auto">
       <div class="flex justify-between items-start">
@@ -194,7 +319,7 @@
           <h3 class="text-lg font-bold font-display text-white dark:text-white light:text-slate-900">System Details</h3>
           <p class="text-xs text-slate-400 mt-1">Remote connection checks and delivery roadmap status.</p>
         </div>
-        <button type="button" class="btn-close-modal text-slate-500 hover:text-white transition duration-200">
+        <button type="button" class="btn-close-modal text-slate-500 hover:text-white transition duration-200" data-modal-close>
           <i data-lucide="x" class="h-5 w-5"></i>
         </button>
       </div>
@@ -252,7 +377,7 @@
               <p class="text-slate-400 mt-0.5">Theme switcher, stackable toasts, modals, and loaders.</p>
             </div>
             <div class="relative">
-              <div class="absolute -left-[31px] top-0 h-4 w-4 rounded-full bg-brand-secondary ring-4 ring-brand-secondary/20 animate-pulse"></div>
+              <div class="absolute -left-[31px] top-0 h-4 w-4 rounded-full bg-emerald-500 ring-4 ring-emerald-500/20 animate-pulse"></div>
               <h5 class="font-semibold text-white dark:text-white light:text-slate-900">Module 5: Executive Dashboard</h5>
               <p class="text-slate-400 mt-0.5">Active analytical widgets bound to live data views.</p>
             </div>
@@ -292,6 +417,13 @@
       verifyConnection();
     });
 
+    // Create ECM Modal
+    const createModal = new Modal('modal-create-ecm');
+    document.getElementById('btn-create-ecm').addEventListener('click', () => {
+      createModal.open();
+      loadFormDropdowns();
+    });
+
     // ----------------------------------------------------
     // Chart References & Color Configurations
     // ----------------------------------------------------
@@ -306,7 +438,6 @@
       };
     }
 
-    // Apply color change dynamically to Chart.js global config & active instances
     globalThis.addEventListener('ecm-theme-change', (e) => {
       const colors = getChartThemeColors(e.detail === 'dark');
       
@@ -332,6 +463,9 @@
         <div class="h-28 glass rounded-3xl animate-pulse"></div>
         <div class="h-28 glass rounded-3xl animate-pulse"></div>
         <div class="h-28 glass rounded-3xl animate-pulse"></div>
+      `;
+      document.getElementById('table-recent-body').innerHTML = `
+        <tr><td colspan="5" class="p-4">${loader.list(3)}</td></tr>
       `;
       document.getElementById('table-workload-body').innerHTML = `
         <tr><td colspan="4" class="p-4">${loader.list(3)}</td></tr>
@@ -365,19 +499,28 @@
           renderPrioritySplit(priorityData);
         }
 
-        // 5. Fetch Workload table
+        // 5. Fetch Recent Requests
+        const { data: recentRequests } = await supabase
+          .from('ecm_requests')
+          .select('*')
+          .eq('is_deleted', false)
+          .order('created_at', { ascending: false })
+          .limit(8);
+        if (recentRequests) {
+          bindRecentRequests(recentRequests);
+        }
+
+        // 6. Fetch Workload table
         const { data: workload } = await supabase.from('vw_workload_per_user').select('*');
         if (workload) {
           bindWorkloadTable(workload);
         }
 
-        // 6. Fetch Funnel stages
+        // 7. Fetch Funnel stages
         const { data: funnel } = await supabase.from('vw_workflow_funnel').select('*');
         if (funnel) {
           bindWorkflowFunnel(funnel);
         }
-
-        toast.success('Dashboard metrics updated.');
 
       } catch (err) {
         console.error('Failed to initialize dashboard:', err);
@@ -385,10 +528,9 @@
       }
     }
 
-    // Bind KPI numbers to visual cards
+    // Bind KPI numbers
     function bindKPIs(k) {
       const grid = document.getElementById('kpi-grid');
-      
       const cards = [
         { title: 'Open Requests', val: k.open_ecm || 0, icon: 'folder-open', color: 'text-brand-secondary', desc: `${k.pending_approval || 0} pending approval` },
         { title: 'Average Lead Time', val: `${k.avg_lead_time_days || '0'} Days`, icon: 'clock', color: 'text-amber-400', desc: `Avg approval: ${k.avg_approval_hours || '0'} hrs` },
@@ -412,7 +554,7 @@
       lucide.createIcons();
     }
 
-    // Render created vs completed changes on Monthly Trends chart
+    // Render Trends Chart
     function renderMonthlyTrends(list) {
       const ctx = document.getElementById('chart-monthly-trends').getContext('2d');
       const isDark = document.documentElement.classList.contains('dark');
@@ -473,7 +615,7 @@
       });
     }
 
-    // Render doughnut chart for priorities
+    // Render Priority Distribution Chart
     function renderPrioritySplit(list) {
       const ctx = document.getElementById('chart-priority-distribution').getContext('2d');
       const isDark = document.documentElement.classList.contains('dark');
@@ -511,7 +653,64 @@
       });
     }
 
-    // Bind workload status to Table Body
+    // Bind Recent Requests
+    function bindRecentRequests(list) {
+      const tbody = document.getElementById('table-recent-body');
+      
+      if (list.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="5" class="p-8 text-center text-slate-500 text-xs">No change requests found. Click "Create Request" to submit one.</td>
+          </tr>
+        `;
+        return;
+      }
+
+      const priorityStyle = {
+        'low': 'text-slate-400 bg-slate-500/10 border-slate-500/20',
+        'medium': 'text-sky-400 bg-sky-500/10 border-sky-500/20',
+        'high': 'text-amber-400 bg-amber-500/10 border-amber-500/20',
+        'critical': 'text-rose-400 bg-rose-500/10 border-rose-500/20'
+      };
+
+      const statusMap = {
+        'draft': { style: 'text-slate-400 bg-slate-500/10 border-slate-500/20', label: 'Draft' },
+        'screening': { style: 'text-amber-400 bg-amber-500/10 border-amber-500/20', label: 'Screening' },
+        'in_progress': { style: 'text-sky-400 bg-sky-500/10 border-sky-500/20', label: 'In Progress' },
+        'approval': { style: 'text-violet-400 bg-violet-500/10 border-violet-500/20', label: 'Approval' },
+        'resolved': { style: 'text-emerald-400 bg-emerald-500/10 border-emerald-500/20', label: 'Resolved' },
+        'completed': { style: 'text-green-400 bg-green-500/10 border-green-500/20', label: 'Completed' },
+        'rejected': { style: 'text-rose-400 bg-rose-500/10 border-rose-500/20', label: 'Rejected' },
+        'cancelled': { style: 'text-pink-400 bg-pink-500/10 border-pink-500/20', label: 'Cancelled' }
+      };
+
+      tbody.innerHTML = list.map(e => {
+        const date = new Date(e.created_at).toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+        const pStyle = priorityStyle[e.priority.toLowerCase()] || 'text-slate-400 border-slate-500/10';
+        const sStyle = statusMap[e.status_category?.toLowerCase()] || { style: 'text-slate-400 border-slate-500/10', label: e.status_category || 'Draft' };
+        
+        return `
+          <tr class="border-b border-white/5 hover:bg-white/5 dark:hover:bg-white/5 light:hover:bg-black/5 transition duration-150 cursor-pointer text-slate-300 dark:text-slate-300 light:text-slate-700" 
+              onclick="globalThis.location.href='/pages/ecm-detail.html?id=${e.id}'">
+            <td class="py-3.5 px-4 font-semibold text-white dark:text-white light:text-slate-900 font-display">${e.ecm_number || 'EC-xxxx'}</td>
+            <td class="py-3.5 px-4 font-medium max-w-[200px] truncate text-slate-200 dark:text-slate-200 light:text-slate-800" title="${e.title}">${e.title}</td>
+            <td class="py-3.5 px-4">
+              <span class="px-2 py-0.5 rounded-full border text-[10px] font-semibold uppercase ${pStyle}">
+                ${e.priority}
+              </span>
+            </td>
+            <td class="py-3.5 px-4">
+              <span class="px-2 py-0.5 rounded-full border text-[10px] font-semibold ${sStyle.style}">
+                ${sStyle.label}
+              </span>
+            </td>
+            <td class="py-3.5 px-4 text-right text-slate-500">${date}</td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    // Bind User Workload Leaderboard
     function bindWorkloadTable(list) {
       const tbody = document.getElementById('table-workload-body');
       
@@ -546,9 +745,7 @@
     // Bind Workflow Funnel progress bars
     function bindWorkflowFunnel(list) {
       const container = document.getElementById('funnel-container');
-      
       const maxCount = Math.max(...list.map(item => item.in_stage), 1);
-      
       const stageColors = { 'PRE': 'bg-slate-400', 'ECR': 'bg-[#0EA5E9]', 'ECO': 'bg-[#00A3E0]', 'CLOSED': 'bg-[#16A34A]' };
 
       container.innerHTML = list.map(stage => {
@@ -568,6 +765,98 @@
         `;
       }).join('');
     }
+
+    // ----------------------------------------------------
+    // Load Form dropdown options dynamically
+    // ----------------------------------------------------
+    let dropdownsLoaded = false;
+    async function loadFormDropdowns() {
+      if (dropdownsLoaded) return;
+      
+      try {
+        const supabase = getSupabase();
+        
+        const [plantsData, deptsData] = await Promise.all([
+          supabase.from('plants').select('id, name').order('name'),
+          supabase.from('departments').select('id, name').order('name')
+        ]);
+
+        const plantSelect = document.getElementById('create-plant');
+        const deptSelect = document.getElementById('create-dept');
+
+        plantSelect.innerHTML = (plantsData.data || []).map(p => `
+          <option value="${p.id}">${p.name}</option>
+        `).join('');
+
+        deptSelect.innerHTML = (deptsData.data || []).map(d => `
+          <option value="${d.id}">${d.name}</option>
+        `).join('');
+
+        dropdownsLoaded = true;
+      } catch (err) {
+        console.error('Failed to load form dropdown metadata:', err);
+        toast.error('Failed to load plant/department list.');
+      }
+    }
+
+    // Create ECM Form Submission
+    document.getElementById('form-create-ecm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      const title = document.getElementById('create-title').value.trim();
+      const description = document.getElementById('create-desc').value.trim();
+      const reason = document.getElementById('create-reason').value.trim();
+      const change_type = document.getElementById('create-type').value;
+      const priority = document.getElementById('create-priority').value;
+      const plant_id = document.getElementById('create-plant').value;
+      const department_id = document.getElementById('create-dept').value;
+
+      // Loading state
+      const submitBtn = document.getElementById('btn-create-submit');
+      const spinner = document.getElementById('create-spinner');
+      submitBtn.disabled = true;
+      spinner.classList.remove('hidden');
+
+      try {
+        const supabase = getSupabase();
+        const profileData = await authService.me();
+        const userId = profileData?.profile?.id;
+
+        if (!userId) throw new Error('User profile not resolved');
+
+        // Insert new request
+        const { data, error } = await supabase
+          .from('ecm_requests')
+          .insert({
+            title,
+            description,
+            reason,
+            change_type,
+            priority,
+            plant_id,
+            department_id,
+            requestor_id: userId,
+            created_by: userId
+          })
+          .select('id')
+          .single();
+
+        if (error) throw error;
+
+        toast.success('Engineering change request created!');
+        
+        // Redirect to detail page
+        setTimeout(() => {
+          globalThis.location.href = `/pages/ecm-detail.html?id=${data.id}`;
+        }, 1500);
+
+      } catch (err) {
+        console.error('Failed to create ECM request:', err);
+        toast.error(err.message || 'Submission failed.');
+        submitBtn.disabled = false;
+        spinner.classList.add('hidden');
+      }
+    });
 
     // ----------------------------------------------------
     // User Profile badge and System Verification Checks
