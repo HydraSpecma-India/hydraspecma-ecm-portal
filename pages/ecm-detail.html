@@ -1919,7 +1919,6 @@
         
         states.forEach(s => {
           graphDef += `  ${nodeId(s.id)}["${sanitizeLabel(s.name)}"]\n`;
-          graphDef += `  click ${nodeId(s.id)} call clickNode\n`;
         });
 
         transitions.forEach(t => {
@@ -1930,11 +1929,11 @@
 
         states.forEach(s => {
           if (s.id === currentStateId) {
-            graphDef += `  style ${nodeId(s.id)} fill:#00A3E0,stroke:#fff,stroke-width:2px,color:#fff;\n`;
+            graphDef += `  style ${nodeId(s.id)} fill:#FFCC00,stroke:#575757,stroke-width:2.5px,color:#1a1a1a;\n`;
           } else if (historyIds.has(s.id)) {
             graphDef += `  style ${nodeId(s.id)} fill:#16A34A,stroke:#fff,stroke-width:1px,color:#fff;\n`;
           } else {
-            graphDef += `  style ${nodeId(s.id)} fill:#1E293B,stroke:#334155,stroke-width:1px,color:#64748B;\n`;
+            graphDef += `  style ${nodeId(s.id)} fill:#575757,stroke:#B3B3B3,stroke-width:1px,color:#fff;\n`;
           }
         });
 
@@ -1949,6 +1948,20 @@
         });
 
         await mermaid.run();
+
+        // Attach native click listeners to the rendered SVG node elements directly
+        const svgContainer = document.getElementById('mermaid-graph-container');
+        const nodes = svgContainer.querySelectorAll('g.node');
+        nodes.forEach(node => {
+          node.style.cursor = 'pointer';
+          node.addEventListener('click', () => {
+            const cleanId = node.id.replace('flowchart-', '').split('-')[0];
+            const state = loadedWorkflowStates.find(s => nodeId(s.id) === cleanId);
+            if (state) {
+              showStatePopup(state);
+            }
+          });
+        });
 
       } catch (err) {
         console.error('Failed to construct Mermaid visualizer:', err);
