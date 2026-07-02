@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Audit Logs Trail - HydraSpecma ECM Portal</title>
+  <!-- Route Guard -->
+  <script type="module" src="/js/auth-guard.js"></script>
+  <!-- Initialize Theme -->
+  <script type="module" src="/js/theme.js"></script>
+  <!-- Modern Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            display: ['Outfit', 'sans-serif'],
+          },
+          colors: {
+            brand: {
+              primary: '#575757',
+              secondary: '#FFCC00',
+              accent: '#B3B3B3',
+              background: '#1a1a1a',
+              card: '#2a2a2a',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@0.462.0/dist/umd/lucide.min.js"></script>
+  <style>
+    body {
+      background: radial-gradient(circle at top right, rgba(255, 204, 0, 0.05), transparent 45%),
+                  radial-gradient(circle at bottom left, rgba(87, 87, 87, 0.15), transparent 50%),
+                  #1a1a1a;
+      transition: background-color 0.3s ease;
+    }
+    html.light body {
+      background: radial-gradient(circle at top right, rgba(255, 204, 0, 0.03), transparent 45%),
+                  radial-gradient(circle at bottom left, rgba(87, 87, 87, 0.08), transparent 50%),
+                  #F8FAFC;
+    }
+    .glass {
+      background: rgba(42, 42, 42, 0.65);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      transition: background-color 0.3s, border-color 0.3s;
+    }
+    html.light .glass {
+      background: rgba(255, 255, 255, 0.75);
+      border: 1px solid rgba(0, 0, 0, 0.06);
+    }
+  </style>
+</head>
+<body class="text-slate-200 dark:text-slate-200 light:text-slate-700 min-h-screen flex flex-col font-sans selection:bg-brand-secondary/30 selection:text-white">
+
+  <!-- Header -->
+  <header class="w-full max-w-7xl mx-auto px-6 py-6 flex justify-between items-center border-b border-white/5 dark:border-white/5 light:border-black/5">
+    <div class="flex items-center space-x-3">
+      <a href="/" class="h-10 w-10 rounded-xl bg-gradient-to-tr from-brand-primary to-brand-secondary flex items-center justify-center shadow-lg shadow-brand-secondary/20 hover:scale-105 transition-transform">
+        <i data-lucide="arrow-left" class="h-5 w-5 text-white"></i>
+      </a>
+      <div>
+        <h1 class="text-lg font-bold font-display tracking-tight text-white dark:text-white light:text-slate-900">Audit Trail Logs</h1>
+        <p class="text-[10px] text-slate-400">System Activity Registry & Immutable History Trail</p>
+      </div>
+    </div>
+    
+    <div class="flex items-center space-x-6">
+      <div id="user-badge" class="hidden flex items-center space-x-3">
+        <div class="h-8 w-8 rounded-full bg-brand-secondary/20 border border-brand-secondary/30 flex items-center justify-center text-xs font-semibold text-brand-secondary font-display" id="user-avatar-placeholder">U</div>
+        <div class="text-left">
+          <p class="text-xs font-semibold text-white dark:text-white light:text-slate-900 leading-tight" id="user-name">Loading...</p>
+          <p class="text-[10px] text-slate-400 dark:text-slate-400 light:text-slate-500 leading-none" id="user-role">Viewer</p>
+        </div>
+        <div id="theme-toggle-container"></div>
+        <button id="btn-signout" class="h-8 w-8 rounded-lg hover:bg-white/5 dark:hover:bg-white/5 light:hover:bg-black/5 border border-transparent hover:border-white/10 flex items-center justify-center text-slate-400 hover:text-slate-700 transition duration-200" title="Sign Out">
+          <i data-lucide="log-out" class="h-4 w-4"></i>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="flex-grow w-full max-w-7xl mx-auto px-6 py-10 flex flex-col space-y-6">
+    
+    <!-- Filter Control Row -->
+    <div class="glass rounded-3xl p-6 flex flex-col space-y-4">
+      <div class="flex justify-between items-center border-b border-white/5 pb-3">
+        <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider">Search Filters</h3>
+        <button id="btn-export-csv" class="py-1.5 px-3 rounded-lg border border-brand-secondary/35 hover:bg-brand-secondary/15 font-semibold text-[10px] text-brand-secondary transition flex items-center space-x-1">
+          <i data-lucide="download" class="h-3.5 w-3.5"></i>
+          <span>Export CSV</span>
+        </button>
+      </div>
+
+      <form id="form-audit-filters" class="grid grid-cols-1 sm:grid-cols-4 gap-4 items-end">
+        <div class="flex flex-col space-y-1">
+          <label for="filter-table" class="text-[9px] font-bold text-slate-400 uppercase">Target Table</label>
+          <select id="filter-table" class="w-full px-3 py-2 rounded-xl bg-black/35 border border-white/5 text-xs text-white outline-none">
+            <option value="">All Tables</option>
+            <option value="ecm_requests">ECM Requests</option>
+            <option value="ecm_tasks">ECM Tasks</option>
+            <option value="approval_requests">Approvals</option>
+            <option value="comments">Comments</option>
+            <option value="document_versions">Documents</option>
+          </select>
+        </div>
+
+        <div class="flex flex-col space-y-1">
+          <label for="filter-action" class="text-[9px] font-bold text-slate-400 uppercase">Action Type</label>
+          <select id="filter-action" class="w-full px-3 py-2 rounded-xl bg-black/35 border border-white/5 text-xs text-white outline-none">
+            <option value="">All Actions</option>
+            <option value="INSERT">INSERT</option>
+            <option value="UPDATE">UPDATE</option>
+            <option value="DELETE">DELETE</option>
+          </select>
+        </div>
+
+        <div class="flex flex-col space-y-1">
+          <label for="filter-search" class="text-[9px] font-bold text-slate-400 uppercase">Search Details</label>
+          <input type="text" id="filter-search" placeholder="Search data values..." class="w-full px-3 py-2 rounded-xl bg-black/35 border border-white/5 text-xs text-white outline-none">
+        </div>
+
+        <button type="submit" class="w-full py-2 px-4 rounded-xl bg-gradient-to-r from-brand-primary to-brand-secondary font-semibold text-xs text-white transition duration-200">
+          Apply Filters
+        </button>
+      </form>
+    </div>
+
+    <!-- Audit Logs List Grid -->
+    <div class="glass rounded-3xl p-6 flex flex-col space-y-4">
+      <h3 class="text-sm font-bold font-display text-white">Immutable System Changes Log</h3>
+      
+      <div class="overflow-x-auto">
+        <table class="w-full text-left text-xs border-collapse">
+          <thead>
+            <tr class="text-slate-400 border-b border-white/5">
+              <th class="py-3 px-4 font-semibold">Timestamp</th>
+              <th class="py-3 px-4 font-semibold">Actor</th>
+              <th class="py-3 px-4 font-semibold">Table</th>
+              <th class="py-3 px-4 font-semibold">Action</th>
+              <th class="py-3 px-4 font-semibold">Record ID</th>
+              <th class="py-3 px-4 text-right">Payload details</th>
+            </tr>
+          </thead>
+          <tbody id="table-audit-body">
+            <!-- Dynamically populated logs -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Payload Details Modal -->
+  <div id="modal-audit-details" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm">
+    <div class="w-full max-w-2xl glass rounded-3xl p-8 flex flex-col space-y-6">
+      <div class="flex justify-between items-start border-b border-white/5 pb-3">
+        <div>
+          <h3 class="text-lg font-bold font-display text-white">Data Change Payload</h3>
+          <p class="text-xs text-slate-400 mt-1" id="audit-details-subtitle">Action details</p>
+        </div>
+        <button type="button" class="text-slate-500 hover:text-white transition duration-200" onclick="closeDetailsModal()">
+          <i data-lucide="x" class="h-5 w-5"></i>
+        </button>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="flex flex-col space-y-1.5">
+          <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider">Before Change (Old Data)</span>
+          <pre id="audit-old-data" class="w-full p-4 rounded-xl bg-black/50 border border-white/5 text-[10px] text-slate-400 overflow-x-auto max-h-[300px] font-mono"></pre>
+        </div>
+        <div class="flex flex-col space-y-1.5">
+          <span class="text-[9px] font-bold text-emerald-400 uppercase tracking-wider">After Change (New Data)</span>
+          <pre id="audit-new-data" class="w-full p-4 rounded-xl bg-black/50 border border-emerald-500/5 text-[10px] text-slate-200 overflow-x-auto max-h-[300px] font-mono"></pre>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="/env.js"></script>
+  <script type="module" src="/js/notifications-manager.js"></script>
+  <script type="module">
+    import { getSupabase } from '../config/supabase.config.js';
+    import { authService } from '../services/auth/authService.js';
+    import { mountThemeToggle } from '../components/theme-toggle.js';
+    import { toast } from '../components/toast.js';
+
+    lucide.createIcons();
+    mountThemeToggle('theme-toggle-container');
+
+    window.closeDetailsModal = function() {
+      document.getElementById('modal-audit-details').classList.add('hidden');
+    };
+
+    // User profile
+    async function loadUserProfile() {
+      try {
+        const session = await authService.getSession();
+        if (session) {
+          const profileData = await authService.me();
+          const profile = profileData?.profile || {};
+          const roles = profileData?.roles || ['VIEWER'];
+
+          document.getElementById('user-badge').classList.remove('hidden');
+          document.getElementById('user-name').textContent = profile.full_name || session.user.email;
+          document.getElementById('user-role').textContent = roles.join(', ');
+          
+          if (profile.avatar_url) {
+            document.getElementById('user-avatar-placeholder').innerHTML = `<img src="${profile.avatar_url}" class="h-full w-full rounded-full object-cover">`;
+          } else {
+            const initial = (profile.full_name || session.user.email)[0].toUpperCase();
+            document.getElementById('user-avatar-placeholder').textContent = initial;
+          }
+        }
+      } catch (err) {
+        console.error('Failed to load profile:', err);
+      }
+    }
+
+    // Sign out
+    document.getElementById('btn-signout').addEventListener('click', async () => {
+      try {
+        await authService.signOut();
+        globalThis.location.href = '/login.html';
+      } catch (err) {
+        console.error('Sign out failed:', err);
+      }
+    });
+
+    // ----------------------------------------------------
+    // Load and Filter Audit Logs
+    // ----------------------------------------------------
+    let activeLogs = [];
+    async function loadAuditLogs() {
+      const tbody = document.getElementById('table-audit-body');
+      tbody.innerHTML = '<tr><td colspan="6" class="text-center py-6 text-slate-500">Loading audit logs...</td></tr>';
+
+      const tableFilter = document.getElementById('filter-table').value;
+      const actionFilter = document.getElementById('filter-action').value;
+      const searchVal = document.getElementById('filter-search').value.trim();
+
+      try {
+        const supabase = getSupabase();
+        
+        let query = supabase
+          .from('audit_logs')
+          .select(`
+            *,
+            actor:profiles(full_name)
+          `)
+          .order('changed_at', { ascending: false })
+          .limit(100);
+
+        if (tableFilter) {
+          query = query.eq('table_name', tableFilter);
+        }
+        if (actionFilter) {
+          query = query.eq('action', actionFilter);
+        }
+
+        const { data, error } = await query;
+
+        if (error) throw error;
+
+        if (!data || data.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="6" class="text-center py-8 text-slate-500">No audit log records matches filters.</td></tr>';
+          return;
+        }
+
+        // Apply client-side search across JSON payload values if needed
+        let filtered = data;
+        if (searchVal) {
+          const lowerSearch = searchVal.toLowerCase();
+          filtered = data.filter(log => {
+            const oldStr = log.old_value ? log.old_value.toLowerCase() : '';
+            const newStr = log.new_value ? log.new_value.toLowerCase() : '';
+            const fieldStr = log.field_name ? log.field_name.toLowerCase() : '';
+            const snapStr = log.row_snapshot ? JSON.stringify(log.row_snapshot).toLowerCase() : '';
+            return oldStr.includes(lowerSearch) || newStr.includes(lowerSearch) || fieldStr.includes(lowerSearch) || snapStr.includes(lowerSearch);
+          });
+        }
+
+        activeLogs = filtered;
+
+        if (filtered.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="6" class="text-center py-8 text-slate-500">No records matching search query.</td></tr>';
+          return;
+        }
+
+        tbody.innerHTML = filtered.map((log, index) => {
+          const date = new Date(log.changed_at).toLocaleString(undefined, {
+            month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit'
+          });
+
+          let actionColor = 'text-slate-400 bg-white/5 border border-white/10';
+          if (log.action === 'INSERT') actionColor = 'text-emerald-400 bg-emerald-500/10 border border-emerald-500/20';
+          if (log.action === 'UPDATE') actionColor = 'text-amber-400 bg-amber-500/10 border border-amber-500/20';
+          if (log.action === 'DELETE') actionColor = 'text-rose-400 bg-rose-500/10 border border-rose-500/20';
+
+          return `
+            <tr class="border-b border-white/5 hover:bg-white/5 dark:hover:bg-white/5 light:hover:bg-black/5 transition duration-150 text-slate-300 dark:text-slate-300 light:text-slate-700">
+              <td class="py-3.5 px-4 font-mono text-[10px] text-slate-500">${date}</td>
+              <td class="py-3.5 px-4 font-bold text-white dark:text-white light:text-slate-800">${log.actor?.full_name || 'System Actor'}</td>
+              <td class="py-3.5 px-4 font-mono font-semibold text-slate-400">${log.table_name}</td>
+              <td class="py-3.5 px-4"><span class="px-2 py-0.5 rounded font-bold text-[9px] uppercase tracking-wider ${actionColor}">${log.action}</span></td>
+              <td class="py-3.5 px-4 font-mono text-[10px] text-slate-500">${log.record_id || 'N/A'}</td>
+              <td class="py-3.5 px-4 text-right">
+                <button onclick="viewPayload(${index})" class="py-1 px-2.5 rounded-lg border border-brand-secondary/35 hover:bg-brand-secondary/15 font-semibold text-[10px] text-brand-secondary transition">
+                  View Diff
+                </button>
+              </td>
+            </tr>
+          `;
+        }).join('');
+
+      } catch (err) {
+        console.error('Failed to load audit logs:', err);
+        tbody.innerHTML = '<tr><td colspan="6" class="text-center py-6 text-rose-400">Failed to load system audit trail</td></tr>';
+      }
+    }
+
+    // View JSON payloads in modal
+    window.viewPayload = function(index) {
+      const log = activeLogs[index];
+      if (!log) return;
+
+      document.getElementById('audit-details-subtitle').textContent = `Record ID: ${log.record_id || 'N/A'} | Table: ${log.table_name}`;
+      
+      const oldPre = document.getElementById('audit-old-data');
+      const newPre = document.getElementById('audit-new-data');
+
+      if (log.field_name) {
+        oldPre.textContent = `Field: ${log.field_name}\nValue: ${log.old_value || '(null)'}`;
+        newPre.textContent = `Field: ${log.field_name}\nValue: ${log.new_value || '(null)'}`;
+      } else {
+        oldPre.textContent = 'No field-level diff stored.';
+        newPre.textContent = log.row_snapshot ? JSON.stringify(log.row_snapshot, null, 2) : 'No snapshot data.';
+      }
+
+      document.getElementById('modal-audit-details').classList.remove('hidden');
+    };
+
+    // Filter submit handler
+    document.getElementById('form-audit-filters').addEventListener('submit', (e) => {
+      e.preventDefault();
+      loadAuditLogs();
+    });
+
+    // CSV export
+    document.getElementById('btn-export-csv').addEventListener('click', () => {
+      if (activeLogs.length === 0) {
+        toast.error('No audit records available to export.');
+        return;
+      }
+
+      let csvContent = '"Timestamp","Actor","Table","Action","Record ID"\n';
+      
+      activeLogs.forEach(log => {
+        const date = new Date(log.changed_at).toISOString();
+        const actorName = log.actor?.full_name || 'System';
+        csvContent += `"${date}","${actorName}","${log.table_name}","${log.action}","${log.record_id || ''}"\n`;
+      });
+
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.setAttribute('download', 'system_audit_trail_logs.csv');
+      link.style.visibility = 'hidden';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      toast.success('Audit trail logs exported successfully.');
+    });
+
+    // Init
+    loadUserProfile();
+    loadAuditLogs();
+  </script>
+</body>
+</html>

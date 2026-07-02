@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Control Panel - HydraSpecma ECM Portal</title>
+  <!-- Route Guard -->
+  <script type="module" src="/js/auth-guard.js"></script>
+  <!-- Initialize Theme -->
+  <script type="module" src="/js/theme.js"></script>
+  <!-- Modern Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            display: ['Outfit', 'sans-serif'],
+          },
+          colors: {
+            brand: {
+              primary: '#575757',
+              secondary: '#FFCC00',
+              accent: '#B3B3B3',
+              background: '#1a1a1a',
+              card: '#2a2a2a',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@0.462.0/dist/umd/lucide.min.js"></script>
+  <style>
+    body {
+      background: radial-gradient(circle at top right, rgba(255, 204, 0, 0.05), transparent 45%),
+                  radial-gradient(circle at bottom left, rgba(87, 87, 87, 0.15), transparent 50%),
+                  #1a1a1a;
+      transition: background-color 0.3s ease;
+    }
+    html.light body {
+      background: radial-gradient(circle at top right, rgba(255, 204, 0, 0.03), transparent 45%),
+                  radial-gradient(circle at bottom left, rgba(87, 87, 87, 0.08), transparent 50%),
+                  #F8FAFC;
+    }
+    .glass {
+      background: rgba(42, 42, 42, 0.65);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      transition: background-color 0.3s, border-color 0.3s;
+    }
+    html.light .glass {
+      background: rgba(255, 255, 255, 0.75);
+      border: 1px solid rgba(0, 0, 0, 0.06);
+    }
+  </style>
+</head>
+<body class="text-slate-200 dark:text-slate-200 light:text-slate-700 min-h-screen flex flex-col font-sans selection:bg-brand-secondary/30 selection:text-white">
+
+  <!-- Header -->
+  <header class="w-full max-w-7xl mx-auto px-6 py-6 flex justify-between items-center border-b border-white/5 dark:border-white/5 light:border-black/5">
+    <div class="flex items-center space-x-3">
+      <a href="/" class="h-10 w-10 rounded-xl bg-gradient-to-tr from-brand-primary to-brand-secondary flex items-center justify-center shadow-lg shadow-brand-secondary/20 hover:scale-105 transition-transform">
+        <i data-lucide="arrow-left" class="h-5 w-5 text-white"></i>
+      </a>
+      <div>
+        <h1 class="text-lg font-bold font-display tracking-tight text-white dark:text-white light:text-slate-900">Admin Control Panel</h1>
+        <p class="text-[10px] text-slate-400">Users, Workflows, and System Parameters</p>
+      </div>
+    </div>
+    
+    <div class="flex items-center space-x-6">
+      <div id="user-badge" class="hidden flex items-center space-x-3">
+        <div class="h-8 w-8 rounded-full bg-brand-secondary/20 border border-brand-secondary/30 flex items-center justify-center text-xs font-semibold text-brand-secondary font-display" id="user-avatar-placeholder">U</div>
+        <div class="text-left">
+          <p class="text-xs font-semibold text-white dark:text-white light:text-slate-900 leading-tight" id="user-name">Loading...</p>
+          <p class="text-[10px] text-slate-400 dark:text-slate-400 light:text-slate-500 leading-none" id="user-role">Viewer</p>
+        </div>
+        <div id="theme-toggle-container"></div>
+        <button id="btn-signout" class="h-8 w-8 rounded-lg hover:bg-white/5 dark:hover:bg-white/5 light:hover:bg-black/5 border border-transparent hover:border-white/10 flex items-center justify-center text-slate-400 hover:text-slate-700 transition duration-200" title="Sign Out">
+          <i data-lucide="log-out" class="h-4 w-4"></i>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="flex-grow w-full max-w-7xl mx-auto px-6 py-10 flex flex-col space-y-6">
+    
+    <!-- Tab Controls -->
+    <div class="flex space-x-2 border-b border-white/5 dark:border-b-white/5 light:border-b-black/5 pb-1">
+      <button id="tab-users-btn" class="px-4 py-2.5 rounded-xl text-xs font-semibold bg-white/5 border border-brand-secondary/30 text-white transition duration-200">
+        User Roles Management
+      </button>
+      <button id="tab-workflow-btn" class="px-4 py-2.5 rounded-xl text-xs font-semibold text-slate-400 hover:text-white hover:bg-white/5 transition duration-200">
+        Workflow Schema
+      </button>
+      <button id="tab-settings-btn" class="px-4 py-2.5 rounded-xl text-xs font-semibold text-slate-400 hover:text-white hover:bg-white/5 transition duration-200">
+        System settings
+      </button>
+    </div>
+
+    <!-- Tab 1: User Roles Management -->
+    <div id="tab-users" class="flex flex-col space-y-6">
+      <div class="glass rounded-3xl p-6 flex flex-col space-y-4">
+        <div class="flex justify-between items-center">
+          <div>
+            <h3 class="text-sm font-bold font-display text-white dark:text-white light:text-slate-900">User Profiles & Security Roles</h3>
+            <p class="text-[10px] text-slate-400 mt-1">Assign and revoke RBAC roles for system access.</p>
+          </div>
+        </div>
+
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-xs border-collapse">
+            <thead>
+              <tr class="text-slate-400 border-b border-white/5">
+                <th class="py-3 px-4 font-semibold">User Name</th>
+                <th class="py-3 px-4 font-semibold">Department</th>
+                <th class="py-3 px-4 font-semibold">Job Title</th>
+                <th class="py-3 px-4 font-semibold">Assigned Roles</th>
+                <th class="py-3 px-4 text-right">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="table-users-body">
+              <!-- Dynamically populated users -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tab 2: Workflow Schema -->
+    <div id="tab-workflow" class="hidden flex flex-col space-y-6">
+      <div class="glass rounded-3xl p-6 flex flex-col space-y-4">
+        <div>
+          <h3 class="text-sm font-bold font-display text-white dark:text-white light:text-slate-900">Workflow States Config</h3>
+          <p class="text-[10px] text-slate-400 mt-1">Status nodes, stages, and transition permissions schema.</p>
+        </div>
+
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-xs border-collapse">
+            <thead>
+              <tr class="text-slate-400 border-b border-white/5">
+                <th class="py-3 px-4 font-semibold">Code</th>
+                <th class="py-3 px-4 font-semibold">State Name</th>
+                <th class="py-3 px-4 font-semibold">Workflow Stage</th>
+                <th class="py-3 px-4 text-center font-semibold">SLA Limit</th>
+                <th class="py-3 px-4 text-right font-semibold">Properties</th>
+              </tr>
+            </thead>
+            <tbody id="table-workflow-body">
+              <!-- Dynamically populated workflow states -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tab 3: System settings -->
+    <div id="tab-settings" class="hidden flex flex-col space-y-6">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        
+        <!-- Plants parameters -->
+        <div class="glass rounded-3xl p-6 flex flex-col space-y-4">
+          <h3 class="text-sm font-bold font-display text-white dark:text-white light:text-slate-900">Manufacturing Plants / Sites</h3>
+          <div class="overflow-y-auto max-h-[300px] space-y-2 pr-1" id="list-plants-container">
+            <!-- Dynamically populated plants -->
+          </div>
+        </div>
+
+        <!-- Departments parameters -->
+        <div class="glass rounded-3xl p-6 flex flex-col space-y-4">
+          <h3 class="text-sm font-bold font-display text-white dark:text-white light:text-slate-900">Internal Departments</h3>
+          <div class="overflow-y-auto max-h-[300px] space-y-2 pr-1" id="list-depts-container">
+            <!-- Dynamically populated departments -->
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Edit Roles Modal -->
+  <div id="modal-edit-roles" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm">
+    <div class="w-full max-w-md glass rounded-3xl p-8 flex flex-col space-y-6">
+      <div class="flex justify-between items-start">
+        <div>
+          <h3 class="text-lg font-bold font-display text-white">Assign User Roles</h3>
+          <p class="text-xs text-slate-400 mt-1" id="edit-roles-subtitle">Modifying roles for...</p>
+        </div>
+        <button type="button" class="text-slate-500 hover:text-white transition duration-200" onclick="closeRolesModal()">
+          <i data-lucide="x" class="h-5 w-5"></i>
+        </button>
+      </div>
+
+      <form id="form-edit-roles" class="flex flex-col space-y-4">
+        <input type="hidden" id="edit-user-id" value="">
+        
+        <div class="space-y-2 max-h-[250px] overflow-y-auto" id="roles-checkboxes-container">
+          <!-- Dynamically populated checkboxes -->
+        </div>
+
+        <button type="submit" class="w-full py-2.5 px-4 rounded-xl bg-gradient-to-r from-brand-primary to-brand-secondary font-semibold text-xs text-white transition duration-200">
+          Save Role Assignments
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <script src="/env.js"></script>
+  <script type="module" src="/js/notifications-manager.js"></script>
+  <script type="module">
+    import { getSupabase } from '../config/supabase.config.js';
+    import { authService } from '../services/auth/authService.js';
+    import { mountThemeToggle } from '../components/theme-toggle.js';
+    import { toast } from '../components/toast.js';
+
+    lucide.createIcons();
+    mountThemeToggle('theme-toggle-container');
+
+    // Tabs Selector
+    const tabUsersBtn = document.getElementById('tab-users-btn');
+    const tabWorkflowBtn = document.getElementById('tab-workflow-btn');
+    const tabSettingsBtn = document.getElementById('tab-settings-btn');
+
+    const tabUsers = document.getElementById('tab-users');
+    const tabWorkflow = document.getElementById('tab-workflow');
+    const tabSettings = document.getElementById('tab-settings');
+
+    tabUsersBtn.addEventListener('click', () => {
+      tabUsers.classList.remove('hidden');
+      tabWorkflow.classList.add('hidden');
+      tabSettings.classList.add('hidden');
+      tabUsersBtn.className = 'px-4 py-2.5 rounded-xl text-xs font-semibold bg-white/5 border border-brand-secondary/30 text-white transition duration-200';
+      tabWorkflowBtn.className = 'px-4 py-2.5 rounded-xl text-xs font-semibold text-slate-400 hover:text-white hover:bg-white/5 transition duration-200';
+      tabSettingsBtn.className = 'px-4 py-2.5 rounded-xl text-xs font-semibold text-slate-400 hover:text-white hover:bg-white/5 transition duration-200';
+      loadUsers();
+    });
+
+    tabWorkflowBtn.addEventListener('click', () => {
+      tabUsers.classList.add('hidden');
+      tabWorkflow.classList.remove('hidden');
+      tabSettings.classList.add('hidden');
+      tabWorkflowBtn.className = 'px-4 py-2.5 rounded-xl text-xs font-semibold bg-white/5 border border-brand-secondary/30 text-white transition duration-200';
+      tabUsersBtn.className = 'px-4 py-2.5 rounded-xl text-xs font-semibold text-slate-400 hover:text-white hover:bg-white/5 transition duration-200';
+      tabSettingsBtn.className = 'px-4 py-2.5 rounded-xl text-xs font-semibold text-slate-400 hover:text-white hover:bg-white/5 transition duration-200';
+      loadWorkflowSchema();
+    });
+
+    tabSettingsBtn.addEventListener('click', () => {
+      tabUsers.classList.add('hidden');
+      tabWorkflow.classList.add('hidden');
+      tabSettings.classList.remove('hidden');
+      tabSettingsBtn.className = 'px-4 py-2.5 rounded-xl text-xs font-semibold bg-white/5 border border-brand-secondary/30 text-white transition duration-200';
+      tabUsersBtn.className = 'px-4 py-2.5 rounded-xl text-xs font-semibold text-slate-400 hover:text-white hover:bg-white/5 transition duration-200';
+      tabWorkflowBtn.className = 'px-4 py-2.5 rounded-xl text-xs font-semibold text-slate-400 hover:text-white hover:bg-white/5 transition duration-200';
+      loadSettingsData();
+    });
+
+    // Modal helpers
+    window.closeRolesModal = function() {
+      document.getElementById('modal-edit-roles').classList.add('hidden');
+    };
+
+    // User profile
+    async function loadUserProfile() {
+      try {
+        const session = await authService.getSession();
+        if (session) {
+          const profileData = await authService.me();
+          const profile = profileData?.profile || {};
+          const roles = profileData?.roles || ['VIEWER'];
+
+          // Check if admin to let them stay
+          if (!roles.includes('SUPER_ADMIN') && !roles.includes('ECM_ADMIN')) {
+            toast.error('Access denied. Administrator privileges required.');
+            setTimeout(() => {
+              globalThis.location.href = '/';
+            }, 1500);
+            return;
+          }
+
+          document.getElementById('user-badge').classList.remove('hidden');
+          document.getElementById('user-name').textContent = profile.full_name || session.user.email;
+          document.getElementById('user-role').textContent = roles.join(', ');
+          
+          if (profile.avatar_url) {
+            document.getElementById('user-avatar-placeholder').innerHTML = `<img src="${profile.avatar_url}" class="h-full w-full rounded-full object-cover">`;
+          } else {
+            const initial = (profile.full_name || session.user.email)[0].toUpperCase();
+            document.getElementById('user-avatar-placeholder').textContent = initial;
+          }
+        }
+      } catch (err) {
+        console.error('Failed to load profile:', err);
+      }
+    }
+
+    // Sign out
+    document.getElementById('btn-signout').addEventListener('click', async () => {
+      try {
+        await authService.signOut();
+        globalThis.location.href = '/login.html';
+      } catch (err) {
+        console.error('Sign out failed:', err);
+      }
+    });
+
+    // ----------------------------------------------------
+    // Load Users (Tab 1)
+    // ----------------------------------------------------
+    let allRoles = [];
+    async function loadUsers() {
+      const tbody = document.getElementById('table-users-body');
+      tbody.innerHTML = '<tr><td colspan="5" class="text-center py-6 text-slate-500">Loading user profiles...</td></tr>';
+
+      try {
+        const supabase = getSupabase();
+        
+        // Load all system roles
+        const { data: rolesData } = await supabase.from('roles').select('*').order('name');
+        allRoles = rolesData || [];
+
+        // Load profiles
+        const { data: users, error } = await supabase
+          .from('profiles')
+          .select(`
+            id,
+            full_name,
+            department,
+            job_title,
+            user_roles (
+              role_id,
+              roles (
+                name
+              )
+            )
+          `)
+          .order('full_name');
+
+        if (error) throw error;
+
+        if (!users || users.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="5" class="text-center py-8 text-slate-500">No users found.</td></tr>';
+          return;
+        }
+
+        tbody.innerHTML = users.map(u => {
+          const userRolesList = u.user_roles?.map(ur => ur.roles?.name).filter(Boolean) || [];
+          const rolesStr = userRolesList.length > 0 
+            ? userRolesList.map(r => `<span class="px-2 py-0.5 bg-brand-secondary/10 border border-brand-secondary/20 rounded-md font-semibold text-[10px] text-brand-secondary uppercase">${r}</span>`).join(' ')
+            : '<span class="text-slate-500 italic">No roles assigned</span>';
+
+          return `
+            <tr class="border-b border-white/5 hover:bg-white/5 dark:hover:bg-white/5 light:hover:bg-black/5 transition duration-150 text-slate-300 dark:text-slate-300 light:text-slate-700">
+              <td class="py-3.5 px-4 font-bold text-white dark:text-white light:text-slate-800">${u.full_name || 'System Account'}</td>
+              <td class="py-3.5 px-4 text-slate-400">${u.department || 'N/A'}</td>
+              <td class="py-3.5 px-4 text-slate-400">${u.job_title || 'N/A'}</td>
+              <td class="py-3.5 px-4"><div class="flex flex-wrap gap-1.5">${rolesStr}</div></td>
+              <td class="py-3.5 px-4 text-right">
+                <button onclick="openEditRoles('${u.id}', '${u.full_name?.replace(/'/g, "\\'")}', [${u.user_roles?.map(ur => `'${ur.role_id}'`).join(',')}])" class="py-1 px-2.5 rounded-lg border border-brand-secondary/35 hover:bg-brand-secondary/15 font-semibold text-[10px] text-brand-secondary transition">
+                  Edit Roles
+                </button>
+              </td>
+            </tr>
+          `;
+        }).join('');
+
+      } catch (err) {
+        console.error('Failed to load users:', err);
+        tbody.innerHTML = '<tr><td colspan="5" class="text-center py-6 text-rose-400">Failed to load profiles list</td></tr>';
+      }
+    }
+
+    // Open Role Assign Modal
+    window.openEditRoles = function(userId, name, assignedRoleIds) {
+      document.getElementById('edit-user-id').value = userId;
+      document.getElementById('edit-roles-subtitle').textContent = `Modifying roles for ${name}`;
+      
+      const container = document.getElementById('roles-checkboxes-container');
+      container.innerHTML = allRoles.map(r => {
+        const checked = assignedRoleIds.includes(r.id) ? 'checked' : '';
+        return `
+          <label class="flex items-center space-x-3 bg-white/5 p-3 rounded-xl border border-white/5 cursor-pointer hover:bg-white/10 transition">
+            <input type="checkbox" name="user_role" value="${r.id}" ${checked} class="h-4 w-4 rounded bg-black/30 border border-white/10 text-brand-secondary focus:ring-0 cursor-pointer">
+            <div class="text-xs">
+              <p class="font-bold text-white uppercase tracking-wider">${r.name}</p>
+              <p class="text-[10px] text-slate-400 mt-0.5">${r.description || ''}</p>
+            </div>
+          </label>
+        `;
+      }).join('');
+
+      document.getElementById('modal-edit-roles').classList.remove('hidden');
+    };
+
+    // Save Roles Form Submit
+    document.getElementById('form-edit-roles').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const userId = document.getElementById('edit-user-id').value;
+      const checkedBoxes = Array.from(document.querySelectorAll('input[name="user_role"]:checked')).map(cb => cb.value);
+
+      try {
+        const supabase = getSupabase();
+        
+        // 1. Delete all existing roles for this user
+        const { error: delErr } = await supabase
+          .from('user_roles')
+          .delete()
+          .eq('user_id', userId);
+
+        if (delErr) throw delErr;
+
+        // 2. Insert new role configurations
+        if (checkedBoxes.length > 0) {
+          const insertPayload = checkedBoxes.map(rId => ({
+            user_id: userId,
+            role_id: rId
+          }));
+
+          const { error: insErr } = await supabase
+            .from('user_roles')
+            .insert(insertPayload);
+
+          if (insErr) throw insErr;
+        }
+
+        toast.success('Roles assigned successfully.');
+        closeRolesModal();
+        loadUsers();
+
+      } catch (err) {
+        console.error('Failed to save roles:', err);
+        toast.error('Failed to update role parameters.');
+      }
+    });
+
+    // ----------------------------------------------------
+    // Load Workflow Configuration (Tab 2)
+    // ----------------------------------------------------
+    async function loadWorkflowSchema() {
+      const tbody = document.getElementById('table-workflow-body');
+      tbody.innerHTML = '<tr><td colspan="5" class="text-center py-6 text-slate-500">Loading schema configuration...</td></tr>';
+
+      try {
+        const supabase = getSupabase();
+        const { data, error } = await supabase
+          .from('wf_states')
+          .select(`
+            *,
+            stage:wf_stages(name)
+          `)
+          .order('code');
+
+        if (error) throw error;
+
+        tbody.innerHTML = data.map(s => {
+          const sla = s.sla_hours ? `${s.sla_hours} hrs` : 'No Limit';
+          
+          let propStr = '';
+          if (s.is_initial) propStr += '<span class="px-1.5 py-0.5 bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 font-semibold text-[8px] tracking-wider uppercase rounded mr-1">Initial</span>';
+          if (s.is_terminal) propStr += '<span class="px-1.5 py-0.5 bg-rose-500/10 border border-rose-500/20 text-rose-400 font-semibold text-[8px] tracking-wider uppercase rounded">Terminal</span>';
+
+          return `
+            <tr class="border-b border-white/5 hover:bg-white/5 dark:hover:bg-white/5 light:hover:bg-black/5 transition duration-150 text-slate-300 dark:text-slate-300 light:text-slate-700">
+              <td class="py-3.5 px-4 font-mono font-bold text-brand-secondary">${s.code}</td>
+              <td class="py-3.5 px-4 font-semibold text-white dark:text-white light:text-slate-800">${s.name}</td>
+              <td class="py-3.5 px-4 text-slate-400">${s.stage?.name || 'Unknown Stage'}</td>
+              <td class="py-3.5 px-4 text-center font-mono text-slate-500">${sla}</td>
+              <td class="py-3.5 px-4 text-right">${propStr || '<span class="text-slate-600">-</span>'}</td>
+            </tr>
+          `;
+        }).join('');
+
+      } catch (err) {
+        console.error('Failed to load schema:', err);
+        tbody.innerHTML = '<tr><td colspan="5" class="text-center py-6 text-rose-400">Failed to load workflow configuration</td></tr>';
+      }
+    }
+
+    // ----------------------------------------------------
+    // Load Settings Data (Tab 3)
+    // ----------------------------------------------------
+    async function loadSettingsData() {
+      const plantsContainer = document.getElementById('list-plants-container');
+      const deptsContainer = document.getElementById('list-depts-container');
+
+      plantsContainer.innerHTML = '<p class="text-xs text-slate-500">Loading plants...</p>';
+      deptsContainer.innerHTML = '<p class="text-xs text-slate-500">Loading departments...</p>';
+
+      try {
+        const supabase = getSupabase();
+        
+        // 1. Fetch plants
+        const { data: plants } = await supabase.from('plants').select('*').order('name');
+        if (plants && plants.length > 0) {
+          plantsContainer.innerHTML = plants.map(p => `
+            <div class="flex items-center justify-between bg-white/5 p-3 rounded-xl border border-white/5 text-xs text-slate-300 dark:text-slate-300 light:text-slate-700">
+              <div>
+                <p class="font-bold text-white dark:text-white light:text-slate-800">${p.name}</p>
+                <p class="text-[9px] text-slate-500 font-medium">Country: ${p.country || 'N/A'}</p>
+              </div>
+              <span class="px-2 py-0.5 bg-brand-primary/20 border border-brand-primary/30 rounded font-mono text-[9px] text-slate-400">${p.code}</span>
+            </div>
+          `).join('');
+        } else {
+          plantsContainer.innerHTML = '<p class="text-xs text-slate-500 italic">No plants defined.</p>';
+        }
+
+        // 2. Fetch departments
+        const { data: depts } = await supabase.from('departments').select('*').order('name');
+        if (depts && depts.length > 0) {
+          deptsContainer.innerHTML = depts.map(d => `
+            <div class="flex items-center justify-between bg-white/5 p-3 rounded-xl border border-white/5 text-xs text-slate-300 dark:text-slate-300 light:text-slate-700">
+              <div>
+                <p class="font-bold text-white dark:text-white light:text-slate-800">${d.name}</p>
+              </div>
+              <span class="px-2 py-0.5 bg-brand-primary/20 border border-brand-primary/30 rounded font-mono text-[9px] text-slate-400">${d.code}</span>
+            </div>
+          `).join('');
+        } else {
+          deptsContainer.innerHTML = '<p class="text-xs text-slate-500 italic">No departments defined.</p>';
+        }
+
+      } catch (err) {
+        console.error('Failed to load settings data:', err);
+      }
+    }
+
+    // Init
+    loadUserProfile();
+    loadUsers();
+  </script>
+</body>
+</html>

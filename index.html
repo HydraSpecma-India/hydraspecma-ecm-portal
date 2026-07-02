@@ -25,11 +25,11 @@
           },
           colors: {
             brand: {
-              primary: '#003A70',
-              secondary: '#00A3E0',
-              accent: '#0EA5E9',
-              background: '#0B0F19',
-              card: '#161F30',
+              primary: '#575757',
+              secondary: '#FFCC00',
+              accent: '#B3B3B3',
+              background: '#1a1a1a',
+              card: '#2a2a2a',
             }
           }
         }
@@ -69,14 +69,9 @@
 
   <!-- Header -->
   <header class="w-full max-w-7xl mx-auto px-6 py-6 flex justify-between items-center border-b border-white/5 dark:border-white/5 light:border-black/5">
-    <div class="flex items-center space-x-3">
-      <div class="h-10 w-10 rounded-xl bg-gradient-to-tr from-brand-primary to-brand-secondary flex items-center justify-center shadow-lg shadow-brand-secondary/20">
-        <i data-lucide="layers" class="h-5 w-5 text-white"></i>
-      </div>
-      <div>
-        <h1 class="text-lg font-bold font-display tracking-tight text-white dark:text-white light:text-slate-900">HydraSpecma</h1>
-        <p class="text-[10px] text-brand-secondary font-semibold tracking-widest uppercase">ECM Portal</p>
-      </div>
+    <div class="flex items-center space-x-4">
+      <img src="https://www.hydraspecma.com/javax.faces.resource/2019/HydraSpecma_Logo.png.xhtml?ln=images" alt="HydraSpecma" class="h-8 object-contain">
+      <span class="text-xs font-semibold tracking-widest uppercase text-brand-secondary bg-white/5 px-2.5 py-1 rounded-xl border border-white/5">ECM Portal</span>
     </div>
     
     <div class="flex items-center space-x-6">
@@ -98,6 +93,16 @@
       <a href="/pages/reports.html" class="flex items-center space-x-2 text-xs text-slate-400 hover:text-brand-secondary transition duration-200">
         <i data-lucide="bar-chart-3" class="h-4 w-4"></i>
         <span>Reports</span>
+      </a>
+
+      <a href="/pages/admin.html" class="flex items-center space-x-2 text-xs text-slate-400 hover:text-brand-secondary transition duration-200">
+        <i data-lucide="shield-alert" class="h-4 w-4"></i>
+        <span>Admin Panel</span>
+      </a>
+
+      <a href="/pages/audit-trail.html" class="flex items-center space-x-2 text-xs text-slate-400 hover:text-brand-secondary transition duration-200">
+        <i data-lucide="history" class="h-4 w-4"></i>
+        <span>Audit Trail</span>
       </a>
 
       <button id="btn-system-details" class="flex items-center space-x-2 text-xs text-slate-400 hover:text-brand-secondary transition duration-200">

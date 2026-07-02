@@ -25,11 +25,11 @@
           },
           colors: {
             brand: {
-              primary: '#003A70',
-              secondary: '#00A3E0',
-              accent: '#0EA5E9',
-              background: '#0B0F19',
-              card: '#161F30',
+              primary: '#575757',
+              secondary: '#FFCC00',
+              accent: '#B3B3B3',
+              background: '#1a1a1a',
+              card: '#2a2a2a',
             }
           }
         }
@@ -178,10 +178,16 @@
         </button>
       </div>
 
-      <button id="btn-print-report" class="py-2.5 px-4 rounded-xl bg-gradient-to-r from-brand-primary to-brand-secondary hover:shadow-lg hover:shadow-brand-secondary/20 font-semibold text-xs text-white transition duration-200 flex items-center space-x-1.5 self-start">
-        <i data-lucide="printer" class="h-4 w-4"></i>
-        <span>Print Report</span>
-      </button>
+      <div class="flex items-center space-x-2 self-start">
+        <button id="btn-print-report" class="py-2.5 px-4 rounded-xl bg-gradient-to-r from-brand-primary to-brand-secondary hover:shadow-lg hover:shadow-brand-secondary/20 font-semibold text-xs text-white transition duration-200 flex items-center space-x-1.5">
+          <i data-lucide="printer" class="h-4 w-4"></i>
+          <span>Print Report</span>
+        </button>
+        <button id="btn-export-csv" class="py-2.5 px-4 rounded-xl border border-brand-secondary/35 hover:bg-brand-secondary/10 font-semibold text-xs text-brand-secondary transition duration-200 flex items-center space-x-1.5">
+          <i data-lucide="download" class="h-4 w-4"></i>
+          <span>Export CSV</span>
+        </button>
+      </div>
     </div>
 
     <!-- Tab 1: State Bottlenecks SLA Breaches -->
@@ -291,7 +297,10 @@
     const tabCycle = document.getElementById('tab-cycle');
     const tabEngineer = document.getElementById('tab-engineer');
 
+    let activeTab = 'bottlenecks';
+
     tabBottlenecksBtn.addEventListener('click', () => {
+      activeTab = 'bottlenecks';
       tabBottlenecks.classList.remove('hidden');
       tabCycle.classList.add('hidden');
       tabEngineer.classList.add('hidden');
@@ -302,6 +311,7 @@
     });
 
     tabCycleBtn.addEventListener('click', () => {
+      activeTab = 'cycle';
       tabBottlenecks.classList.add('hidden');
       tabCycle.classList.remove('hidden');
       tabEngineer.classList.add('hidden');
@@ -312,6 +322,7 @@
     });
 
     tabEngineerBtn.addEventListener('click', () => {
+      activeTab = 'engineer';
       tabBottlenecks.classList.add('hidden');
       tabCycle.classList.add('hidden');
       tabEngineer.classList.remove('hidden');
@@ -324,6 +335,58 @@
     // Print button handler
     document.getElementById('btn-print-report').addEventListener('click', () => {
       window.print();
+    });
+
+    // CSV Export handler
+    document.getElementById('btn-export-csv').addEventListener('click', () => {
+      let tableId = '';
+      let filename = 'report.csv';
+      if (activeTab === 'bottlenecks') {
+        tableId = 'table-bottlenecks-body';
+        filename = 'state_bottlenecks_sla_report.csv';
+      } else if (activeTab === 'cycle') {
+        tableId = 'table-cycle-body';
+        filename = 'completed_cycle_times_report.csv';
+      } else if (activeTab === 'engineer') {
+        tableId = 'table-engineer-body';
+        filename = 'engineer_metrics_report.csv';
+      }
+
+      const tbody = document.getElementById(tableId);
+      if (!tbody) return;
+
+      const rows = Array.from(tbody.querySelectorAll('tr'));
+      if (rows.length === 0 || rows[0].innerText.includes('Loading') || rows[0].innerText.includes('No ')) {
+        toast.error('No data available to export.');
+        return;
+      }
+
+      // Generate CSV content
+      let csvContent = '';
+      
+      // Get headers from corresponding table
+      const tableElement = tbody.closest('table');
+      const headers = Array.from(tableElement.querySelectorAll('thead th')).map(th => `"${th.innerText.trim()}"`);
+      csvContent += headers.join(',') + '\n';
+
+      rows.forEach(row => {
+        const cols = Array.from(row.querySelectorAll('td')).map(td => {
+          let text = td.innerText.trim().replace(/"/g, '""');
+          return `"${text}"`;
+        });
+        csvContent += cols.join(',') + '\n';
+      });
+
+      // Trigger download
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.setAttribute('download', filename);
+      link.style.visibility = 'hidden';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      toast.success('Report exported successfully.');
     });
 
     // User Profile
