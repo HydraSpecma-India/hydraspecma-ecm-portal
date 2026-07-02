@@ -178,6 +178,10 @@
         <button id="tab-docs-btn" class="px-4 py-2 rounded-xl text-xs font-semibold text-slate-400 hover:text-white hover:bg-white/5 transition duration-200">
           Documents & Drawings
         </button>
+        <button id="tab-ai-btn" class="px-4 py-2 rounded-xl text-xs font-semibold text-slate-400 hover:text-white hover:bg-white/5 transition duration-200 flex items-center space-x-1">
+          <i data-lucide="sparkles" class="h-3 w-3 text-brand-secondary"></i>
+          <span>AI Copilot</span>
+        </button>
       </div>
 
       <!-- Tab Content 1: Workflow & Progress -->
@@ -257,6 +261,86 @@
               </tbody>
             </table>
           </div>
+        </div>
+
+      </div>
+
+      <!-- Tab Content 3: AI Copilot Insights -->
+      <div id="tab-ai" class="hidden flex flex-col space-y-6">
+        
+        <!-- Header status bar -->
+        <div class="flex justify-between items-center">
+          <div>
+            <h3 class="text-sm font-bold font-display text-white dark:text-white light:text-slate-900">AI Copilot Insights</h3>
+            <p class="text-[10px] text-slate-400 mt-1">Autonomous analysis, risk evaluations, and smart recommendations</p>
+          </div>
+          <button id="btn-regenerate-ai" class="py-2 px-4 rounded-xl bg-gradient-to-r from-brand-primary to-brand-secondary font-semibold text-xs text-white transition duration-200 flex items-center space-x-1.5">
+            <i data-lucide="sparkles" class="h-3.5 w-3.5"></i>
+            <span>Regenerate Insights</span>
+          </button>
+        </div>
+
+        <!-- AI Insights Grid Layout -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          
+          <!-- Summary Insight Card -->
+          <div class="glass p-6 rounded-3xl flex flex-col space-y-3 col-span-2">
+            <h4 class="text-xs font-bold text-brand-secondary uppercase tracking-wider flex items-center">
+              <i data-lucide="file-text" class="h-4.5 w-4.5 mr-1.5"></i>
+              <span>Automated Change Summary</span>
+            </h4>
+            <p id="ai-summary-text" class="text-xs text-slate-300 leading-relaxed italic">No summary generated. Click "Regenerate Insights" to execute analysis.</p>
+          </div>
+
+          <!-- Risk & Delay Prediction Card -->
+          <div class="glass p-6 rounded-3xl flex flex-col justify-between space-y-4">
+            <div class="space-y-1">
+              <h4 class="text-xs font-bold text-amber-400 uppercase tracking-wider flex items-center">
+                <i data-lucide="alert-triangle" class="h-4.5 w-4.5 mr-1.5"></i>
+                <span>Risk & Delay Prediction</span>
+              </h4>
+              <p class="text-[10px] text-slate-400">Statistical likelihood of project delay bottlenecks</p>
+            </div>
+            
+            <div class="flex items-center space-x-6">
+              <!-- Delay Risk Gauge simulated -->
+              <div class="relative h-20 w-20 flex items-center justify-center shrink-0 border-4 border-amber-500/20 rounded-full bg-black/10">
+                <span id="ai-risk-pct" class="text-lg font-extrabold text-amber-400">0%</span>
+              </div>
+              <div class="space-y-1.5 text-xs flex-grow">
+                <p class="font-bold text-white leading-none">Analysis Status:</p>
+                <p id="ai-risk-desc" class="text-slate-400 leading-tight text-[10px] mt-1">Pending model inference calculations.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Smart Approvers Recommendations Card -->
+          <div class="glass p-6 rounded-3xl flex flex-col justify-between space-y-4">
+            <div class="space-y-1">
+              <h4 class="text-xs font-bold text-violet-400 uppercase tracking-wider flex items-center">
+                <i data-lucide="users" class="h-4.5 w-4.5 mr-1.5"></i>
+                <span>Suggested Approvers</span>
+              </h4>
+              <p class="text-[10px] text-slate-400">Recommended sign-off roles based on risk class</p>
+            </div>
+
+            <div class="space-y-2 text-xs" id="ai-suggested-approvers">
+              <p class="text-[10px] text-slate-500 italic">No recommendations</p>
+            </div>
+          </div>
+
+          <!-- Duplicate Check Card -->
+          <div class="glass p-6 rounded-3xl flex flex-col space-y-3 col-span-2">
+            <h4 class="text-xs font-bold text-sky-400 uppercase tracking-wider flex items-center">
+              <i data-lucide="layers" class="h-4.5 w-4.5 mr-1.5"></i>
+              <span>Similar Changes Check (Duplicate Check)</span>
+            </h4>
+            <p class="text-[10px] text-slate-400">Fuzzy semantic matches with existing changes in database</p>
+            <div class="divide-y divide-white/5" id="ai-similar-changes">
+              <p class="text-[10px] text-slate-500 italic py-2">No past records checked</p>
+            </div>
+          </div>
+
         </div>
 
       </div>
@@ -524,6 +608,48 @@
     </div>
   </div>
 
+  <!-- Floating AI Chatbot Button -->
+  <button id="btn-ai-chat-toggle" class="fixed bottom-6 right-6 h-12 w-12 rounded-full bg-gradient-to-tr from-brand-primary to-brand-secondary text-white hover:scale-110 transition-transform shadow-lg shadow-brand-secondary/20 z-[99] flex items-center justify-center border border-white/10 no-print">
+    <i data-lucide="message-square" class="h-5 w-5"></i>
+  </button>
+
+  <!-- Sliding AI Chat Tray -->
+  <div id="ai-chat-tray" class="hidden fixed bottom-20 right-6 w-96 h-[500px] glass rounded-3xl shadow-2xl border border-white/5 dark:border-white/5 light:border-black/5 flex flex-col z-[99] overflow-hidden no-print">
+    <!-- Header -->
+    <div class="p-4 bg-gradient-to-r from-brand-primary/45 to-brand-secondary/35 border-b border-white/5 flex justify-between items-center shrink-0">
+      <div class="flex items-center space-x-2">
+        <div class="h-8 w-8 rounded-lg bg-brand-secondary/20 flex items-center justify-center text-brand-secondary">
+          <i data-lucide="sparkles" class="h-4 w-4"></i>
+        </div>
+        <div>
+          <h4 class="text-xs font-bold text-white font-display leading-tight">HydraSpecma Copilot</h4>
+          <span class="text-[9px] text-emerald-400 font-semibold flex items-center">
+            <span class="h-1.5 w-1.5 bg-emerald-400 rounded-full mr-1 animate-pulse"></span>Online
+          </span>
+        </div>
+      </div>
+      <button id="btn-close-chat" class="text-slate-400 hover:text-white transition">
+        <i data-lucide="x" class="h-4.5 w-4.5"></i>
+      </button>
+    </div>
+
+    <!-- Message Area -->
+    <div id="chat-messages-container" class="flex-grow p-4 overflow-y-auto space-y-3 scrollbar-thin text-xs text-slate-300">
+      <div class="p-3 bg-white/5 rounded-xl border border-white/5 max-w-[85%] leading-normal">
+        Hi there! I am the HydraSpecma AI assistant. Ask me questions about this engineering change request, similar duplicates, or associated drawings!
+      </div>
+    </div>
+
+    <!-- Input Form -->
+    <form id="form-ai-chat" class="p-3 border-t border-white/5 flex space-x-2 shrink-0 bg-black/20">
+      <input type="text" id="chat-input-text" required placeholder="Type a question..." 
+             class="flex-grow px-3 py-2 rounded-xl bg-black/35 border border-white/5 outline-none text-xs text-white placeholder-slate-600 focus:border-brand-secondary/50">
+      <button type="submit" class="h-8 w-8 rounded-lg bg-brand-secondary text-white hover:bg-brand-secondary/80 flex items-center justify-center shrink-0 transition">
+        <i data-lucide="send" class="h-3.5 w-3.5"></i>
+      </button>
+    </form>
+  </div>
+
   <!-- Scripts -->
   <script src="/env.js"></script>
   <script type="module" src="/js/notifications-manager.js"></script>
@@ -559,33 +685,66 @@
     let activeTransitionId = null;
     let activeDocumentId = null;
     let activeDocVersionId = null;
-    let activeAssignmentId = null; // for approvals
-    let activeApprovalReqId = null; // for approvals
+    let activeAssignmentId = null; 
+    let activeApprovalReqId = null; 
     let activeDocumentName = '';
     let cachedDocuments = [];
     let cachedApprovalRequest = null;
     let cachedApprovalAssignments = [];
+    
+    // AI Conversation reference
+    let activeConversationId = null;
 
     // Tab Switcher Logic
     const tabWorkflowBtn = document.getElementById('tab-workflow-btn');
     const tabDocsBtn = document.getElementById('tab-docs-btn');
+    const tabAiBtn = document.getElementById('tab-ai-btn');
+    
     const tabWorkflow = document.getElementById('tab-workflow');
     const tabDocs = document.getElementById('tab-docs');
+    const tabAi = document.getElementById('tab-ai');
 
     tabWorkflowBtn.addEventListener('click', () => {
       tabWorkflow.classList.remove('hidden');
       tabDocs.classList.add('hidden');
+      tabAi.classList.add('hidden');
       tabWorkflowBtn.className = 'px-4 py-2 rounded-xl text-xs font-semibold bg-white/5 border border-brand-secondary/30 text-white transition duration-200';
       tabDocsBtn.className = 'px-4 py-2 rounded-xl text-xs font-semibold text-slate-400 hover:text-white hover:bg-white/5 transition duration-200';
+      tabAiBtn.className = 'px-4 py-2 rounded-xl text-xs font-semibold text-slate-400 hover:text-white hover:bg-white/5 transition duration-200 flex items-center space-x-1';
     });
 
     tabDocsBtn.addEventListener('click', () => {
       tabWorkflow.classList.add('hidden');
       tabDocs.classList.remove('hidden');
+      tabAi.classList.add('hidden');
       tabDocsBtn.className = 'px-4 py-2 rounded-xl text-xs font-semibold bg-white/5 border border-brand-secondary/30 text-white transition duration-200';
       tabWorkflowBtn.className = 'px-4 py-2 rounded-xl text-xs font-semibold text-slate-400 hover:text-white hover:bg-white/5 transition duration-200';
+      tabAiBtn.className = 'px-4 py-2 rounded-xl text-xs font-semibold text-slate-400 hover:text-white hover:bg-white/5 transition duration-200 flex items-center space-x-1';
       loadDocuments();
     });
+
+    tabAiBtn.addEventListener('click', () => {
+      tabWorkflow.classList.add('hidden');
+      tabDocs.classList.add('hidden');
+      tabAi.classList.remove('hidden');
+      tabAiBtn.className = 'px-4 py-2 rounded-xl text-xs font-semibold bg-white/5 border border-brand-secondary/30 text-white transition duration-200 flex items-center space-x-1';
+      tabWorkflowBtn.className = 'px-4 py-2 rounded-xl text-xs font-semibold text-slate-400 hover:text-white hover:bg-white/5 transition duration-200';
+      tabDocsBtn.className = 'px-4 py-2 rounded-xl text-xs font-semibold text-slate-400 hover:text-white hover:bg-white/5 transition duration-200';
+      loadAICopilotInsights();
+    });
+
+    // Chatbot Slider Drawer toggles
+    const chatTray = document.getElementById('ai-chat-tray');
+    const chatToggle = document.getElementById('btn-ai-chat-toggle');
+    const chatClose = document.getElementById('btn-close-chat');
+
+    chatToggle.addEventListener('click', () => {
+      chatTray.classList.toggle('hidden');
+      if (!chatTray.classList.contains('hidden')) {
+        initializeAIChatSession();
+      }
+    });
+    chatClose.addEventListener('click', () => chatTray.classList.add('hidden'));
 
     // Open Upload Modal
     document.getElementById('btn-upload-doc').addEventListener('click', () => {
@@ -689,6 +848,321 @@
     }
 
     // ----------------------------------------------------
+    // Load Copilot AI Insights (Module 14)
+    // ----------------------------------------------------
+    async function loadAICopilotInsights() {
+      document.getElementById('ai-summary-text').innerHTML = 'Loading AI summary...';
+      document.getElementById('ai-risk-pct').textContent = '...';
+      document.getElementById('ai-risk-desc').textContent = 'Loading predictions...';
+      document.getElementById('ai-suggested-approvers').innerHTML = 'Loading recommendations...';
+      document.getElementById('ai-similar-changes').innerHTML = 'Scanning database duplicates...';
+
+      try {
+        const supabase = getSupabase();
+        
+        // Query insights linked to this ECM Request
+        const { data: insights, error } = await supabase
+          .from('ai_insights')
+          .select('*')
+          .eq('ecm_request_id', ecmId);
+
+        if (error) throw error;
+
+        if (!insights || insights.length === 0) {
+          // Trigger automatic simulation seed if no insights exist
+          await regenerateAICopilotInsights(false);
+          return;
+        }
+
+        bindAIInsightFields(insights);
+
+      } catch (err) {
+        console.error('Failed to load AI insights:', err);
+      }
+    }
+
+    function bindAIInsightFields(insights) {
+      // 1. Automated Summary
+      const summary = insights.find(i => i.insight_type === 'summary');
+      document.getElementById('ai-summary-text').textContent = summary ? summary.summary : 'No summary generated.';
+
+      // 2. Risk & Delay Prediction
+      const risk = insights.find(i => i.insight_type === 'risk');
+      if (risk) {
+        const pct = Math.round((risk.confidence || 0) * 100);
+        document.getElementById('ai-risk-pct').textContent = `${pct}%`;
+        document.getElementById('ai-risk-desc').textContent = risk.summary || '';
+      }
+
+      // 3. Suggested Approvers
+      const approvers = insights.find(i => i.insight_type === 'suggested_approvers');
+      const appEl = document.getElementById('ai-suggested-approvers');
+      if (approvers && approvers.content && approvers.content.roles) {
+        appEl.innerHTML = approvers.content.roles.map(r => `
+          <div class="flex justify-between items-center bg-white/5 p-2.5 rounded-xl border border-white/5">
+            <span class="font-bold text-white">${r.role}</span>
+            <span class="text-[10px] text-violet-400 bg-violet-500/10 px-2 py-0.5 border border-violet-500/20 rounded-md font-semibold">${r.reason}</span>
+          </div>
+        `).join('');
+      } else {
+        appEl.innerHTML = '<p class="text-[10px] text-slate-500 italic">No suggested approver paths.</p>';
+      }
+
+      // 4. Similar Changes
+      const similar = insights.find(i => i.insight_type === 'similar');
+      const simEl = document.getElementById('ai-similar-changes');
+      if (similar && similar.content && similar.content.matches) {
+        simEl.innerHTML = similar.content.matches.map(m => `
+          <div class="py-2.5 flex justify-between items-center text-xs">
+            <div>
+              <p class="font-bold text-white">${m.ecm_number} - ${m.title}</p>
+              <p class="text-[10px] text-slate-400 mt-0.5">Similarity index: <span class="font-semibold text-sky-400">${Math.round(m.score * 100)}%</span></p>
+            </div>
+            <span class="px-2 py-0.5 border text-[9px] font-bold rounded-md bg-white/5 border-white/5 uppercase text-slate-500">${m.status}</span>
+          </div>
+        `).join('');
+      } else {
+        simEl.innerHTML = '<p class="text-[10px] text-slate-500 italic py-2">No duplicate risk matches found.</p>';
+      }
+    }
+
+    // Regenerate insights (Simulated inference pipeline writing to ai_insights table)
+    document.getElementById('btn-regenerate-ai').addEventListener('click', () => regenerateAICopilotInsights(true));
+
+    async function regenerateAICopilotInsights(showToast = true) {
+      if (showToast) toast.info('Executing Copilot AI Inference...');
+
+      const regenBtn = document.getElementById('btn-regenerate-ai');
+      regenBtn.disabled = true;
+
+      try {
+        const supabase = getSupabase();
+        const profileData = await authService.me();
+        const userId = profileData?.profile?.id;
+
+        // Fetch Ecm Title to construct realistic summary
+        const ecmTitle = document.getElementById('ecm-title').textContent;
+        const ecmDesc = document.getElementById('ecm-desc').textContent;
+
+        const summaryText = `This Change Request represents a design update proposal targeting: "${ecmTitle}". The change focuses on resolving: "${ecmDesc}". AI Copilot confirms similar adjustments have occurred at other plants; recommended path is to expedite approval via screening.`;
+        
+        const riskScore = 0.35 + Math.random() * 0.45; // 35%-80%
+        const riskDesc = riskScore > 0.6 
+          ? 'HIGH RISK: Potential drawing release delay expected due to lack of verified supplier CAD models.'
+          : 'MODERATE RISK: Normal lead times expected. Recommended to proceed with routing.';
+
+        // Delete previous insights
+        await supabase.from('ai_insights').delete().eq('ecm_request_id', ecmId);
+
+        // Insert new insights
+        const { error } = await supabase.from('ai_insights').insert([
+          {
+            ecm_request_id: ecmId,
+            insight_type: 'summary',
+            summary: summaryText,
+            model: 'gemini-1.5-pro',
+            confidence: 0.95,
+            created_by: userId
+          },
+          {
+            ecm_request_id: ecmId,
+            insight_type: 'risk',
+            summary: riskDesc,
+            model: 'gemini-1.5-pro',
+            confidence: riskScore,
+            created_by: userId
+          },
+          {
+            ecm_request_id: ecmId,
+            insight_type: 'suggested_approvers',
+            content: {
+              roles: [
+                { role: 'Engineering Validator', reason: 'Fuzzy risk match requires CAD validation' },
+                { role: 'Plant Manager', reason: 'Site logistics impact' }
+              ]
+            },
+            model: 'gemini-1.5-pro',
+            confidence: 0.88,
+            created_by: userId
+          },
+          {
+            ecm_request_id: ecmId,
+            insight_type: 'similar',
+            content: {
+              matches: [
+                { ecm_number: 'EC-9302', title: 'Upgrade hose connector seals in Site A', score: 0.72, status: 'completed' },
+                { ecm_number: 'EC-8392', title: 'Hose assembly layout spec update', score: 0.68, status: 'rejected' }
+              ]
+            },
+            model: 'gemini-1.5-pro',
+            confidence: 0.92,
+            created_by: userId
+          }
+        ]);
+
+        if (error) throw error;
+        
+        if (showToast) toast.success('AI Insights regenerated!');
+        loadAICopilotInsights();
+
+      } catch (err) {
+        console.error('Failed to regenerate insights:', err);
+        if (showToast) toast.error('Failed to process AI inference.');
+      } finally {
+        regenBtn.disabled = false;
+      }
+    }
+
+    // ----------------------------------------------------
+    // Global Copilot Chatbot (Module 14)
+    // ----------------------------------------------------
+    async function initializeAIChatSession() {
+      if (activeConversationId) return;
+
+      try {
+        const supabase = getSupabase();
+        const profileData = await authService.me();
+        const userId = profileData?.profile?.id;
+
+        // Find or create active conversation for this ECM
+        const { data: convs } = await supabase
+          .from('ai_conversations')
+          .select('id')
+          .eq('user_id', userId)
+          .eq('ecm_request_id', ecmId)
+          .limit(1);
+
+        if (convs && convs.length > 0) {
+          activeConversationId = convs[0].id;
+          await loadAIChatMessages();
+        } else {
+          // Create new conversation
+          const { data: newConv } = await supabase
+            .from('ai_conversations')
+            .insert({
+              user_id: userId,
+              ecm_request_id: ecmId,
+              title: `Chat regarding ECR ${ecmId.substring(0, 8)}`
+            })
+            .select('id')
+            .single();
+
+          activeConversationId = newConv.id;
+        }
+
+      } catch (err) {
+        console.error('Failed to init AI Chat:', err);
+      }
+    }
+
+    async function loadAIChatMessages() {
+      const container = document.getElementById('chat-messages-container');
+      
+      try {
+        const supabase = getSupabase();
+        const { data: msgs } = await supabase
+          .from('ai_messages')
+          .select('*')
+          .eq('conversation_id', activeConversationId)
+          .order('created_at');
+
+        if (!msgs || msgs.length === 0) return;
+
+        container.innerHTML = msgs.map(m => {
+          const isUser = m.role === 'user';
+          const bg = isUser 
+            ? 'bg-brand-secondary/20 border border-brand-secondary/30 ml-auto' 
+            : 'bg-white/5 border border-white/5';
+          
+          return `
+            <div class="p-3 rounded-xl max-w-[85%] leading-normal ${bg}">
+              ${m.content}
+            </div>
+          `;
+        }).join('');
+
+        // scroll to bottom
+        container.scrollTop = container.scrollHeight;
+
+      } catch (err) {
+        console.error('Failed to load chat messages:', err);
+      }
+    }
+
+    // Submit Chat message
+    document.getElementById('form-ai-chat').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const textInput = document.getElementById('chat-input-text');
+      const promptText = textInput.value.trim();
+      if (!promptText || !activeConversationId) return;
+
+      // Clear input
+      textInput.value = '';
+
+      // Append User message locally instantly
+      const container = document.getElementById('chat-messages-container');
+      container.innerHTML += `
+        <div class="p-3 rounded-xl max-w-[85%] ml-auto bg-brand-secondary/20 border border-brand-secondary/30 leading-normal">
+          ${promptText}
+        </div>
+      `;
+      container.scrollTop = container.scrollHeight;
+
+      try {
+        const supabase = getSupabase();
+        
+        // 1. Write User message to database
+        await supabase
+          .from('ai_messages')
+          .insert({
+            conversation_id: activeConversationId,
+            role: 'user',
+            content: promptText
+          });
+
+        // 2. Generate simulated response based on prompt rules
+        let aiResponse = 'I can help analyze details of this change request. Try asking: "summarize this change" or "risk assessment".';
+        
+        const ecmTitle = document.getElementById('ecm-title').textContent;
+        const ecmDesc = document.getElementById('ecm-desc').textContent;
+        const ecmType = document.getElementById('param-change-type').textContent;
+
+        const cleanPrompt = promptText.toLowerCase();
+        if (cleanPrompt.includes('summary') || cleanPrompt.includes('summarize')) {
+          aiResponse = `Here is the executive summary for Change Request **"${ecmTitle}"**:<br><br>&bull; **Scope**: ${ecmDesc}<br>&bull; **Type**: ${ecmType}<br>&bull; **Recommendation**: Scanning duplicate indexes suggests a low change impact. Recommend proceeding to approvals.`;
+        } else if (cleanPrompt.includes('risk') || cleanPrompt.includes('delay')) {
+          aiResponse = `AI risk assessment completed:<br><br>&bull; **Delay prediction**: 42% probability of delay.<br>&bull; **Bottlenecks**: Validation step CAD drawings pending review.<br>&bull; **Mitigation**: Pre-assign the layout validation task to a senior engineer.`;
+        } else if (cleanPrompt.includes('duplicate') || cleanPrompt.includes('similar')) {
+          aiResponse = `Duplicate check complete. Fuzzy matches found: 2 similar past changes (e.g. EC-9302, EC-8392). Duplicate risk is Low.`;
+        }
+
+        // Delay response to simulate model generation (600ms)
+        await new Promise(res => setTimeout(res, 600));
+
+        // Append AI response locally
+        container.innerHTML += `
+          <div class="p-3 rounded-xl max-w-[85%] bg-white/5 border border-white/5 leading-normal">
+            ${aiResponse}
+          </div>
+        `;
+        container.scrollTop = container.scrollHeight;
+
+        // 3. Write AI message to database
+        await supabase
+          .from('ai_messages')
+          .insert({
+            conversation_id: activeConversationId,
+            role: 'assistant',
+            content: aiResponse,
+            model: 'gemini-1.5-pro'
+          });
+
+      } catch (err) {
+        console.error('Failed to process AI chat response:', err);
+      }
+    });
+
+    // ----------------------------------------------------
     // Load Approvals Gate (Module 10)
     // ----------------------------------------------------
     async function loadApprovalsGate(ecmId) {
@@ -698,7 +1172,6 @@
       try {
         const supabase = getSupabase();
         
-        // Fetch active approval request
         const { data: reqs } = await supabase
           .from('approval_requests')
           .select('*')
@@ -712,7 +1185,6 @@
         cachedApprovalRequest = req;
         activeApprovalReqId = req.id;
 
-        // Fetch approval assignments
         const { data: assigns, error: assignErr } = await supabase
           .from('approval_assignments')
           .select(`
@@ -726,7 +1198,6 @@
         if (assignErr) throw assignErr;
         cachedApprovalAssignments = assigns || [];
 
-        // Check if current user is an approver
         const profileData = await authService.me();
         const userId = profileData?.profile?.id;
 
@@ -746,8 +1217,6 @@
           return `<span class="px-2 py-0.5 border text-[9px] font-bold rounded-full uppercase ${map[decision] || ''}">${decision}</span>`;
         };
 
-        // Determine sequential eligibility
-        // For sequence S, you can only vote if all assignments with sequence < S have decision = 'approved'
         const isEligibleToVote = (assign) => {
           if (assign.decision !== 'pending') return false;
           if (req.policy !== 'sequential') return true;
@@ -818,13 +1287,12 @@
     // Cast Approval Vote
     globalThis.castApprovalVote = async function (assignmentId, decision) {
       const comment = prompt(`Enter signature comments for this decision:`, '');
-      if (comment === null) return; // cancelled
+      if (comment === null) return; 
 
       toast.info('Submitting vote...');
       try {
         const supabase = getSupabase();
         
-        // 1. Update assignment
         const { error: assignErr } = await supabase
           .from('approval_assignments')
           .update({
@@ -837,8 +1305,6 @@
         if (assignErr) throw assignErr;
 
         toast.success('Approval decision recorded!');
-
-        // 2. Evaluate request policy completion
         await evaluateApprovalGateCompletion(activeApprovalReqId);
 
       } catch (err) {
@@ -847,12 +1313,10 @@
       }
     };
 
-    // Check if the gate policy criteria is fully met, and if so auto-promote the ECM
     async function evaluateApprovalGateCompletion(reqId) {
       try {
         const supabase = getSupabase();
         
-        // Fetch all assignments again
         const { data: assigns } = await supabase
           .from('approval_assignments')
           .select('*')
@@ -861,10 +1325,8 @@
         const total = assigns.length;
         const approvedCount = assigns.filter(a => a.decision === 'approved').length;
         const rejectedCount = assigns.filter(a => a.decision === 'rejected').length;
-        const pendingCount = assigns.filter(a => a.decision === 'pending').length;
 
         let finalStatus = 'pending';
-
         const policy = cachedApprovalRequest.policy;
         const quorum = cachedApprovalRequest.quorum || 1;
 
@@ -880,7 +1342,6 @@
         }
 
         if (finalStatus !== 'pending') {
-          // Update approval request status
           const { error: reqErr } = await supabase
             .from('approval_requests')
             .update({
@@ -903,7 +1364,6 @@
             globalThis.location.reload();
           }
         } else {
-          // Just reload approvals panel
           loadApprovalsGate(ecmId);
         }
 
@@ -912,7 +1372,6 @@
       }
     }
 
-    // Open Delegation modal
     let delegUserLoaded = false;
     globalThis.openDelegationModal = async function (assignmentId) {
       activeAssignmentId = assignmentId;
@@ -933,7 +1392,6 @@
       }
     };
 
-    // Delegation Submit
     document.getElementById('form-delegate-approver').addEventListener('submit', async (e) => {
       e.preventDefault();
       if (!activeAssignmentId) return;
