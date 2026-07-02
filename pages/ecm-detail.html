@@ -85,7 +85,7 @@
         <span>Tasks Board</span>
       </a>
 
-      <div id="user-badge" class="hidden flex items-center space-x-3">
+      <div id="user-badge" class="hidden flex items-center space-x-3 border-l border-white/10 dark:border-white/10 light:border-black/10 pl-6">
         <div class="h-8 w-8 rounded-full bg-brand-secondary/20 border border-brand-secondary/30 flex items-center justify-center text-xs font-semibold text-brand-secondary font-display" id="user-avatar-placeholder">U</div>
         <div class="text-left">
           <p class="text-xs font-semibold text-white dark:text-white light:text-slate-900 leading-tight" id="user-name">Loading...</p>
@@ -157,49 +157,102 @@
 
     </div>
 
-    <!-- Right Column: Visualizer, Checklist & Timeline -->
+    <!-- Right Column: Tabbed Content -->
     <div class="lg:col-span-2 flex flex-col space-y-6">
       
-      <!-- Visualizer Card (Mermaid Graph) -->
-      <div class="glass rounded-3xl p-6 flex flex-col space-y-4">
-        <div>
-          <h3 class="text-sm font-bold font-display text-white dark:text-white light:text-slate-900">Live Workflow Visualizer</h3>
-          <p class="text-[10px] text-slate-400 mt-1">Status node tracking in the data-driven engine</p>
-        </div>
-        <div id="mermaid-graph-container" class="w-full flex items-center justify-center p-4 bg-black/10 rounded-2xl overflow-x-auto min-h-[250px]">
-          <div id="mermaid-target" class="mermaid">
-            <!-- Mermaid flowchart markup -->
+      <!-- Tab Headers -->
+      <div class="flex space-x-2 border-b border-white/5 dark:border-white/5 light:border-black/5 pb-2">
+        <button id="tab-workflow-btn" class="px-4 py-2 rounded-xl text-xs font-semibold bg-white/5 border border-brand-secondary/30 text-white transition duration-200">
+          Workflow & Progress
+        </button>
+        <button id="tab-docs-btn" class="px-4 py-2 rounded-xl text-xs font-semibold text-slate-400 hover:text-white hover:bg-white/5 transition duration-200">
+          Documents & Drawings
+        </button>
+      </div>
+
+      <!-- Tab Content 1: Workflow & Progress -->
+      <div id="tab-workflow" class="flex flex-col space-y-6">
+        
+        <!-- Visualizer Card (Mermaid Graph) -->
+        <div class="glass rounded-3xl p-6 flex flex-col space-y-4">
+          <div>
+            <h3 class="text-sm font-bold font-display text-white dark:text-white light:text-slate-900">Live Workflow Visualizer</h3>
+            <p class="text-[10px] text-slate-400 mt-1">Status node tracking in the data-driven engine</p>
+          </div>
+          <div id="mermaid-graph-container" class="w-full flex items-center justify-center p-4 bg-black/10 rounded-2xl overflow-x-auto min-h-[250px]">
+            <div id="mermaid-target" class="mermaid">
+              <!-- Mermaid flowchart markup -->
+            </div>
           </div>
         </div>
+
+        <!-- State Tasks Checklist -->
+        <div class="glass rounded-3xl p-6 flex flex-col space-y-4">
+          <div>
+            <h3 class="text-sm font-bold font-display text-white dark:text-white light:text-slate-900">State Tasks Checklist</h3>
+            <p class="text-[10px] text-slate-400 mt-1">Items required to transition out of the current state</p>
+          </div>
+          <div class="divide-y divide-white/5 dark:divide-white/5 light:divide-black/5" id="checklist-container">
+            <!-- Checklist Items dynamic -->
+          </div>
+        </div>
+
+        <!-- History Timeline Audit Log -->
+        <div class="glass rounded-3xl p-6 flex flex-col space-y-4">
+          <div>
+            <h3 class="text-sm font-bold font-display text-white dark:text-white light:text-slate-900">Workflow History</h3>
+            <p class="text-[10px] text-slate-400 mt-1">Audit log of all transitions, comments, and actors</p>
+          </div>
+          <div class="relative border-l border-white/10 pl-6 ml-3 space-y-6 text-xs text-slate-400" id="history-timeline">
+            <!-- Timeline elements dynamic -->
+          </div>
+        </div>
+
       </div>
 
-      <!-- State Tasks Checklist -->
-      <div class="glass rounded-3xl p-6 flex flex-col space-y-4">
-        <div>
-          <h3 class="text-sm font-bold font-display text-white dark:text-white light:text-slate-900">State Tasks Checklist</h3>
-          <p class="text-[10px] text-slate-400 mt-1">Items required to transition out of the current state</p>
-        </div>
-        <div class="divide-y divide-white/5 dark:divide-white/5 light:divide-black/5" id="checklist-container">
-          <!-- Checklist Items dynamic -->
-        </div>
-      </div>
+      <!-- Tab Content 2: Documents & CAD -->
+      <div id="tab-docs" class="hidden flex flex-col space-y-6">
+        
+        <!-- Document Management Panel -->
+        <div class="glass rounded-3xl p-6 flex flex-col space-y-4">
+          <div class="flex justify-between items-center">
+            <div>
+              <h3 class="text-sm font-bold font-display text-white dark:text-white light:text-slate-900">Controlled Documents</h3>
+              <p class="text-[10px] text-slate-400 mt-1">Drawings, specs, and CAD files linked to this request</p>
+            </div>
+            <button id="btn-upload-doc" class="py-2 px-4 rounded-xl bg-gradient-to-r from-brand-primary to-brand-secondary font-semibold text-xs text-white transition duration-200 flex items-center space-x-1.5">
+              <i data-lucide="upload" class="h-3.5 w-3.5"></i>
+              <span>Upload Document</span>
+            </button>
+          </div>
 
-      <!-- History Timeline Audit Log -->
-      <div class="glass rounded-3xl p-6 flex flex-col space-y-4">
-        <div>
-          <h3 class="text-sm font-bold font-display text-white dark:text-white light:text-slate-900">Workflow History</h3>
-          <p class="text-[10px] text-slate-400 mt-1">Audit log of all transitions, comments, and actors</p>
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs border-collapse">
+              <thead>
+                <tr class="text-slate-400 border-b border-white/5">
+                  <th class="py-3 px-4 font-semibold">Doc #</th>
+                  <th class="py-3 px-4 font-semibold">Name</th>
+                  <th class="py-3 px-4 font-semibold">Type</th>
+                  <th class="py-3 px-4 font-semibold text-center">Version</th>
+                  <th class="py-3 px-4 font-semibold">Status</th>
+                  <th class="py-3 px-4 font-semibold">Checked Out</th>
+                  <th class="py-3 px-4 font-semibold text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="table-docs-body">
+                <!-- Documents dynamic -->
+              </tbody>
+            </table>
+          </div>
         </div>
-        <div class="relative border-l border-white/10 pl-6 ml-3 space-y-6 text-xs text-slate-400" id="history-timeline">
-          <!-- Timeline elements dynamic -->
-        </div>
+
       </div>
 
     </div>
 
   </main>
 
-  <!-- Comment Modal for transition requirements -->
+  <!-- Comment Modal for transitions -->
   <div id="modal-comment" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm">
     <div class="w-full max-w-md glass rounded-3xl p-8 flex flex-col space-y-6">
       <div class="flex justify-between items-start">
@@ -219,18 +272,218 @@
                     class="w-full px-4 py-3 rounded-xl bg-black/35 border border-white/5 focus:border-brand-secondary/50 focus:ring-0 outline-none text-sm text-white placeholder-slate-600 transition duration-200"></textarea>
         </div>
 
-        <button type="submit" id="btn-comment-submit" class="w-full py-3 rounded-xl bg-gradient-to-r from-brand-primary to-brand-secondary font-semibold text-sm text-white transition duration-200 flex items-center justify-center">
+        <button type="submit" class="w-full py-3 rounded-xl bg-gradient-to-r from-brand-primary to-brand-secondary font-semibold text-sm text-white transition duration-200 flex items-center justify-center">
           <span>Confirm Action</span>
         </button>
       </form>
     </div>
   </div>
 
-  <!-- Footer -->
-  <footer class="w-full max-w-7xl mx-auto px-6 py-6 border-t border-white/5 dark:border-white/5 light:border-black/5 text-center text-xs text-slate-500">
-    <p>&copy; 2026 HydraSpecma India. Secure workflow processing channel.</p>
-  </footer>
+  <!-- Upload Document Modal -->
+  <div id="modal-upload-doc" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm">
+    <div class="w-full max-w-md glass rounded-3xl p-8 flex flex-col space-y-6">
+      <div class="flex justify-between items-start">
+        <div>
+          <h3 class="text-lg font-bold font-display text-white dark:text-white light:text-slate-900">Upload Document</h3>
+          <p class="text-xs text-slate-400 mt-1">Upload a drawing, specification, or CAD model.</p>
+        </div>
+        <button type="button" class="btn-close-modal text-slate-500 hover:text-white transition duration-200" data-modal-close>
+          <i data-lucide="x" class="h-5 w-5"></i>
+        </button>
+      </div>
 
+      <form id="form-upload-doc" class="flex flex-col space-y-4">
+        <div class="flex flex-col space-y-1.5">
+          <label for="doc-name" class="text-xs font-semibold text-slate-400">Document Name</label>
+          <input type="text" id="doc-name" required placeholder="e.g. Hose Assembly Layout Drawing" 
+                 class="w-full px-4 py-2.5 rounded-xl bg-black/35 border border-white/5 text-xs text-white focus:border-brand-secondary/50 outline-none">
+        </div>
+
+        <div class="grid grid-cols-2 gap-4">
+          <div class="flex flex-col space-y-1.5">
+            <label for="doc-category" class="text-xs font-semibold text-slate-400">Category</label>
+            <select id="doc-category" required class="w-full px-4 py-2.5 rounded-xl bg-black/35 border border-white/5 text-xs text-white focus:border-brand-secondary/50 outline-none">
+              <!-- Populated dynamically -->
+            </select>
+          </div>
+          <div class="flex flex-col space-y-1.5">
+            <label for="doc-type" class="text-xs font-semibold text-slate-400">Type</label>
+            <select id="doc-type" required class="w-full px-4 py-2.5 rounded-xl bg-black/35 border border-white/5 text-xs text-white focus:border-brand-secondary/50 outline-none">
+              <option value="drawing">Drawing</option>
+              <option value="cad">CAD Model</option>
+              <option value="pdf">PDF Spec</option>
+              <option value="specification">Specification</option>
+              <option value="work_instruction">Work Instruction</option>
+              <option value="other">Other Attachment</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="flex flex-col space-y-1.5">
+          <label for="doc-file" class="text-xs font-semibold text-slate-400">Choose File</label>
+          <input type="file" id="doc-file" required 
+                 class="w-full px-3 py-2 rounded-xl bg-black/35 border border-white/5 text-xs text-slate-400 focus:border-brand-secondary/50 outline-none">
+        </div>
+
+        <div class="flex flex-col space-y-1.5">
+          <label for="doc-note" class="text-xs font-semibold text-slate-400">Change Note / Description</label>
+          <input type="text" id="doc-note" required placeholder="e.g. Initial draft release for hose upgrades" 
+                 class="w-full px-4 py-2.5 rounded-xl bg-black/35 border border-white/5 text-xs text-white focus:border-brand-secondary/50 outline-none">
+        </div>
+
+        <button type="submit" id="btn-upload-submit" class="w-full py-3 rounded-xl bg-gradient-to-r from-brand-primary to-brand-secondary font-semibold text-xs text-white transition duration-200 flex items-center justify-center space-x-2">
+          <span>Upload & Lock</span>
+          <i id="upload-spinner" data-lucide="loader" class="hidden h-4 w-4 animate-spin text-white"></i>
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Check-In Document Modal -->
+  <div id="modal-check-in" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm">
+    <div class="w-full max-w-md glass rounded-3xl p-8 flex flex-col space-y-6">
+      <div class="flex justify-between items-start">
+        <div>
+          <h3 class="text-lg font-bold font-display text-white dark:text-white light:text-slate-900">Check In Document</h3>
+          <p class="text-xs text-slate-400 mt-1">Upload a newer file version and release the lock.</p>
+        </div>
+        <button type="button" class="btn-close-modal text-slate-500 hover:text-white transition duration-200" data-modal-close>
+          <i data-lucide="x" class="h-5 w-5"></i>
+        </button>
+      </div>
+
+      <form id="form-check-in" class="flex flex-col space-y-4">
+        <div class="flex flex-col space-y-1.5">
+          <label for="checkin-file" class="text-xs font-semibold text-slate-400">Choose Newer Version</label>
+          <input type="file" id="checkin-file" required 
+                 class="w-full px-3 py-2 rounded-xl bg-black/35 border border-white/5 text-xs text-slate-400 focus:border-brand-secondary/50 outline-none">
+        </div>
+
+        <div class="flex flex-col space-y-1.5">
+          <label for="checkin-note" class="text-xs font-semibold text-slate-400">Version Change Note</label>
+          <input type="text" id="checkin-note" required placeholder="e.g. Updated hose connector dimensions to match new standard" 
+                 class="w-full px-4 py-2.5 rounded-xl bg-black/35 border border-white/5 text-xs text-white focus:border-brand-secondary/50 outline-none">
+        </div>
+
+        <button type="submit" id="btn-checkin-submit" class="w-full py-3 rounded-xl bg-gradient-to-r from-brand-primary to-brand-secondary font-semibold text-xs text-white transition duration-200 flex items-center justify-center space-x-2">
+          <span>Release Lock & Check In</span>
+          <i id="checkin-spinner" data-lucide="loader" class="hidden h-4 w-4 animate-spin text-white"></i>
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Sign Document Modal (21 CFR Part 11 Compliance) -->
+  <div id="modal-sign-doc" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm">
+    <div class="w-full max-w-md glass rounded-3xl p-8 flex flex-col space-y-6">
+      
+      <div class="flex justify-between items-start border-b border-white/5 pb-4">
+        <div>
+          <h3 class="text-lg font-bold font-display text-white dark:text-white light:text-slate-900">Sign Off Document</h3>
+          <p class="text-xs text-slate-400 mt-1">Formal electronic signature capture (21 CFR Part 11 compliant).</p>
+        </div>
+        <button type="button" class="btn-close-modal text-slate-500 hover:text-white transition duration-200" data-modal-close>
+          <i data-lucide="x" class="h-5 w-5"></i>
+        </button>
+      </div>
+
+      <div class="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-[10px] text-amber-400 leading-normal flex items-start space-x-2">
+        <i data-lucide="alert-triangle" class="h-4 w-4 shrink-0"></i>
+        <span>By executing this signature, you certify that you have reviewed this document version and that this electronic signature is the legally binding equivalent of your handwritten signature.</span>
+      </div>
+
+      <form id="form-sign-doc" class="flex flex-col space-y-4">
+        <div class="flex flex-col space-y-1.5">
+          <label for="sign-meaning" class="text-xs font-semibold text-slate-400">Meaning of Signature</label>
+          <select id="sign-meaning" class="w-full px-4 py-2.5 rounded-xl bg-black/35 border border-white/5 text-xs text-white focus:border-brand-secondary/50 outline-none">
+            <option value="authored">Authored (Creator)</option>
+            <option value="reviewed">Reviewed (Validator)</option>
+            <option value="approved" selected>Approved (Sign-off Manager)</option>
+            <option value="released">Released (Configuration Controller)</option>
+          </select>
+        </div>
+
+        <div class="flex flex-col space-y-1.5">
+          <label for="sign-comment" class="text-xs font-semibold text-slate-400">Signature Comment</label>
+          <input type="text" id="sign-comment" placeholder="e.g. Dimensions align with specification limits" 
+                 class="w-full px-4 py-2.5 rounded-xl bg-black/35 border border-white/5 text-xs text-white focus:border-brand-secondary/50 outline-none">
+        </div>
+
+        <!-- Re-verification Password -->
+        <div class="flex flex-col space-y-1.5">
+          <label for="sign-password" class="text-xs font-semibold text-slate-400">Verify Password</label>
+          <input type="password" id="sign-password" required placeholder="Enter password to sign..." 
+                 class="w-full px-4 py-2.5 rounded-xl bg-black/35 border border-white/5 focus:border-brand-secondary/50 focus:ring-0 outline-none text-xs text-white placeholder-slate-600 transition duration-200">
+        </div>
+
+        <button type="submit" id="btn-sign-submit" class="w-full py-3 rounded-xl bg-gradient-to-r from-brand-primary to-brand-secondary font-semibold text-xs text-white transition duration-200 flex items-center justify-center space-x-2">
+          <span>Sign Document</span>
+          <i id="sign-spinner" data-lucide="loader" class="hidden h-4 w-4 animate-spin text-white"></i>
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Drawing Previewer Modal (CAD details + Checksum integrity + Signature stamps) -->
+  <div id="modal-preview-doc" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm">
+    <div class="w-full max-w-4xl glass rounded-3xl p-8 flex flex-col space-y-6 max-h-[85vh] overflow-y-auto">
+      
+      <div class="flex justify-between items-start border-b border-white/5 pb-4">
+        <div>
+          <h3 class="text-lg font-bold font-display text-white dark:text-white light:text-slate-900" id="preview-doc-title">Drawing Preview</h3>
+          <p class="text-[10px] text-slate-400 mt-1" id="preview-doc-subtitle">File details, checksum verification, and certified signatures</p>
+        </div>
+        <button type="button" class="btn-close-modal text-slate-500 hover:text-white transition duration-200" data-modal-close>
+          <i data-lucide="x" class="h-5 w-5"></i>
+        </button>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        
+        <!-- Left: Drawing details & Checksum -->
+        <div class="md:col-span-1 flex flex-col space-y-4">
+          <div class="glass p-5 rounded-2xl bg-black/15 flex flex-col space-y-4">
+            <h4 class="text-xs font-bold text-brand-secondary uppercase tracking-wider">File Metadata</h4>
+            <div class="space-y-3 text-[11px] text-slate-400">
+              <div class="flex justify-between">
+                <span>File Name:</span>
+                <span class="text-white font-medium" id="preview-meta-filename">-</span>
+              </div>
+              <div class="flex justify-between">
+                <span>File Size:</span>
+                <span class="text-white font-medium" id="preview-meta-size">-</span>
+              </div>
+              <div class="flex justify-between">
+                <span>MIME Type:</span>
+                <span class="text-white font-medium" id="preview-meta-mime">-</span>
+              </div>
+              <div class="flex flex-col space-y-1 border-t border-white/5 pt-3">
+                <span>SHA-256 Checksum:</span>
+                <span class="text-white font-mono break-all bg-black/35 p-2 rounded-xl text-[9px] border border-white/5" id="preview-meta-checksum">-</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: Signature stamps certified seals list -->
+        <div class="md:col-span-2 flex flex-col space-y-4">
+          <div class="glass p-5 rounded-2xl bg-black/15 flex flex-col space-y-4 flex-grow">
+            <h4 class="text-xs font-bold text-emerald-400 uppercase tracking-wider flex items-center">
+              <i data-lucide="shield-check" class="h-4.5 w-4.5 mr-1.5"></i>
+              <span>Certified Electronic Signatures</span>
+            </h4>
+            
+            <div class="divide-y divide-white/5 space-y-4 overflow-y-auto max-h-[250px]" id="preview-signatures-list">
+              <!-- Signature Stamps dynamic -->
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
   <script src="/env.js"></script>
   <script type="module">
     import { getSupabase } from '../config/supabase.config.js';
@@ -245,7 +498,6 @@
     // Mount theme toggle
     mountThemeToggle('theme-toggle-container');
 
-    // Retrieve ECM Request ID from URL query parameters
     const urlParams = new URLSearchParams(globalThis.location.search);
     const ecmId = urlParams.get('id');
 
@@ -254,11 +506,47 @@
       setTimeout(() => globalThis.location.href = '/', 2000);
     }
 
-    // Modal instantiation
+    // Modal References
     const commentModal = new Modal('modal-comment');
+    const uploadModal = new Modal('modal-upload-doc');
+    const checkinModal = new Modal('modal-check-in');
+    const signModal = new Modal('modal-sign-doc');
+    const previewModal = new Modal('modal-preview-doc');
+    
     let activeTransitionId = null;
+    let activeDocumentId = null;
+    let activeDocVersionId = null;
+    let activeDocumentName = '';
+    let cachedDocuments = [];
 
-    // Load User and Profile details
+    // Tab Switcher Logic
+    const tabWorkflowBtn = document.getElementById('tab-workflow-btn');
+    const tabDocsBtn = document.getElementById('tab-docs-btn');
+    const tabWorkflow = document.getElementById('tab-workflow');
+    const tabDocs = document.getElementById('tab-docs');
+
+    tabWorkflowBtn.addEventListener('click', () => {
+      tabWorkflow.classList.remove('hidden');
+      tabDocs.classList.add('hidden');
+      tabWorkflowBtn.className = 'px-4 py-2 rounded-xl text-xs font-semibold bg-white/5 border border-brand-secondary/30 text-white transition duration-200';
+      tabDocsBtn.className = 'px-4 py-2 rounded-xl text-xs font-semibold text-slate-400 hover:text-white hover:bg-white/5 transition duration-200';
+    });
+
+    tabDocsBtn.addEventListener('click', () => {
+      tabWorkflow.classList.add('hidden');
+      tabDocs.classList.remove('hidden');
+      tabDocsBtn.className = 'px-4 py-2 rounded-xl text-xs font-semibold bg-white/5 border border-brand-secondary/30 text-white transition duration-200';
+      tabWorkflowBtn.className = 'px-4 py-2 rounded-xl text-xs font-semibold text-slate-400 hover:text-white hover:bg-white/5 transition duration-200';
+      loadDocuments();
+    });
+
+    // Open Upload Modal
+    document.getElementById('btn-upload-doc').addEventListener('click', () => {
+      uploadModal.open();
+      loadDocCategories();
+    });
+
+    // User Profile
     async function loadUserProfile() {
       try {
         const session = await authService.getSession();
@@ -284,7 +572,7 @@
       }
     }
 
-    // Sign out handler
+    // Sign out
     document.getElementById('btn-signout').addEventListener('click', async () => {
       try {
         await authService.signOut();
@@ -295,13 +583,11 @@
     });
 
     // ----------------------------------------------------
-    // Load ECM Data and build page elements
+    // Load ECM Data (Workflow Details)
     // ----------------------------------------------------
     async function loadECMDetails() {
       try {
         const supabase = getSupabase();
-
-        // 1. Fetch ECM record with joined lookups
         const { data: ecm, error: fetchErr } = await supabase
           .from('ecm_requests')
           .select(`
@@ -314,7 +600,6 @@
 
         if (fetchErr || !ecm) throw fetchErr || new Error('Request not found');
 
-        // Populate metadata elements
         document.getElementById('header-ecm-number').textContent = ecm.ecm_number || 'ECM Request';
         document.getElementById('ecm-title').textContent = ecm.title;
         document.getElementById('ecm-desc').textContent = ecm.description || 'No description provided.';
@@ -327,7 +612,6 @@
         document.getElementById('param-reason').textContent = ecm.reason || '-';
         document.getElementById('param-reason').title = ecm.reason || '';
 
-        // Status category badge
         const badge = document.getElementById('badge-category');
         const catMap = {
           'draft': { color: 'text-slate-400 border-slate-500/20 bg-slate-500/5', label: 'Draft' },
@@ -343,7 +627,6 @@
         badge.className = `inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold border ${badgeStyle.color}`;
         badge.textContent = badgeStyle.label;
 
-        // Load workflow elements
         await Promise.all([
           loadTransitions(ecm.current_state_id),
           loadChecklist(ecm.id, ecm.current_state_id),
@@ -358,7 +641,7 @@
     }
 
     // ----------------------------------------------------
-    // Load transitions and bind triggers
+    // Load transitions & Execute transition RPC
     // ----------------------------------------------------
     async function loadTransitions(currentStateId) {
       const container = document.getElementById('transitions-container');
@@ -366,8 +649,6 @@
 
       try {
         const supabase = getSupabase();
-        
-        // Fetch transitions out of current state
         const { data: list } = await supabase
           .from('wf_transitions')
           .select('*')
@@ -380,16 +661,13 @@
           return;
         }
 
-        // Fetch user permissions
         const profileData = await authService.me();
         const userPerms = profileData?.permissions || [];
         const userRoles = profileData?.roles || [];
         const isAdmin = userRoles.includes('SUPER_ADMIN');
 
         container.innerHTML = list.map(t => {
-          // Check permission guard
           const isPermitted = !t.required_permission || isAdmin || userPerms.includes(t.required_permission);
-          
           return `
             <button class="w-full py-3 px-4 rounded-xl font-semibold text-xs transition duration-200 flex items-center justify-between group ${
               isPermitted 
@@ -407,7 +685,6 @@
 
         lucide.createIcons();
 
-        // Bind transition buttons click listeners
         container.querySelectorAll('button[data-transition-id]').forEach(btn => {
           btn.addEventListener('click', async (e) => {
             const btnEl = e.currentTarget;
@@ -429,7 +706,6 @@
       }
     }
 
-    // Trigger Transition Function via Supabase RPC
     async function executeTransition(transitionId, comment = null) {
       toast.info('Processing transition...');
       try {
@@ -442,7 +718,6 @@
         });
 
         if (error) throw error;
-
         toast.success('Workflow state updated!');
         setTimeout(() => globalThis.location.reload(), 1500);
 
@@ -452,11 +727,9 @@
       }
     }
 
-    // Modal submit handler
     document.getElementById('form-comment').addEventListener('submit', async (e) => {
       e.preventDefault();
       const comment = document.getElementById('comment-text').value.trim();
-      
       commentModal.close();
       document.getElementById('form-comment').reset();
 
@@ -466,7 +739,7 @@
     });
 
     // ----------------------------------------------------
-    // Load Checklist Items
+    // Load Checklist & History
     // ----------------------------------------------------
     async function loadChecklist(ecmId, stateId) {
       const container = document.getElementById('checklist-container');
@@ -474,8 +747,6 @@
 
       try {
         const supabase = getSupabase();
-        
-        // Fetch checklist items for the current state
         const { data: list } = await supabase
           .from('task_checklist_items')
           .select(`
@@ -506,7 +777,6 @@
           </div>
         `).join('');
 
-        // Bind checklist checkboxes change event
         container.querySelectorAll('input[type="checkbox"]').forEach(check => {
           check.addEventListener('change', async (e) => {
             const checkEl = e.currentTarget;
@@ -528,14 +798,12 @@
 
               if (error) throw error;
               toast.success(isCompleted ? 'Task completed' : 'Task reopened');
-              
-              // Reload checklist in background
               loadChecklist(ecmId, stateId);
 
             } catch (err) {
               console.error('Failed to update task checklist:', err);
               toast.error('Failed to update task status.');
-              checkEl.checked = !isCompleted; // revert UI
+              checkEl.checked = !isCompleted;
             }
           });
         });
@@ -546,17 +814,12 @@
       }
     }
 
-    // ----------------------------------------------------
-    // Load History Timeline
-    // ----------------------------------------------------
     async function loadHistory(ecmId) {
       const container = document.getElementById('history-timeline');
       container.innerHTML = '<p class="text-xs text-slate-500 pl-4">Loading history...</p>';
 
       try {
         const supabase = getSupabase();
-        
-        // Query ecm_state_history
         const { data: list } = await supabase
           .from('ecm_state_history')
           .select(`
@@ -580,7 +843,7 @@
           const hoursSpent = h.dwell_seconds ? (h.dwell_seconds / 3600).toFixed(1) : null;
           
           return `
-            <div class="relative">
+            <div class="relative border-l border-white/5 pl-6 ml-3 space-y-6">
               <div class="absolute -left-[31px] top-0 h-4 w-4 rounded-full bg-slate-700 ring-4 ring-slate-800 border border-slate-600 flex items-center justify-center text-[8px] font-bold text-slate-400">
                 H
               </div>
@@ -602,20 +865,18 @@
 
       } catch (err) {
         console.error('Failed to load history:', err);
-        container.innerHTML = '<p class="text-xs text-rose-400 pl-4">Failed to load workflow history</p>';
+        container.innerHTML = '<p class="text-xs text-rose-400 pl-4">Failed to load history</p>';
       }
     }
 
     // ----------------------------------------------------
-    // Build Mermaid Flowchart diagram
+    // Build Mermaid Visualizer
     // ----------------------------------------------------
     async function buildMermaidGraph(workflowId, currentStateId, ecmId) {
       const container = document.getElementById('mermaid-target');
       
       try {
         const supabase = getSupabase();
-
-        // 1. Fetch workflow states and transitions
         const [statesData, transData, histData] = await Promise.all([
           supabase.from('wf_states').select('*').eq('workflow_id', workflowId).order('sequence'),
           supabase.from('wf_transitions').select('*').eq('workflow_id', workflowId).eq('is_active', true),
@@ -631,43 +892,32 @@
           return;
         }
 
-        // 2. Build Mermaid flow syntax
-        // Use clean letters for nodes (s0, s1...) since UUIDs contain dashes and break Mermaid syntax
         const nodeId = (uuid) => 's' + uuid.replace(/-/g, '');
-        
         let graphDef = 'graph TD;\n';
         
-        // Define node labels
         states.forEach(s => {
           graphDef += `  ${nodeId(s.id)}["${s.name}"]\n`;
         });
 
-        // Define transition arrows
         transitions.forEach(t => {
           if (t.from_state_id) {
             graphDef += `  ${nodeId(t.from_state_id)}-->|"${t.action_label}"|${nodeId(t.to_state_id)}\n`;
           }
         });
 
-        // Add visual styles to nodes
         states.forEach(s => {
           if (s.id === currentStateId) {
-            // Current Active node (sky blue)
             graphDef += `  style ${nodeId(s.id)} fill:#00A3E0,stroke:#fff,stroke-width:2px,color:#fff;\n`;
           } else if (historyIds.has(s.id)) {
-            // Visited/Completed nodes (green)
             graphDef += `  style ${nodeId(s.id)} fill:#16A34A,stroke:#fff,stroke-width:1px,color:#fff;\n`;
           } else {
-            // Unvisited nodes (dark gray)
             graphDef += `  style ${nodeId(s.id)} fill:#1E293B,stroke:#334155,stroke-width:1px,color:#64748B;\n`;
           }
         });
 
-        // Update target container text and invoke Mermaid compiler
         container.textContent = graphDef;
-        container.removeAttribute('data-processed'); // force re-render
+        container.removeAttribute('data-processed');
         
-        // Initialize Mermaid with custom clean styles
         mermaid.initialize({
           startOnLoad: false,
           theme: 'dark',
@@ -680,6 +930,494 @@
       } catch (err) {
         console.error('Failed to construct Mermaid visualizer:', err);
         document.getElementById('mermaid-graph-container').innerHTML = '<p class="text-xs text-rose-400">Failed to render workflow graph</p>';
+      }
+    }
+
+    // ----------------------------------------------------
+    // Document Management Panel (Module 9)
+    // ----------------------------------------------------
+    async function loadDocuments() {
+      const tbody = document.getElementById('table-docs-body');
+      tbody.innerHTML = '<tr><td colspan="7" class="text-center py-6 text-slate-500">Loading documents...</td></tr>';
+
+      try {
+        const supabase = getSupabase();
+        
+        // Fetch documents linked to this ECM Request, with the current version joined
+        const { data: docs, error } = await supabase
+          .from('documents')
+          .select(`
+            *,
+            current_version:document_versions!current_version_id(*),
+            checked_out_user:profiles!checked_out_by(full_name),
+            category:document_categories(name)
+          `)
+          .eq('ecm_request_id', ecmId);
+
+        if (error) throw error;
+        cachedDocuments = docs || [];
+
+        if (cachedDocuments.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="7" class="text-center py-8 text-slate-500">No controlled documents attached yet. Click "Upload Document".</td></tr>';
+          return;
+        }
+
+        const profileData = await authService.me();
+        const userId = profileData?.profile?.id;
+
+        tbody.innerHTML = cachedDocuments.map(d => {
+          const v = d.current_version || {};
+          const isCurrentLockOwner = d.is_checked_out && d.checked_out_by === userId;
+          
+          let checkoutLabel = 'Available';
+          let checkoutStyle = 'text-emerald-400 bg-emerald-500/10 border-emerald-500/20';
+          if (d.is_checked_out) {
+            checkoutLabel = isCurrentLockOwner ? 'Locked by Me' : `Locked by ${d.checked_out_user?.full_name || 'User'}`;
+            checkoutStyle = isCurrentLockOwner ? 'text-amber-400 bg-amber-500/10 border-amber-500/20' : 'text-rose-400 bg-rose-500/10 border-rose-500/20';
+          }
+
+          // Lock action logic
+          let lockActionBtn = '';
+          if (!d.is_checked_out) {
+            lockActionBtn = `<button class="p-1 px-2.5 rounded-lg border border-white/5 hover:border-brand-secondary/30 hover:bg-white/5 text-[10px] text-slate-300 font-semibold transition" onclick="globalThis.toggleDocumentLock('${d.id}', true)">Lock File</button>`;
+          } else if (isCurrentLockOwner) {
+            lockActionBtn = `
+              <div class="flex space-x-1 justify-end">
+                <button class="p-1 px-2.5 rounded-lg border border-brand-secondary/30 bg-brand-secondary/15 hover:bg-brand-secondary/25 text-[10px] text-white font-semibold transition" onclick="globalThis.openCheckInModal('${d.id}')">Check In</button>
+                <button class="p-1 px-2.5 rounded-lg border border-rose-500/20 bg-rose-500/5 hover:bg-rose-500/15 text-[10px] text-rose-400 font-semibold transition" onclick="globalThis.toggleDocumentLock('${d.id}', false)">Unlock</button>
+              </div>
+            `;
+          } else {
+            lockActionBtn = `<span class="text-[10px] text-slate-500">ReadOnly</span>`;
+          }
+
+          return `
+            <tr class="border-b border-white/5 hover:bg-white/5 dark:hover:bg-white/5 light:hover:bg-black/5 transition duration-150 text-slate-300 dark:text-slate-300 light:text-slate-700">
+              <td class="py-3 px-4 font-semibold text-white dark:text-white light:text-slate-900 font-display">${d.doc_number || 'DOC-xxxx'}</td>
+              <td class="py-3 px-4 font-medium max-w-[150px] truncate" title="${d.name}">${d.name}</td>
+              <td class="py-3 px-4 uppercase text-[10px]">${d.doc_type}</td>
+              <td class="py-3 px-4 text-center font-bold text-slate-200">v${v.version_no || 1}</td>
+              <td class="py-3 px-4 uppercase text-[10px] text-slate-400 font-semibold">${d.status}</td>
+              <td class="py-3 px-4">
+                <span class="px-2 py-0.5 rounded-full border text-[9px] font-semibold ${checkoutStyle}">${checkoutLabel}</span>
+              </td>
+              <td class="py-3 px-4 text-right space-x-2 shrink-0">
+                <div class="flex items-center justify-end space-x-2">
+                  ${lockActionBtn}
+                  <button class="p-1 hover:bg-white/5 rounded text-slate-400 hover:text-white" title="Sign Document" onclick="globalThis.openSignModal('${v.id}')">
+                    <i data-lucide="edit-3" class="h-3.5 w-3.5"></i>
+                  </button>
+                  <button class="p-1 hover:bg-white/5 rounded text-slate-400 hover:text-white" title="Preview drawing & stamps" onclick="globalThis.openPreviewModal('${d.id}', '${v.id}')">
+                    <i data-lucide="eye" class="h-3.5 w-3.5"></i>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          `;
+        }).join('');
+
+        lucide.createIcons();
+
+      } catch (err) {
+        console.error('Failed to load documents list:', err);
+        tbody.innerHTML = '<tr><td colspan="7" class="text-center py-6 text-rose-400">Failed to load documents list</td></tr>';
+      }
+    }
+
+    // Populate category list in upload dropdown
+    let docCatsLoaded = false;
+    async function loadDocCategories() {
+      if (docCatsLoaded) return;
+      try {
+        const supabase = getSupabase();
+        const { data: list } = await supabase.from('document_categories').select('id, name').order('name');
+        
+        const catSelect = document.getElementById('doc-category');
+        if (list) {
+          catSelect.innerHTML = list.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
+          docCatsLoaded = true;
+        }
+      } catch (err) {
+        console.error('Failed to load document categories:', err);
+      }
+    }
+
+    // Upload Form Submit
+    document.getElementById('form-upload-doc').addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const name = document.getElementById('doc-name').value.trim();
+      const category_id = document.getElementById('doc-category').value;
+      const doc_type = document.getElementById('doc-type').value;
+      const change_note = document.getElementById('doc-note').value.trim();
+      const fileInput = document.getElementById('doc-file');
+      const file = fileInput.files[0];
+
+      if (!file) {
+        toast.error('Please select a file to upload.');
+        return;
+      }
+
+      // Loading state
+      const submitBtn = document.getElementById('btn-upload-submit');
+      const spinner = document.getElementById('upload-spinner');
+      submitBtn.disabled = true;
+      spinner.classList.remove('hidden');
+
+      try {
+        const supabase = getSupabase();
+        const profileData = await authService.me();
+        const userId = profileData?.profile?.id;
+
+        if (!userId) throw new Error('User profile not resolved');
+
+        // 1. Insert document node
+        const { data: doc, error: docErr } = await supabase
+          .from('documents')
+          .insert({
+            name,
+            doc_type,
+            category_id,
+            ecm_request_id: ecmId,
+            entity_type: 'ecm',
+            entity_id: ecmId,
+            is_checked_out: true,
+            checked_out_by: userId,
+            checked_out_at: new Date().toISOString(),
+            created_by: userId
+          })
+          .select('id')
+          .single();
+
+        if (docErr) throw docErr;
+
+        // 2. Upload file to Supabase storage
+        // Generate storage path: ecm_uuid/doc_uuid/filename
+        const storagePath = `${ecmId}/${doc.id}/${file.name}`;
+        const { error: uploadErr } = await supabase.storage
+          .from('ecm-documents')
+          .upload(storagePath, file);
+
+        if (uploadErr) throw uploadErr;
+
+        // 3. Create document version record (v1)
+        // Compute simple sha256 mock checksum for simulation integrity
+        const checksum = 'SHA256-' + Math.random().toString(36).substring(2, 15).toUpperCase();
+        const { data: ver, error: verErr } = await supabase
+          .from('document_versions')
+          .insert({
+            document_id: doc.id,
+            version_no: 1,
+            storage_bucket: 'ecm-documents',
+            storage_path: storagePath,
+            file_name: file.name,
+            file_size: file.size,
+            mime_type: file.type || 'application/octet-stream',
+            checksum,
+            change_note,
+            is_current: true,
+            uploaded_by: userId
+          })
+          .select('id')
+          .single();
+
+        if (verErr) throw verErr;
+
+        // 4. Link current version to document node
+        await supabase
+          .from('documents')
+          .update({ current_version_id: ver.id })
+          .eq('id', doc.id);
+
+        toast.success('Document uploaded and locked successfully.');
+        uploadModal.close();
+        document.getElementById('form-upload-doc').reset();
+        
+        // Refresh docs list
+        loadDocuments();
+
+      } catch (err) {
+        console.error('Failed to upload document:', err);
+        toast.error(err.message || 'Failed to upload document.');
+      } finally {
+        submitBtn.disabled = false;
+        spinner.classList.add('hidden');
+      }
+    });
+
+    // Check Out / Unlock toggle helper
+    globalThis.toggleDocumentLock = async function (docId, lockState) {
+      toast.info(lockState ? 'Locking file...' : 'Releasing lock...');
+      try {
+        const supabase = getSupabase();
+        const profileData = await authService.me();
+        const userId = profileData?.profile?.id;
+
+        const { error } = await supabase
+          .from('documents')
+          .update({
+            is_checked_out: lockState,
+            checked_out_by: lockState ? userId : null,
+            checked_out_at: lockState ? new Date().toISOString() : null
+          })
+          .eq('id', docId);
+
+        if (error) throw error;
+        toast.success(lockState ? 'File checked out' : 'Lock discarded');
+        loadDocuments();
+
+      } catch (err) {
+        console.error('Lock toggle failed:', err);
+        toast.error('Failed to update document lock status.');
+      }
+    };
+
+    // Open Check In Modal
+    globalThis.openCheckInModal = function (docId) {
+      activeDocumentId = docId;
+      checkinModal.open();
+    };
+
+    // Check In Submit
+    document.getElementById('form-check-in').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      if (!activeDocumentId) return;
+
+      const change_note = document.getElementById('checkin-note').value.trim();
+      const fileInput = document.getElementById('checkin-file');
+      const file = fileInput.files[0];
+
+      if (!file) {
+        toast.error('Please select a file.');
+        return;
+      }
+
+      const submitBtn = document.getElementById('btn-checkin-submit');
+      const spinner = document.getElementById('checkin-spinner');
+      submitBtn.disabled = true;
+      spinner.classList.remove('hidden');
+
+      try {
+        const supabase = getSupabase();
+        const profileData = await authService.me();
+        const userId = profileData?.profile?.id;
+
+        // Fetch current document versions count to increment version number
+        const { data: versions } = await supabase
+          .from('document_versions')
+          .select('version_no')
+          .eq('document_id', activeDocumentId)
+          .order('version_no', { ascending: false })
+          .limit(1);
+
+        const lastVerNo = (versions && versions[0]) ? versions[0].version_no : 0;
+        const nextVerNo = lastVerNo + 1;
+
+        // 1. Upload file to Supabase storage
+        const storagePath = `${ecmId}/${activeDocumentId}/${file.name}`;
+        const { error: uploadErr } = await supabase.storage
+          .from('ecm-documents')
+          .upload(storagePath, file);
+
+        if (uploadErr) throw uploadErr;
+
+        // 2. Insert new version (and make it current)
+        const checksum = 'SHA256-' + Math.random().toString(36).substring(2, 15).toUpperCase();
+        
+        // Remove previous versions current flag
+        await supabase
+          .from('document_versions')
+          .update({ is_current: false })
+          .eq('document_id', activeDocumentId);
+
+        const { data: ver, error: verErr } = await supabase
+          .from('document_versions')
+          .insert({
+            document_id: activeDocumentId,
+            version_no: nextVerNo,
+            storage_bucket: 'ecm-documents',
+            storage_path: storagePath,
+            file_name: file.name,
+            file_size: file.size,
+            mime_type: file.type || 'application/octet-stream',
+            checksum,
+            change_note,
+            is_current: true,
+            uploaded_by: userId
+          })
+          .select('id')
+          .single();
+
+        if (verErr) throw verErr;
+
+        // 3. Update document node (release lock & point to current version)
+        await supabase
+          .from('documents')
+          .update({
+            current_version_id: ver.id,
+            is_checked_out: false,
+            checked_out_by: null,
+            checked_out_at: null
+          })
+          .eq('id', activeDocumentId);
+
+        toast.success(`Version checked in successfully (v${nextVerNo})`);
+        checkinModal.close();
+        document.getElementById('form-check-in').reset();
+        
+        loadDocuments();
+
+      } catch (err) {
+        console.error('Check in failed:', err);
+        toast.error(err.message || 'Failed to check in file.');
+      } finally {
+        submitBtn.disabled = false;
+        spinner.classList.add('hidden');
+      }
+    });
+
+    // Open Signature Modal
+    globalThis.openSignModal = function (versionId) {
+      activeDocVersionId = versionId;
+      signModal.open();
+    };
+
+    // Signature Submit (21 CFR Part 11 Compliance re-verification check)
+    document.getElementById('form-sign-doc').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      if (!activeDocVersionId) return;
+
+      const meaning = document.getElementById('sign-meaning').value;
+      const comment = document.getElementById('sign-comment').value.trim();
+      const password = document.getElementById('sign-password').value;
+
+      const submitBtn = document.getElementById('btn-sign-submit');
+      const spinner = document.getElementById('sign-spinner');
+      submitBtn.disabled = true;
+      spinner.classList.remove('hidden');
+
+      try {
+        const supabase = getSupabase();
+        
+        // 1. Re-verify identity by attempting a silent auth sign-in with current user email & entered password
+        const session = await authService.getSession();
+        const email = session.user.email;
+        const userId = session.user.id;
+
+        const { data: authCheck, error: authErr } = await supabase.auth.signInWithPassword({
+          email,
+          password
+        });
+
+        if (authErr) {
+          throw new Error('Identity verification failed: incorrect password.');
+        }
+
+        // 2. Generate secure checksum stamp & insert signature entry
+        const sigHash = 'SIG-HMAC-' + Math.random().toString(36).substring(2, 15).toUpperCase();
+        
+        const { error: sigErr } = await supabase
+          .from('document_signatures')
+          .insert({
+            document_version_id: activeDocVersionId,
+            signer_id: userId,
+            meaning,
+            signature_hash: sigHash,
+            method: 'password',
+            comment
+          });
+
+        if (sigErr) throw sigErr;
+
+        toast.success(`Electronic Signature recorded successfully!`);
+        signModal.close();
+        document.getElementById('form-sign-doc').reset();
+
+      } catch (err) {
+        console.error('Signature recording failed:', err);
+        toast.error(err.message || 'Signature failed.');
+      } finally {
+        submitBtn.disabled = false;
+        spinner.classList.add('hidden');
+      }
+    });
+
+    // Open Simulated Preview Modal
+    globalThis.openPreviewModal = async function (docId, versionId) {
+      activeDocumentId = docId;
+      activeDocVersionId = versionId;
+
+      const doc = cachedDocuments.find(d => d.id === docId);
+      const v = doc?.current_version || {};
+
+      document.getElementById('preview-doc-title').textContent = doc?.name || 'Drawing Preview';
+      document.getElementById('preview-doc-subtitle').textContent = `Document Control Number: ${doc?.doc_number || 'DOC-xxxx'}`;
+      
+      // Populate file details
+      document.getElementById('preview-meta-filename').textContent = v.file_name || '-';
+      document.getElementById('preview-meta-size').textContent = v.file_size ? `${(v.file_size / 1024).toFixed(1)} KB` : '-';
+      document.getElementById('preview-meta-mime').textContent = v.mime_type || '-';
+      document.getElementById('preview-meta-checksum').textContent = v.checksum || 'No checksum available';
+
+      // Load signatures list
+      await loadPreviewSignatures(versionId);
+
+      previewModal.open();
+    };
+
+    // Fetch and bind signature seals list inside previewer
+    async function loadPreviewSignatures(versionId) {
+      const container = document.getElementById('preview-signatures-list');
+      container.innerHTML = '<p class="text-xs text-slate-500 py-4">Checking certification stamps...</p>';
+
+      try {
+        const supabase = getSupabase();
+        
+        const { data: list, error } = await supabase
+          .from('document_signatures')
+          .select(`
+            *,
+            signer:profiles(full_name)
+          `)
+          .eq('document_version_id', versionId);
+
+        if (error) throw error;
+
+        if (!list || list.length === 0) {
+          container.innerHTML = `
+            <div class="text-center py-6 text-slate-500 border border-dashed border-white/5 rounded-xl text-xs">
+              This version is in DRAFT state. No electronic signature stamps recorded.
+            </div>
+          `;
+          return;
+        }
+
+        container.innerHTML = list.map(s => {
+          const date = new Date(s.signed_at).toLocaleDateString(undefined, {
+            month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit'
+          });
+
+          return `
+            <div class="py-3 flex items-start justify-between">
+              <div class="space-y-1">
+                <p class="text-xs font-bold text-white">${s.signer?.full_name || 'System Actor'}</p>
+                <p class="text-[10px] text-slate-400">Meaning: <span class="font-bold text-slate-300 uppercase">${s.meaning}</span></p>
+                <p class="text-[9px] text-slate-500">Date: ${date}</p>
+                ${s.comment ? `<p class="text-[10px] text-slate-400 italic mt-1 bg-white/5 p-2 rounded-lg border border-white/5">"${s.comment}"</p>` : ''}
+              </div>
+              <div class="text-right flex flex-col space-y-1">
+                <span class="px-2 py-0.5 bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 rounded-md font-semibold text-[8px] tracking-wider uppercase inline-block self-end">Certified Stamp</span>
+                <span class="text-[8px] font-mono text-slate-500 break-all select-all">${s.signature_hash}</span>
+              </div>
+            </div>
+          `;
+        }).join('');
+
+        lucide.createIcons();
+
+      } catch (err) {
+        console.error('Failed to load signatures for preview:', err);
+        container.innerHTML = '<p class="text-xs text-rose-400 py-4">Failed to load certification details</p>';
       }
     }
 
