@@ -1,56 +1,135 @@
-/* Custom styling overrides injected globally */
-
-/* Light mode overrides */
-html.light, html {
-  background-color: #F5F5F5 !important;
-  color-scheme: light !important;
+/* Layout Background overrides */
+html {
+  background-color: #B3B3B3 !important;
 }
 
-html.light body, body {
-  /* clean light background, yellow & gray radial glow, NO blue! */
-  background: radial-gradient(circle at top right, rgba(255, 204, 0, 0.06), transparent 45%),
-              radial-gradient(circle at bottom left, rgba(87, 87, 87, 0.06), transparent 50%),
-              #F9FAFB !important;
-  color: #374151 !important; /* dark gray text */
+body {
+  background-color: #B3B3B3 !important;
+  background-image: none !important;
+  color: #1a1a1a !important; /* High contrast dark text on B3B3B3 background */
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
 }
 
-/* Glassmorphism for light theme */
-html.light .glass, .glass {
-  background: rgba(255, 255, 255, 0.85) !important;
-  backdrop-filter: blur(12px) !important;
-  -webkit-backdrop-filter: blur(12px) !important;
-  border: 1px solid rgba(87, 87, 87, 0.15) !important;
-  color: #374151 !important;
+/* Header Banner styling */
+header {
+  background-color: #575757 !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  padding: 1.25rem 2rem !important;
+  border-bottom: 3px solid #FFCC00 !important;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2) !important;
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  z-index: 10 !important;
 }
 
-html.light .glass:hover, .glass:hover {
-  border-color: rgba(255, 204, 0, 0.4) !important;
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08), 0 0 15px rgba(255, 204, 0, 0.1) !important;
+/* Header links and text readability */
+header a, header button, header span, header div {
+  color: #E2E8F0 !important; /* Bright light-gray/white text */
+  font-weight: 600 !important;
+  font-size: 0.85rem !important; /* Optimized font size */
+  transition: all 0.2s ease !important;
 }
 
-/* Force text colors to match our theme in light mode */
-html.light .text-white, .text-white {
-  color: #1F2937 !important; /* dark gray instead of white for readability */
+header a:hover, header button:hover {
+  color: #FFCC00 !important; /* Bright gold on hover */
+  transform: translateY(-0.5px);
 }
 
-html.light .text-slate-200, html.light .text-slate-300, .text-slate-200, .text-slate-300 {
-  color: #374151 !important;
+/* Footer Banner styling */
+footer {
+  background-color: #575757 !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  padding: 1.25rem 2rem !important;
+  border-top: 3px solid #FFCC00 !important;
+  margin-top: auto !important;
+  box-shadow: 0 -4px 15px rgba(0, 0, 0, 0.1) !important;
 }
 
-html.light .text-slate-400, html.light .text-slate-500, .text-slate-400, .text-slate-500 {
-  color: #6B7280 !important;
+footer p, footer span, footer a {
+  color: #E2E8F0 !important;
+  font-size: 0.8rem !important;
 }
 
-/* Primary buttons */
+footer a:hover {
+  color: #FFCC00 !important;
+}
+
+/* Main content wrapper padding to ensure spacing from header/footer */
+main, .max-w-7xl {
+  padding-left: 1.5rem !important;
+  padding-right: 1.5rem !important;
+}
+
+/* Card glassmorphism re-designed to stand out on B3B3B3 background */
+.glass, .bg-card, .bg-slate-800, .bg-slate-900, div.rounded-3xl {
+  background-color: #FFFFFF !important; /* Bright white cards */
+  border: 1.5px solid #575757 !important; /* Dark gray border */
+  border-radius: 16px !important;
+  color: #1a1a1a !important; /* Dark text for high contrast */
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08) !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+.glass:hover {
+  border-color: #FFCC00 !important; /* Gold border on hover */
+  box-shadow: 0 12px 30px rgba(255, 204, 0, 0.15) !important;
+  transform: translateY(-2.5px);
+}
+
+/* Text and Headings on B3B3B3 background */
+h1, h2, h3, h4, th, .text-white {
+  color: #1a1a1a !important; /* Clear dark text */
+  font-weight: 800 !important;
+}
+
+p, span, td, .text-slate-300, .text-slate-400 {
+  color: #2D3748 !important; /* Legible body text */
+  font-weight: 500 !important;
+}
+
+/* th columns (table headers) should be dark gray with white text */
+th {
+  background-color: #575757 !important;
+  color: #FFFFFF !important;
+  font-size: 0.75rem !important;
+  font-weight: 700 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.05em !important;
+  padding: 0.75rem 1rem !important;
+}
+
+/* Table rows alternating and clean border styling */
+tr {
+  border-bottom: 1px solid #B3B3B3 !important;
+}
+
+tr:hover {
+  background-color: rgba(255, 204, 0, 0.08) !important; /* Highlight hovered row with light gold */
+}
+
+/* Buttons */
 .btn-primary, button[type="submit"] {
   background: linear-gradient(135deg, #FFCC00, #E0B400) !important;
-  color: #1F2937 !important;
+  color: #1a1a1a !important;
   font-weight: 700 !important;
-  border: none !important;
-  box-shadow: 0 4px 12px rgba(255, 204, 0, 0.2) !important;
+  border: 1.5px solid #575757 !important;
+  box-shadow: 0 4px 10px rgba(255, 204, 0, 0.2) !important;
+  transition: all 0.2s ease !important;
 }
 
 .btn-primary:hover, button[type="submit"]:hover {
-  box-shadow: 0 6px 18px rgba(255, 204, 0, 0.35) !important;
+  box-shadow: 0 6px 16px rgba(255, 204, 0, 0.4) !important;
   transform: translateY(-1px);
+}
+
+/* Status badges */
+.status-badge, span.rounded-full {
+  background-color: #575757 !important;
+  color: #FFFFFF !important;
+  border: 1px solid #FFCC00 !important;
 }
