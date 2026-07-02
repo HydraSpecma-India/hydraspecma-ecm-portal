@@ -1,74 +1,56 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+/* Custom styling overrides injected globally */
 
-:root {
-  --brand-primary: #575757;
-  --brand-secondary: #FFCC00;
-  --brand-accent: #B3B3B3;
-  --brand-bg: #1a1a1a;
-  --radius-card: 20px;
+/* Light mode overrides */
+html.light, html {
+  background-color: #F5F5F5 !important;
+  color-scheme: light !important;
 }
 
-/* Force dark theme default backgrounds and colors */
-html {
-  background-color: #1a1a1a !important;
-  color-scheme: dark !important;
+html.light body, body {
+  /* clean light background, yellow & gray radial glow, NO blue! */
+  background: radial-gradient(circle at top right, rgba(255, 204, 0, 0.06), transparent 45%),
+              radial-gradient(circle at bottom left, rgba(87, 87, 87, 0.06), transparent 50%),
+              #F9FAFB !important;
+  color: #374151 !important; /* dark gray text */
 }
 
-body {
-  background-color: #1a1a1a !important;
-  color: #B3B3B3 !important;
-  font-family: 'Inter', sans-serif;
-  overflow-x: hidden;
-}
-
-/* Smooth glass card styling with gold accent on hover */
-.glass {
-  background: rgba(42, 42, 42, 0.75) !important;
+/* Glassmorphism for light theme */
+html.light .glass, .glass {
+  background: rgba(255, 255, 255, 0.85) !important;
   backdrop-filter: blur(12px) !important;
   -webkit-backdrop-filter: blur(12px) !important;
-  border: 1px solid rgba(87, 87, 87, 0.3) !important;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  border: 1px solid rgba(87, 87, 87, 0.15) !important;
+  color: #374151 !important;
 }
 
-.glass:hover {
-  border-color: rgba(255, 204, 0, 0.3) !important;
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4), 0 0 15px rgba(255, 204, 0, 0.05) !important;
-  transform: translateY(-2px);
+html.light .glass:hover, .glass:hover {
+  border-color: rgba(255, 204, 0, 0.4) !important;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08), 0 0 15px rgba(255, 204, 0, 0.1) !important;
 }
 
-/* Rebranded primary gold buttons with hover glow */
-.btn-primary {
+/* Force text colors to match our theme in light mode */
+html.light .text-white, .text-white {
+  color: #1F2937 !important; /* dark gray instead of white for readability */
+}
+
+html.light .text-slate-200, html.light .text-slate-300, .text-slate-200, .text-slate-300 {
+  color: #374151 !important;
+}
+
+html.light .text-slate-400, html.light .text-slate-500, .text-slate-400, .text-slate-500 {
+  color: #6B7280 !important;
+}
+
+/* Primary buttons */
+.btn-primary, button[type="submit"] {
   background: linear-gradient(135deg, #FFCC00, #E0B400) !important;
-  color: #1a1a1a !important;
+  color: #1F2937 !important;
   font-weight: 700 !important;
-  box-shadow: 0 4px 14px rgba(255, 204, 0, 0.2) !important;
-  transition: all 0.3s ease !important;
+  border: none !important;
+  box-shadow: 0 4px 12px rgba(255, 204, 0, 0.2) !important;
 }
 
-.btn-primary:hover {
-  box-shadow: 0 6px 20px rgba(255, 204, 0, 0.4) !important;
+.btn-primary:hover, button[type="submit"]:hover {
+  box-shadow: 0 6px 18px rgba(255, 204, 0, 0.35) !important;
   transform: translateY(-1px);
-}
-
-/* Interactive animations and transitions */
-@keyframes pulse-glow {
-  0%, 100% {
-    box-shadow: 0 0 15px rgba(255, 204, 0, 0.15);
-  }
-  50% {
-    box-shadow: 0 0 25px rgba(255, 204, 0, 0.35);
-  }
-}
-
-.pulse-glow {
-  animation: pulse-glow 3s infinite ease-in-out;
-}
-
-/* Rebranded status badges */
-.status-badge {
-  border-color: rgba(255, 204, 0, 0.2) !important;
-  background-color: rgba(255, 204, 0, 0.05) !important;
-  color: #FFCC00 !important;
 }
