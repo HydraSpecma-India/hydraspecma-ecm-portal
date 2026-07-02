@@ -4,6 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>HydraSpecma ECM Portal</title>
+  <!-- Route Guard (protects the page from unauthenticated users) -->
+  <script type="module" src="/js/auth-guard.js"></script>
   <!-- Modern Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -66,11 +68,21 @@
       </div>
     </div>
     
-    <div class="flex items-center space-x-4">
+    <div class="flex items-center space-x-6">
       <a href="https://github.com/HydraSpecma-India/hydraspecma-ecm-portal" target="_blank" class="flex items-center space-x-2 text-sm text-slate-400 hover:text-white transition duration-200">
         <i data-lucide="github" class="h-4 w-4"></i>
         <span>Repository</span>
       </a>
+      <div id="user-badge" class="hidden flex items-center space-x-3 border-l border-white/10 pl-6">
+        <div class="h-8 w-8 rounded-full bg-brand-secondary/20 border border-brand-secondary/30 flex items-center justify-center text-xs font-semibold text-brand-secondary font-display" id="user-avatar-placeholder">U</div>
+        <div class="text-left">
+          <p class="text-xs font-semibold text-white leading-tight" id="user-name">Loading...</p>
+          <p class="text-[10px] text-slate-400 leading-none" id="user-role">Viewer</p>
+        </div>
+        <button id="btn-signout" class="h-8 w-8 rounded-lg hover:bg-white/5 border border-transparent hover:border-white/10 flex items-center justify-center text-slate-400 hover:text-white transition duration-200" title="Sign Out">
+          <i data-lucide="log-out" class="h-4 w-4"></i>
+        </button>
+      </div>
     </div>
   </header>
 
@@ -296,6 +308,45 @@
       lucide.createIcons();
     }
 
+    // Fetch profile and roles from Supabase authService
+    import { authService } from './services/auth/authService.js';
+
+    async function loadUserProfile() {
+      try {
+        const session = await authService.getSession();
+        if (session) {
+          const profileData = await authService.me();
+          const profile = profileData?.profile || {};
+          const roles = profileData?.roles || ['VIEWER'];
+
+          document.getElementById('user-badge').classList.remove('hidden');
+          document.getElementById('user-name').textContent = profile.full_name || session.user.email;
+          document.getElementById('user-role').textContent = roles.join(', ');
+          
+          if (profile.avatar_url) {
+            const avatarDiv = document.getElementById('user-avatar-placeholder');
+            avatarDiv.innerHTML = `<img src="${profile.avatar_url}" class="h-full w-full rounded-full object-cover">`;
+          } else {
+            const initial = (profile.full_name || session.user.email)[0].toUpperCase();
+            document.getElementById('user-avatar-placeholder').textContent = initial;
+          }
+        }
+      } catch (err) {
+        console.error('Failed to load profile:', err);
+      }
+    }
+
+    // Sign out handler
+    document.getElementById('btn-signout').addEventListener('click', async () => {
+      try {
+        await authService.signOut();
+        globalThis.location.href = '/login.html';
+      } catch (err) {
+        console.error('Sign out failed:', err);
+      }
+    });
+
+    loadUserProfile();
     // Run connection test
     verifyConnection();
   </script>

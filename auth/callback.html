@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Authenticating... - HydraSpecma ECM Portal</title>
+  <!-- Modern Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            display: ['Outfit', 'sans-serif'],
+          },
+          colors: {
+            brand: {
+              primary: '#003A70',
+              secondary: '#00A3E0',
+              accent: '#0EA5E9',
+              background: '#0B0F19',
+              card: '#161F30',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@0.462.0/dist/umd/lucide.min.js"></script>
+  <style>
+    body {
+      background: radial-gradient(circle at top right, rgba(0, 163, 224, 0.12), transparent 45%),
+                  radial-gradient(circle at bottom left, rgba(0, 58, 112, 0.2), transparent 50%),
+                  #0B0F19;
+    }
+    .glass {
+      background: rgba(22, 31, 48, 0.65);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+  </style>
+</head>
+<body class="text-slate-200 min-h-screen flex flex-col justify-between font-sans selection:bg-brand-secondary/30 selection:text-white">
+
+  <!-- Main Container -->
+  <div class="flex-grow flex items-center justify-center px-4 py-16">
+    <div class="w-full max-w-sm glass rounded-3xl p-8 flex flex-col items-center justify-center text-center space-y-6 shadow-2xl">
+      <!-- Loading Animation -->
+      <div class="relative flex items-center justify-center">
+        <div class="h-16 w-16 rounded-full border-4 border-brand-primary border-t-brand-secondary animate-spin"></div>
+        <i data-lucide="shield-check" class="absolute h-6 w-6 text-brand-secondary"></i>
+      </div>
+      <div>
+        <h2 class="text-xl font-bold font-display text-white">Completing Sign In</h2>
+        <p class="text-xs text-slate-400 mt-2">Exchanging authentication tokens with Supabase security gate. Please wait...</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="w-full text-center py-6 text-xs text-slate-600">
+    <p>&copy; 2026 HydraSpecma India. Secure callback channel.</p>
+  </footer>
+
+  <script src="/env.js"></script>
+  <script type="module">
+    import { getSupabase } from '../config/supabase.config.js';
+
+    // Load Lucide Icons
+    lucide.createIcons();
+
+    async function handleCallback() {
+      try {
+        const supabase = getSupabase();
+        
+        // Wait a brief moment for the auth state handler to run and store the session
+        const { data: { session }, error } = await supabase.auth.getSession();
+        
+        if (error) throw error;
+        
+        if (session) {
+          // Authenticated! Redirect to dashboard
+          console.log('[auth-callback] Session successfully established, redirecting...');
+          globalThis.location.href = '/';
+        } else {
+          // No session found yet, subscribe to state change
+          const { data } = supabase.auth.onAuthStateChange((event, session) => {
+            if (session) {
+              console.log('[auth-callback] Received sign in event, redirecting...');
+              globalThis.location.href = '/';
+            }
+          });
+          
+          // Safety timeout: if no session in 7 seconds, redirect to login
+          setTimeout(() => {
+            console.warn('[auth-callback] Authentication timed out.');
+            globalThis.location.href = '/login.html?error=Session%20timed%20out';
+          }, 7000);
+        }
+      } catch (err) {
+        console.error('[auth-callback] Failed to parse session:', err);
+        globalThis.location.href = '/login.html?error=' + encodeURIComponent(err.message || 'Authentication failed');
+      }
+    }
+
+    // Run callback handler
+    handleCallback();
+  </script>
+</body>
+</html>

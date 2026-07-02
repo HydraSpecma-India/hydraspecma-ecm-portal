@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sign In - HydraSpecma ECM Portal</title>
+  <!-- Route Guard (protects login page, redirects if already authenticated) -->
+  <script type="module" src="/js/auth-guard.js"></script>
+  <!-- Modern Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            display: ['Outfit', 'sans-serif'],
+          },
+          colors: {
+            brand: {
+              primary: '#003A70',
+              secondary: '#00A3E0',
+              accent: '#0EA5E9',
+              background: '#0B0F19',
+              card: '#161F30',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@0.462.0/dist/umd/lucide.min.js"></script>
+  <style>
+    body {
+      background: radial-gradient(circle at top right, rgba(0, 163, 224, 0.12), transparent 45%),
+                  radial-gradient(circle at bottom left, rgba(0, 58, 112, 0.2), transparent 50%),
+                  #0B0F19;
+    }
+    .glass {
+      background: rgba(22, 31, 48, 0.65);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+  </style>
+</head>
+<body class="text-slate-200 min-h-screen flex flex-col justify-between font-sans selection:bg-brand-secondary/30 selection:text-white">
+
+  <!-- Main Container -->
+  <div class="flex-grow flex items-center justify-center px-4 py-16">
+    <div class="w-full max-w-md flex flex-col space-y-6">
+      
+      <!-- Logo Header -->
+      <div class="flex flex-col items-center text-center space-y-3 mb-2 animate-fade-in">
+        <div class="h-12 w-12 rounded-2xl bg-gradient-to-tr from-brand-primary to-brand-secondary flex items-center justify-center shadow-lg shadow-brand-secondary/20">
+          <i data-lucide="layers" class="h-6 w-6 text-white animate-pulse"></i>
+        </div>
+        <div>
+          <h1 class="text-2xl font-extrabold font-display tracking-tight text-white">HydraSpecma</h1>
+          <p class="text-xs text-brand-secondary font-semibold tracking-widest uppercase">ECM Portal</p>
+        </div>
+      </div>
+
+      <!-- Login Card -->
+      <div class="glass rounded-[32px] p-8 shadow-2xl relative overflow-hidden">
+        
+        <!-- Tab Content: Credentials Sign In -->
+        <form id="form-signin" class="flex flex-col space-y-5">
+          <div>
+            <h2 class="text-xl font-bold font-display text-white">Sign In</h2>
+            <p class="text-xs text-slate-400 mt-1">Enter your credentials or use Single Sign-On</p>
+          </div>
+
+          <!-- Alert Placeholder -->
+          <div id="login-alert" class="hidden flex items-center space-x-2 p-3 rounded-xl border text-xs">
+            <i id="alert-icon" data-lucide="alert-circle" class="h-4 w-4 shrink-0"></i>
+            <span id="alert-text"></span>
+          </div>
+
+          <!-- Email Input -->
+          <div class="flex flex-col space-y-1.5">
+            <label for="email" class="text-xs font-semibold text-slate-400">Email Address</label>
+            <div class="relative flex items-center">
+              <i data-lucide="mail" class="absolute left-4 h-4 w-4 text-slate-500"></i>
+              <input type="email" id="email" required autocomplete="username" placeholder="name@hydraspecma.com" 
+                     class="w-full pl-11 pr-4 py-3 rounded-xl bg-black/35 border border-white/5 focus:border-brand-secondary/50 focus:ring-1 focus:ring-brand-secondary/30 outline-none text-sm text-white placeholder-slate-600 transition duration-200">
+            </div>
+          </div>
+
+          <!-- Password Input -->
+          <div class="flex flex-col space-y-1.5">
+            <div class="flex justify-between items-center">
+              <label for="password" class="text-xs font-semibold text-slate-400">Password</label>
+              <button type="button" id="btn-forgot" class="text-xs text-brand-secondary hover:text-brand-accent transition duration-200">Forgot password?</button>
+            </div>
+            <div class="relative flex items-center">
+              <i data-lucide="lock" class="absolute left-4 h-4 w-4 text-slate-500"></i>
+              <input type="password" id="password" required autocomplete="current-password" placeholder="••••••••" 
+                     class="w-full pl-11 pr-12 py-3 rounded-xl bg-black/35 border border-white/5 focus:border-brand-secondary/50 focus:ring-1 focus:ring-brand-secondary/30 outline-none text-sm text-white placeholder-slate-600 transition duration-200">
+              <button type="button" id="btn-toggle-password" class="absolute right-4 text-slate-500 hover:text-slate-300">
+                <i data-lucide="eye" id="password-toggle-icon" class="h-4 w-4"></i>
+              </button>
+            </div>
+          </div>
+
+          <!-- Remember Me -->
+          <div class="flex items-center space-x-2">
+            <input type="checkbox" id="remember-me" checked 
+                   class="h-4 w-4 rounded bg-black/30 border border-white/10 text-brand-secondary focus:ring-0 outline-none cursor-pointer">
+            <label for="remember-me" class="text-xs text-slate-400 select-none cursor-pointer">Remember me for 30 days</label>
+          </div>
+
+          <!-- Sign In Button -->
+          <button type="submit" id="btn-submit" class="w-full py-3 rounded-xl bg-gradient-to-r from-brand-primary to-brand-secondary hover:shadow-lg hover:shadow-brand-secondary/20 font-semibold text-sm text-white transition duration-200 flex items-center justify-center space-x-2">
+            <span id="btn-text">Sign In</span>
+            <i id="btn-spinner" data-lucide="loader" class="hidden h-4 w-4 animate-spin text-white"></i>
+          </button>
+        </form>
+
+        <!-- Divider -->
+        <div class="flex items-center my-6">
+          <div class="flex-grow border-t border-white/5"></div>
+          <span class="px-3 text-[10px] text-slate-500 uppercase tracking-widest">or continue with</span>
+          <div class="flex-grow border-t border-white/5"></div>
+        </div>
+
+        <!-- Microsoft SSO Button -->
+        <button type="button" id="btn-sso" class="w-full py-3 rounded-xl bg-[#2F2F2F] hover:bg-[#3D3D3D] border border-white/5 hover:border-white/10 font-semibold text-sm text-white transition duration-200 flex items-center justify-center space-x-3">
+          <!-- Microsoft Logo Icon SVG -->
+          <svg class="h-4 w-4" viewBox="0 0 23 23" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M0 0H11V11H0V0Z" fill="#F25022"/>
+            <path d="M12 0H23V11H12V0Z" fill="#7FBA00"/>
+            <path d="M0 12H11V23H0V12Z" fill="#00A1F1"/>
+            <path d="M12 12H23V23H12V12Z" fill="#FFB900"/>
+          </svg>
+          <span>Single Sign-On (Entra ID)</span>
+        </button>
+
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Forgot Password Modal -->
+  <div id="modal-forgot" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm">
+    <div class="w-full max-w-md glass rounded-3xl p-8 flex flex-col space-y-6">
+      <div class="flex justify-between items-start">
+        <div>
+          <h3 class="text-lg font-bold font-display text-white">Reset Password</h3>
+          <p class="text-xs text-slate-400 mt-1">Enter your email and we'll send you a recovery link.</p>
+        </div>
+        <button type="button" id="btn-close-modal" class="text-slate-500 hover:text-white transition duration-200">
+          <i data-lucide="x" class="h-5 w-5"></i>
+        </button>
+      </div>
+
+      <!-- Forgot Alert -->
+      <div id="forgot-alert" class="hidden flex items-center space-x-2 p-3 rounded-xl border text-xs">
+        <i data-lucide="info" class="h-4 w-4 shrink-0"></i>
+        <span id="forgot-alert-text"></span>
+      </div>
+
+      <form id="form-forgot" class="flex flex-col space-y-4">
+        <div class="flex flex-col space-y-1.5">
+          <label for="forgot-email" class="text-xs font-semibold text-slate-400">Email Address</label>
+          <input type="email" id="forgot-email" required placeholder="name@hydraspecma.com" 
+                 class="w-full px-4 py-3 rounded-xl bg-black/35 border border-white/5 focus:border-brand-secondary/50 focus:ring-0 outline-none text-sm text-white placeholder-slate-600 transition duration-200">
+        </div>
+
+        <button type="submit" id="btn-forgot-submit" class="w-full py-3 rounded-xl bg-gradient-to-r from-brand-primary to-brand-secondary font-semibold text-sm text-white transition duration-200 flex items-center justify-center space-x-2">
+          <span>Send Reset Link</span>
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="w-full text-center py-6 text-xs text-slate-600">
+    <p>&copy; 2026 HydraSpecma India. Secure Single Sign-On enabled.</p>
+  </footer>
+
+  <script src="/env.js"></script>
+  <script type="module">
+    import { authService } from './services/auth/authService.js';
+
+    // Load Lucide Icons
+    lucide.createIcons();
+
+    // Toggle Password Visibility
+    const btnToggle = document.getElementById('btn-toggle-password');
+    const inputPassword = document.getElementById('password');
+    const toggleIcon = document.getElementById('password-toggle-icon');
+
+    btnToggle.addEventListener('click', () => {
+      const isPassword = inputPassword.type === 'password';
+      inputPassword.type = isPassword ? 'text' : 'password';
+      toggleIcon.setAttribute('data-lucide', isPassword ? 'eye-off' : 'eye');
+      lucide.createIcons();
+    });
+
+    // Alert display helper
+    function showAlert(elementId, text, type = 'error') {
+      const alertDiv = document.getElementById(elementId);
+      const textSpan = alertDiv.querySelector('span:last-child');
+      
+      alertDiv.className = `flex items-center space-x-2 p-3 rounded-xl border text-xs mt-2 ${
+        type === 'success' 
+          ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400' 
+          : 'bg-rose-500/10 border-rose-500/20 text-rose-400'
+      }`;
+      textSpan.textContent = text;
+      alertDiv.classList.remove('hidden');
+    }
+
+    // Sign In Submission
+    const formSignin = document.getElementById('form-signin');
+    const btnSubmit = document.getElementById('btn-submit');
+    const btnText = document.getElementById('btn-text');
+    const btnSpinner = document.getElementById('btn-spinner');
+
+    formSignin.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      const email = document.getElementById('email').value.trim();
+      const password = document.getElementById('password').value;
+      const remember = document.getElementById('remember-me').checked;
+
+      // Loading state
+      btnText.textContent = 'Signing In...';
+      btnSubmit.disabled = true;
+      btnSpinner.classList.remove('hidden');
+      document.getElementById('login-alert').classList.add('hidden');
+
+      try {
+        await authService.signIn(email, password, remember);
+        // Redirect to dashboard on success
+        globalThis.location.href = '/';
+      } catch (err) {
+        console.error('Sign in error:', err);
+        showAlert('login-alert', err.message || 'Invalid email or password.');
+        
+        // Reset button
+        btnText.textContent = 'Sign In';
+        btnSubmit.disabled = false;
+        btnSpinner.classList.add('hidden');
+        lucide.createIcons();
+      }
+    });
+
+    // Microsoft SSO login
+    const btnSSO = document.getElementById('btn-sso');
+    btnSSO.addEventListener('click', async () => {
+      try {
+        await authService.signInWithAzure();
+      } catch (err) {
+        console.error('SSO redirect failed:', err);
+        showAlert('login-alert', err.message || 'SSO authentication failed.');
+      }
+    });
+
+    // Forgot Password Modal Handlers
+    const btnForgot = document.getElementById('btn-forgot');
+    const modalForgot = document.getElementById('modal-forgot');
+    const btnCloseModal = document.getElementById('btn-close-modal');
+
+    btnForgot.addEventListener('click', () => {
+      modalForgot.classList.remove('hidden');
+    });
+
+    btnCloseModal.addEventListener('click', () => {
+      modalForgot.classList.add('hidden');
+      document.getElementById('forgot-alert').classList.add('hidden');
+      document.getElementById('form-forgot').reset();
+    });
+
+    // Forgot Password Submission
+    const formForgot = document.getElementById('form-forgot');
+    formForgot.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const email = document.getElementById('forgot-email').value.trim();
+
+      try {
+        await authService.requestPasswordReset(email);
+        showAlert('forgot-alert', 'Reset link sent! Please check your email.', 'success');
+        formForgot.reset();
+      } catch (err) {
+        console.error('Forgot password error:', err);
+        showAlert('forgot-alert', err.message || 'Failed to request reset link.');
+      }
+      lucide.createIcons();
+    });
+  </script>
+</body>
+</html>

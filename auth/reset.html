@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Update Password - HydraSpecma ECM Portal</title>
+  <!-- Modern Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            display: ['Outfit', 'sans-serif'],
+          },
+          colors: {
+            brand: {
+              primary: '#003A70',
+              secondary: '#00A3E0',
+              accent: '#0EA5E9',
+              background: '#0B0F19',
+              card: '#161F30',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@0.462.0/dist/umd/lucide.min.js"></script>
+  <style>
+    body {
+      background: radial-gradient(circle at top right, rgba(0, 163, 224, 0.12), transparent 45%),
+                  radial-gradient(circle at bottom left, rgba(0, 58, 112, 0.2), transparent 50%),
+                  #0B0F19;
+    }
+    .glass {
+      background: rgba(22, 31, 48, 0.65);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+  </style>
+</head>
+<body class="text-slate-200 min-h-screen flex flex-col justify-between font-sans selection:bg-brand-secondary/30 selection:text-white">
+
+  <!-- Main Container -->
+  <div class="flex-grow flex items-center justify-center px-4 py-16">
+    <div class="w-full max-w-md flex flex-col space-y-6">
+      
+      <!-- Header -->
+      <div class="flex flex-col items-center text-center space-y-3 mb-2">
+        <div class="h-12 w-12 rounded-2xl bg-gradient-to-tr from-brand-primary to-brand-secondary flex items-center justify-center shadow-lg shadow-brand-secondary/20">
+          <i data-lucide="key-round" class="h-6 w-6 text-white"></i>
+        </div>
+        <div>
+          <h1 class="text-2xl font-extrabold font-display tracking-tight text-white">HydraSpecma</h1>
+          <p class="text-xs text-brand-secondary font-semibold tracking-widest uppercase">ECM Portal</p>
+        </div>
+      </div>
+
+      <!-- Form Card -->
+      <div class="glass rounded-[32px] p-8 shadow-2xl">
+        <form id="form-reset" class="flex flex-col space-y-5">
+          <div>
+            <h2 class="text-xl font-bold font-display text-white">Update Password</h2>
+            <p class="text-xs text-slate-400 mt-1">Set a strong new password for your account</p>
+          </div>
+
+          <!-- Alert Placeholder -->
+          <div id="reset-alert" class="hidden flex items-center space-x-2 p-3 rounded-xl border text-xs">
+            <i id="alert-icon" data-lucide="alert-circle" class="h-4 w-4 shrink-0"></i>
+            <span id="alert-text"></span>
+          </div>
+
+          <!-- Password Input -->
+          <div class="flex flex-col space-y-1.5">
+            <label for="password" class="text-xs font-semibold text-slate-400">New Password</label>
+            <div class="relative flex items-center">
+              <i data-lucide="lock" class="absolute left-4 h-4 w-4 text-slate-500"></i>
+              <input type="password" id="password" required placeholder="••••••••" minlength="8"
+                     class="w-full pl-11 pr-4 py-3 rounded-xl bg-black/35 border border-white/5 focus:border-brand-secondary/50 focus:ring-0 outline-none text-sm text-white placeholder-slate-600 transition duration-200">
+            </div>
+          </div>
+
+          <!-- Confirm Password Input -->
+          <div class="flex flex-col space-y-1.5">
+            <label for="confirm-password" class="text-xs font-semibold text-slate-400">Confirm Password</label>
+            <div class="relative flex items-center">
+              <i data-lucide="lock" class="absolute left-4 h-4 w-4 text-slate-500"></i>
+              <input type="password" id="confirm-password" required placeholder="••••••••" minlength="8"
+                     class="w-full pl-11 pr-4 py-3 rounded-xl bg-black/35 border border-white/5 focus:border-brand-secondary/50 focus:ring-0 outline-none text-sm text-white placeholder-slate-600 transition duration-200">
+            </div>
+          </div>
+
+          <!-- Submit Button -->
+          <button type="submit" id="btn-submit" class="w-full py-3 rounded-xl bg-gradient-to-r from-brand-primary to-brand-secondary font-semibold text-sm text-white transition duration-200 flex items-center justify-center space-x-2">
+            <span id="btn-text">Save New Password</span>
+            <i id="btn-spinner" data-lucide="loader" class="hidden h-4 w-4 animate-spin text-white"></i>
+          </button>
+        </form>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="w-full text-center py-6 text-xs text-slate-600">
+    <p>&copy; 2026 HydraSpecma India. Secure password reset channel.</p>
+  </footer>
+
+  <script src="/env.js"></script>
+  <script type="module">
+    import { authService } from '../services/auth/authService.js';
+
+    // Load Lucide Icons
+    lucide.createIcons();
+
+    const formReset = document.getElementById('form-reset');
+    const btnSubmit = document.getElementById('btn-submit');
+    const btnText = document.getElementById('btn-text');
+    const btnSpinner = document.getElementById('btn-spinner');
+
+    formReset.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const password = document.getElementById('password').value;
+      const confirmPassword = document.getElementById('confirm-password').value;
+
+      // Reset alert
+      const alertDiv = document.getElementById('reset-alert');
+      alertDiv.classList.add('hidden');
+
+      if (password !== confirmPassword) {
+        alertDiv.className = 'flex items-center space-x-2 p-3 rounded-xl border text-xs mt-2 bg-rose-500/10 border-rose-500/20 text-rose-400';
+        document.getElementById('alert-text').textContent = 'Passwords do not match.';
+        alertDiv.classList.remove('hidden');
+        lucide.createIcons();
+        return;
+      }
+
+      // Loading state
+      btnText.textContent = 'Saving...';
+      btnSubmit.disabled = true;
+      btnSpinner.classList.remove('hidden');
+
+      try {
+        await authService.updatePassword(password);
+        
+        // Success state
+        alertDiv.className = 'flex items-center space-x-2 p-3 rounded-xl border text-xs mt-2 bg-emerald-500/10 border-emerald-500/20 text-emerald-400';
+        document.getElementById('alert-icon').setAttribute('data-lucide', 'check-circle-2');
+        document.getElementById('alert-text').textContent = 'Password updated successfully! Redirecting to homepage...';
+        alertDiv.classList.remove('hidden');
+        lucide.createIcons();
+
+        // Redirect after 3 seconds
+        setTimeout(() => {
+          globalThis.location.href = '/';
+        }, 3000);
+      } catch (err) {
+        console.error('Password reset failed:', err);
+        alertDiv.className = 'flex items-center space-x-2 p-3 rounded-xl border text-xs mt-2 bg-rose-500/10 border-rose-500/20 text-rose-400';
+        document.getElementById('alert-icon').setAttribute('data-lucide', 'alert-circle');
+        document.getElementById('alert-text').textContent = err.message || 'Failed to update password.';
+        alertDiv.classList.remove('hidden');
+        
+        // Reset loading state
+        btnText.textContent = 'Save New Password';
+        btnSubmit.disabled = false;
+        btnSpinner.classList.add('hidden');
+        lucide.createIcons();
+      }
+    });
+  </script>
+</body>
+</html>
