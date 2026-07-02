@@ -229,10 +229,20 @@
               </button>
             </div>
           </div>
-          <div id="mermaid-graph-container" class="w-full flex items-center justify-center p-4 bg-black/10 rounded-2xl overflow-hidden min-h-[280px] relative">
-            <div id="mermaid-target" class="mermaid transition-transform duration-200 origin-center scale-100">
+          <div id="mermaid-graph-container" class="w-full flex items-center justify-start p-6 rounded-2xl overflow-x-auto min-h-[300px] relative bg-[#1a1a1a] border border-[#575757]">
+            <!-- Floating Scroll Left Button -->
+            <button onclick="globalThis.scrollWorkflow('left')" class="absolute left-3 top-1/2 -translate-y-1/2 h-8 w-8 rounded-full bg-[#575757] border border-[#FFCC00] text-[#FFCC00] hover:bg-[#FFCC00] hover:text-[#1a1a1a] transition flex items-center justify-center z-10 shadow-lg" title="Scroll Left">
+              <i data-lucide="chevron-left" class="h-4 w-4"></i>
+            </button>
+
+            <div id="mermaid-target" class="mermaid mx-auto transition-transform duration-200 origin-center scale-100">
               <!-- Mermaid flowchart markup -->
             </div>
+
+            <!-- Floating Scroll Right Button -->
+            <button onclick="globalThis.scrollWorkflow('right')" class="absolute right-3 top-1/2 -translate-y-1/2 h-8 w-8 rounded-full bg-[#575757] border border-[#FFCC00] text-[#FFCC00] hover:bg-[#FFCC00] hover:text-[#1a1a1a] transition flex items-center justify-center z-10 shadow-lg" title="Scroll Right">
+              <i data-lucide="chevron-right" class="h-4 w-4"></i>
+            </button>
           </div>
         </div>
 
@@ -1845,6 +1855,16 @@
       const target = document.getElementById('mermaid-target');
       if (target) {
         target.style.transform = `scale(1.0)`;
+      }
+    };
+    globalThis.scrollWorkflow = function (direction) {
+      const container = document.getElementById('mermaid-graph-container');
+      if (container) {
+        const scrollAmount = 250;
+        container.scrollBy({
+          left: direction === 'left' ? -scrollAmount : scrollAmount,
+          behavior: 'smooth'
+        });
       }
     };
 
