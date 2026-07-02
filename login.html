@@ -6,6 +6,8 @@
   <title>Sign In - HydraSpecma ECM Portal</title>
   <!-- Route Guard (protects login page, redirects if already authenticated) -->
   <script type="module" src="/js/auth-guard.js"></script>
+  <!-- Initialize Theme (prevents flash of unstyled content) -->
+  <script type="module" src="/js/theme.js"></script>
   <!-- Modern Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -50,6 +52,9 @@
   </style>
 </head>
 <body class="text-slate-200 min-h-screen flex flex-col justify-between font-sans selection:bg-brand-secondary/30 selection:text-white">
+
+  <!-- Theme Toggle Container -->
+  <div class="absolute top-6 right-6" id="theme-toggle-container"></div>
 
   <!-- Main Container -->
   <div class="flex-grow flex items-center justify-center px-4 py-16">
@@ -294,6 +299,9 @@
       }
       lucide.createIcons();
     });
+    // Mount theme toggle
+    import { mountThemeToggle } from './components/theme-toggle.js';
+    mountThemeToggle('theme-toggle-container');
   </script>
 </body>
 </html>
