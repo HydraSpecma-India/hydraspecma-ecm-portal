@@ -1,0 +1,704 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Compliance Center - HydraSpecma ECM Portal</title>
+  <!-- Route Guard -->
+  <script type="module" src="/js/auth-guard.js"></script>
+  <!-- Initialize Theme -->
+  <script type="module" src="/js/theme.js"></script>
+  <!-- Modern Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            display: ['Outfit', 'sans-serif'],
+          },
+          colors: {
+            brand: {
+              primary: '#003A70',
+              secondary: '#00A3E0',
+              accent: '#0EA5E9',
+              background: '#0B0F19',
+              card: '#161F30',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@0.462.0/dist/umd/lucide.min.js"></script>
+  <style>
+    body {
+      background: radial-gradient(circle at top right, rgba(0, 163, 224, 0.08), transparent 45%),
+                  radial-gradient(circle at bottom left, rgba(0, 58, 112, 0.15), transparent 50%),
+                  #0B0F19;
+      transition: background-color 0.3s ease;
+    }
+    html.light body {
+      background: radial-gradient(circle at top right, rgba(0, 163, 224, 0.06), transparent 45%),
+                  radial-gradient(circle at bottom left, rgba(0, 58, 112, 0.08), transparent 50%),
+                  #F8FAFC;
+    }
+    .glass {
+      background: rgba(22, 31, 48, 0.65);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      transition: background-color 0.3s, border-color 0.3s;
+    }
+    html.light .glass {
+      background: rgba(255, 255, 255, 0.75);
+      border: 1px solid rgba(0, 0, 0, 0.06);
+    }
+    
+    /* Print Layout Styling for Certificate */
+    @media print {
+      body * {
+        visibility: hidden;
+      }
+      #print-certificate-area, #print-certificate-area * {
+        visibility: visible;
+      }
+      #print-certificate-area {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        background: white !important;
+        color: black !important;
+        border: none !important;
+        box-shadow: none !important;
+        padding: 40px !important;
+      }
+      .no-print {
+        display: none !important;
+      }
+    }
+  </style>
+</head>
+<body class="text-slate-200 dark:text-slate-200 light:text-slate-700 min-h-screen flex flex-col font-sans selection:bg-brand-secondary/30 selection:text-white">
+
+  <!-- Header -->
+  <header class="w-full max-w-7xl mx-auto px-6 py-6 flex justify-between items-center border-b border-white/5 dark:border-white/5 light:border-black/5 no-print">
+    <div class="flex items-center space-x-3">
+      <a href="/" class="h-10 w-10 rounded-xl bg-gradient-to-tr from-brand-primary to-brand-secondary flex items-center justify-center shadow-lg shadow-brand-secondary/20 hover:scale-105 transition-transform">
+        <i data-lucide="arrow-left" class="h-5 w-5 text-white"></i>
+      </a>
+      <div>
+        <h1 class="text-lg font-bold font-display tracking-tight text-white dark:text-white light:text-slate-900">Compliance Center</h1>
+        <p class="text-[10px] text-slate-400">FDA 21 CFR Part 11 Audits & E-Signatures</p>
+      </div>
+    </div>
+    
+    <div class="flex items-center space-x-6">
+      <div id="user-badge" class="hidden flex items-center space-x-3">
+        <div class="h-8 w-8 rounded-full bg-brand-secondary/20 border border-brand-secondary/30 flex items-center justify-center text-xs font-semibold text-brand-secondary font-display" id="user-avatar-placeholder">U</div>
+        <div class="text-left">
+          <p class="text-xs font-semibold text-white dark:text-white light:text-slate-900 leading-tight" id="user-name">Loading...</p>
+          <p class="text-[10px] text-slate-400 dark:text-slate-400 light:text-slate-500 leading-none" id="user-role">Viewer</p>
+        </div>
+        <div id="theme-toggle-container"></div>
+        <button id="btn-signout" class="h-8 w-8 rounded-lg hover:bg-white/5 dark:hover:bg-white/5 light:hover:bg-black/5 border border-transparent hover:border-white/10 flex items-center justify-center text-slate-400 hover:text-slate-700 transition duration-200" title="Sign Out">
+          <i data-lucide="log-out" class="h-4 w-4"></i>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content Area -->
+  <main class="flex-grow w-full max-w-7xl mx-auto px-6 py-10 flex flex-col space-y-6 no-print">
+    
+    <!-- Tab Controls & Quick Actions -->
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+      <div class="flex space-x-2 border-b border-white/5 dark:border-b-white/5 light:border-b-black/5 pb-1">
+        <button id="tab-audit-btn" class="px-4 py-2.5 rounded-xl text-xs font-semibold bg-white/5 border border-brand-secondary/30 text-white transition duration-200">
+          Immutable Audit Trail
+        </button>
+        <button id="tab-signatures-btn" class="px-4 py-2.5 rounded-xl text-xs font-semibold text-slate-400 hover:text-white hover:bg-white/5 transition duration-200">
+          Electronic Signatures
+        </button>
+      </div>
+      
+      <button id="btn-cert-wizard" class="py-2.5 px-4 rounded-xl bg-gradient-to-r from-brand-primary to-brand-secondary hover:shadow-lg hover:shadow-brand-secondary/20 font-semibold text-xs text-white transition duration-200 flex items-center space-x-1.5 self-start">
+        <i data-lucide="award" class="h-4 w-4"></i>
+        <span>Generate Compliance Certificate</span>
+      </button>
+    </div>
+
+    <!-- Tab Content 1: System Audit Trail -->
+    <div id="tab-audit" class="flex flex-col space-y-6">
+      
+      <!-- Filter Row Panel -->
+      <div class="glass rounded-2xl p-4 flex flex-col md:flex-row gap-4 items-center justify-between">
+        <div class="flex flex-wrap items-center gap-4 w-full md:w-auto">
+          
+          <!-- Filter by Table -->
+          <div class="flex flex-col space-y-1 w-full sm:w-44">
+            <label for="filter-table" class="text-[9px] font-semibold text-slate-400 uppercase">Table Scope</label>
+            <select id="filter-table" class="px-3 py-2 rounded-lg bg-black/35 border border-white/5 text-xs text-white focus:border-brand-secondary/50 outline-none">
+              <option value="all">All Tables</option>
+              <option value="ecm_requests">ECM Requests</option>
+              <option value="documents">Controlled Documents</option>
+              <option value="document_versions">Doc Versions</option>
+              <option value="ecm_tasks">Tasks Checklist</option>
+              <option value="approval_requests">Approval Gates</option>
+            </select>
+          </div>
+
+          <!-- Filter by Action -->
+          <div class="flex flex-col space-y-1 w-full sm:w-36">
+            <label for="filter-action" class="text-[9px] font-semibold text-slate-400 uppercase">Operation Type</label>
+            <select id="filter-action" class="px-3 py-2 rounded-lg bg-black/35 border border-white/5 text-xs text-white focus:border-brand-secondary/50 outline-none">
+              <option value="all">All Actions</option>
+              <option value="INSERT">INSERT (Create)</option>
+              <option value="UPDATE">UPDATE (Edit)</option>
+              <option value="DELETE">DELETE (Remove)</option>
+            </select>
+          </div>
+
+          <!-- Search by Record ID or Values -->
+          <div class="flex flex-col space-y-1 w-full sm:w-56">
+            <label for="filter-search" class="text-[9px] font-semibold text-slate-400 uppercase">Keyword Search</label>
+            <input type="text" id="filter-search" placeholder="Search values, fields, or UUIDs..." 
+                   class="px-3 py-2 rounded-lg bg-black/35 border border-white/5 text-xs text-white focus:border-brand-secondary/50 outline-none">
+          </div>
+
+        </div>
+
+        <div class="text-[10px] text-slate-500 font-medium shrink-0 flex items-center mt-2 md:mt-0">
+          <i data-lucide="shield-check" class="h-4 w-4 mr-1.5 text-emerald-400"></i>
+          <span>Enforced by immutable RLS triggers</span>
+        </div>
+      </div>
+
+      <!-- Audit Logs Table -->
+      <div class="glass rounded-3xl p-6 flex flex-col space-y-4">
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-xs border-collapse">
+            <thead>
+              <tr class="text-slate-400 border-b border-white/5">
+                <th class="py-3 px-4 font-semibold">Time</th>
+                <th class="py-3 px-4 font-semibold">Table</th>
+                <th class="py-3 px-4 font-semibold">Action</th>
+                <th class="py-3 px-4 font-semibold">Field</th>
+                <th class="py-3 px-4 font-semibold">Old Value</th>
+                <th class="py-3 px-4 font-semibold">New Value</th>
+                <th class="py-3 px-4 font-semibold">Performed By</th>
+                <th class="py-3 px-4 font-semibold text-right">Verification IP</th>
+              </tr>
+            </thead>
+            <tbody id="table-audit-body">
+              <!-- Dynamically populated audit log rows -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Tab Content 2: Signature Manifestations -->
+    <div id="tab-signatures" class="hidden flex flex-col space-y-6">
+      
+      <!-- Electronic Signatures Registry List -->
+      <div class="glass rounded-3xl p-6 flex flex-col space-y-4">
+        <div>
+          <h3 class="text-sm font-bold font-display text-white dark:text-white light:text-slate-900">Compliance Signature manifested List</h3>
+          <p class="text-[10px] text-slate-400 mt-1">21 CFR Part 11 compliant digital signatures captured with password re-verification.</p>
+        </div>
+
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-xs border-collapse">
+            <thead>
+              <tr class="text-slate-400 border-b border-white/5">
+                <th class="py-3 px-4 font-semibold">Date & Time</th>
+                <th class="py-3 px-4 font-semibold">Document</th>
+                <th class="py-3 px-4 font-semibold text-center">Version</th>
+                <th class="py-3 px-4">Signer</th>
+                <th class="py-3 px-4">Meaning</th>
+                <th class="py-3 px-4">Secure HMAC Hash Seal</th>
+                <th class="py-3 px-4 text-right">Method</th>
+              </tr>
+            </thead>
+            <tbody id="table-signatures-body">
+              <!-- Dynamically populated signature manifestation rows -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+
+  </main>
+
+  <!-- Compliance Certificate Wizard Modal -->
+  <div id="modal-compliance-cert" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm no-print">
+    <div class="w-full max-w-xl glass rounded-3xl p-8 flex flex-col space-y-6 max-h-[90vh] overflow-y-auto">
+      
+      <div class="flex justify-between items-start border-b border-white/5 pb-4">
+        <div>
+          <h3 class="text-lg font-bold font-display text-white dark:text-white light:text-slate-900">Compile Compliance Certificate</h3>
+          <p class="text-xs text-slate-400 mt-1">Choose an active Engineering Change Request to certify.</p>
+        </div>
+        <button type="button" class="btn-close-modal text-slate-500 hover:text-white transition duration-200" data-modal-close>
+          <i data-lucide="x" class="h-5 w-5"></i>
+        </button>
+      </div>
+
+      <form id="form-compliance-cert" class="flex flex-col space-y-4">
+        <div class="flex flex-col space-y-1.5">
+          <label for="cert-ecm" class="text-xs font-semibold text-slate-400">Change Request (ECM)</label>
+          <select id="cert-ecm" required class="w-full px-4 py-2.5 rounded-xl bg-black/35 border border-white/5 text-xs text-white focus:border-brand-secondary/50 outline-none">
+            <!-- Populated dynamically -->
+          </select>
+        </div>
+
+        <button type="submit" class="w-full py-3 rounded-xl bg-gradient-to-r from-brand-primary to-brand-secondary font-semibold text-xs text-white transition duration-200 flex items-center justify-center space-x-1.5">
+          <i data-lucide="printer" class="h-4 w-4"></i>
+          <span>Generate Print Preview</span>
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Print Certificate Overlay Container (Hidden until generated, printable) -->
+  <div id="print-certificate-area" class="hidden fixed inset-0 z-50 bg-white text-black p-12 overflow-y-auto flex flex-col space-y-8 font-serif">
+    <!-- Header -->
+    <div class="flex justify-between items-start border-b-2 border-black pb-6">
+      <div class="space-y-1">
+        <h1 class="text-2xl font-bold tracking-tight font-sans">HYDRASPECMA INDIA</h1>
+        <p class="text-xs tracking-wider font-semibold uppercase text-slate-600 font-sans">Engineering Change Management Portal</p>
+      </div>
+      <div class="text-right space-y-1 text-xs font-sans">
+        <p class="font-bold">FDA 21 CFR Part 11</p>
+        <p class="text-slate-500">Record Verification Certificate</p>
+      </div>
+    </div>
+
+    <!-- Seal Section -->
+    <div class="flex justify-between items-center bg-slate-50 p-6 border border-slate-200 rounded-xl">
+      <div class="space-y-2">
+        <h2 class="text-lg font-bold text-slate-900 font-sans">Certificate of Compliance Verification</h2>
+        <p class="text-xs text-slate-600 leading-normal max-w-lg">
+          This certificate manifests that all electronic signatures and audit trail entries associated with the record detailed below have been compiled, verified, and stamped under FDA 21 CFR Part 11 guidelines.
+        </p>
+      </div>
+      <!-- Tamper-evident Certified Seal Badge -->
+      <div class="flex flex-col items-center justify-center border-4 border-emerald-600 p-4 rounded-full h-28 w-28 shrink-0 text-center text-emerald-600 font-sans font-extrabold uppercase text-[10px] tracking-wider leading-tight">
+        <i data-lucide="shield-check" class="h-7 w-7 text-emerald-600 mb-1"></i>
+        <span>Certified<br>Compliance</span>
+      </div>
+    </div>
+
+    <!-- Record Info -->
+    <div class="space-y-3 font-sans text-xs">
+      <h3 class="text-xs font-bold border-b border-slate-200 pb-1.5 uppercase text-slate-500 tracking-wider">Record Details</h3>
+      <div class="grid grid-cols-2 gap-4">
+        <div>
+          <p class="text-slate-500">ECM Number:</p>
+          <p class="font-bold text-slate-900" id="cert-print-number">-</p>
+        </div>
+        <div>
+          <p class="text-slate-500">Record Title:</p>
+          <p class="font-bold text-slate-900" id="cert-print-title">-</p>
+        </div>
+        <div>
+          <p class="text-slate-500">Change Type / Priority:</p>
+          <p class="font-bold text-slate-900" id="cert-print-type">-</p>
+        </div>
+        <div>
+          <p class="text-slate-500">Compiled Date:</p>
+          <p class="font-bold text-slate-900" id="cert-print-date">-</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Signatures Manifest Table -->
+    <div class="space-y-3 font-sans text-xs flex-grow">
+      <h3 class="text-xs font-bold border-b border-slate-200 pb-1.5 uppercase text-slate-500 tracking-wider">Signature manifestations</h3>
+      <table class="w-full text-left text-xs border-collapse">
+        <thead>
+          <tr class="text-slate-500 border-b border-slate-200 font-semibold">
+            <th class="py-2">Signer</th>
+            <th class="py-2">Meaning of Signature</th>
+            <th class="py-2">Signed Timestamp</th>
+            <th class="py-2 text-right">HMAC Signature Seal</th>
+          </tr>
+        </thead>
+        <tbody id="cert-print-signatures-body">
+          <tr><td colspan="4" class="py-4 text-center text-slate-400 italic">No signatures recorded for this change request scope.</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Footer Controls (Invisible during printing) -->
+    <div class="no-print border-t border-slate-200 pt-6 flex justify-between items-center font-sans">
+      <button type="button" class="py-2.5 px-5 rounded-lg border border-slate-200 hover:bg-slate-50 font-semibold text-xs text-slate-700 transition" onclick="globalThis.closePrintPreview()">
+        Close Preview
+      </button>
+      <button type="button" class="py-2.5 px-5 rounded-lg bg-emerald-600 hover:bg-emerald-700 font-semibold text-xs text-white transition flex items-center space-x-1.5" onclick="window.print()">
+        <i data-lucide="printer" class="h-4 w-4"></i>
+        <span>Print Certificate</span>
+      </button>
+    </div>
+  </div>
+
+  <script src="/env.js"></script>
+  <script type="module" src="/js/notifications-manager.js"></script>
+  <script type="module">
+    import { getSupabase } from '../config/supabase.config.js';
+    import { authService } from '../services/auth/authService.js';
+    import { mountThemeToggle } from '../components/theme-toggle.js';
+    import { toast } from '../components/toast.js';
+    import { Modal } from '../components/modal.js';
+
+    // Initialize Lucide Icons
+    lucide.createIcons();
+
+    // Mount theme toggle
+    mountThemeToggle('theme-toggle-container');
+
+    const certModal = new Modal('modal-compliance-cert');
+
+    // Tab Switcher Logic
+    const tabAuditBtn = document.getElementById('tab-audit-btn');
+    const tabSignaturesBtn = document.getElementById('tab-signatures-btn');
+    const tabAudit = document.getElementById('tab-audit');
+    const tabSignatures = document.getElementById('tab-signatures');
+
+    tabAuditBtn.addEventListener('click', () => {
+      tabAudit.classList.remove('hidden');
+      tabSignatures.classList.add('hidden');
+      tabAuditBtn.className = 'px-4 py-2.5 rounded-xl text-xs font-semibold bg-white/5 border border-brand-secondary/30 text-white transition duration-200';
+      tabSignaturesBtn.className = 'px-4 py-2.5 rounded-xl text-xs font-semibold text-slate-400 hover:text-white hover:bg-white/5 transition duration-200';
+      loadAuditTrail();
+    });
+
+    tabSignaturesBtn.addEventListener('click', () => {
+      tabAudit.classList.add('hidden');
+      tabSignatures.classList.remove('hidden');
+      tabSignaturesBtn.className = 'px-4 py-2.5 rounded-xl text-xs font-semibold bg-white/5 border border-brand-secondary/30 text-white transition duration-200';
+      tabAuditBtn.className = 'px-4 py-2.5 rounded-xl text-xs font-semibold text-slate-400 hover:text-white hover:bg-white/5 transition duration-200';
+      loadSignatureManifestations();
+    });
+
+    document.getElementById('btn-cert-wizard').addEventListener('click', () => {
+      certModal.open();
+      loadWizardDropdown();
+    });
+
+    // Close preview handler
+    globalThis.closePrintPreview = function() {
+      document.getElementById('print-certificate-area').classList.add('hidden');
+    };
+
+    // User Profile
+    async function loadUserProfile() {
+      try {
+        const session = await authService.getSession();
+        if (session) {
+          const profileData = await authService.me();
+          const profile = profileData?.profile || {};
+          const roles = profileData?.roles || ['VIEWER'];
+
+          document.getElementById('user-badge').classList.remove('hidden');
+          document.getElementById('user-name').textContent = profile.full_name || session.user.email;
+          document.getElementById('user-role').textContent = roles.join(', ');
+          
+          if (profile.avatar_url) {
+            const avatarDiv = document.getElementById('user-avatar-placeholder');
+            avatarDiv.innerHTML = `<img src="${profile.avatar_url}" class="h-full w-full rounded-full object-cover">`;
+          } else {
+            const initial = (profile.full_name || session.user.email)[0].toUpperCase();
+            document.getElementById('user-avatar-placeholder').textContent = initial;
+          }
+        }
+      } catch (err) {
+        console.error('Failed to load profile:', err);
+      }
+    }
+
+    // Sign out
+    document.getElementById('btn-signout').addEventListener('click', async () => {
+      try {
+        await authService.signOut();
+        globalThis.location.href = '/login.html';
+      } catch (err) {
+        console.error('Sign out failed:', err);
+      }
+    });
+
+    // ----------------------------------------------------
+    // Load System Audit Trail
+    // ----------------------------------------------------
+    async function loadAuditTrail() {
+      const tbody = document.getElementById('table-audit-body');
+      tbody.innerHTML = '<tr><td colspan="8" class="text-center py-6 text-slate-500">Loading audit trail...</td></tr>';
+
+      try {
+        const supabase = getSupabase();
+        const tableFilter = document.getElementById('filter-table').value;
+        const actionFilter = document.getElementById('filter-action').value;
+        const searchFilter = document.getElementById('filter-search').value.trim();
+
+        let query = supabase
+          .from('audit_logs')
+          .select('*');
+
+        if (tableFilter !== 'all') {
+          query = query.eq('table_name', tableFilter);
+        }
+        if (actionFilter !== 'all') {
+          query = query.eq('action', actionFilter);
+        }
+        if (searchFilter) {
+          query = query.or(`old_value.ilike.%${searchFilter}%,new_value.ilike.%${searchFilter}%,field_name.ilike.%${searchFilter}%`);
+        }
+
+        const { data: logs, error } = await query
+          .order('changed_at', { ascending: false })
+          .limit(50);
+
+        if (error) throw error;
+
+        if (!logs || logs.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="8" class="text-center py-8 text-slate-500">No matching audit logs found.</td></tr>';
+          return;
+        }
+
+        // Fetch profiles to resolve names
+        const { data: profiles } = await supabase.from('profiles').select('id, full_name');
+        const profilesMap = new Map((profiles || []).map(p => [p.id, p.full_name]));
+
+        tbody.innerHTML = logs.map(l => {
+          const date = new Date(l.changed_at).toLocaleDateString(undefined, {
+            month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit'
+          });
+          const actionColors = {
+            'INSERT': 'text-emerald-400 bg-emerald-500/10 border-emerald-500/20',
+            'UPDATE': 'text-sky-400 bg-sky-500/10 border-sky-500/20',
+            'DELETE': 'text-rose-400 bg-rose-500/10 border-rose-500/20'
+          };
+          const userLabel = profilesMap.get(l.changed_by) || l.changed_by || 'System Trigger';
+          
+          return `
+            <tr class="border-b border-white/5 hover:bg-white/5 dark:hover:bg-white/5 light:hover:bg-black/5 transition duration-150 text-slate-300 dark:text-slate-300 light:text-slate-700">
+              <td class="py-3.5 px-4 text-slate-500 font-mono text-[10px]">${date}</td>
+              <td class="py-3.5 px-4 font-semibold text-slate-200 dark:text-slate-200 light:text-slate-800">${l.table_name}</td>
+              <td class="py-3.5 px-4">
+                <span class="px-2 py-0.5 border text-[9px] font-bold rounded-full ${actionColors[l.action] || ''}">${l.action}</span>
+              </td>
+              <td class="py-3.5 px-4 text-slate-400 font-medium">${l.field_name || '-'}</td>
+              <td class="py-3.5 px-4 max-w-[120px] truncate text-slate-500 font-mono" title="${l.old_value || ''}">${l.old_value || '-'}</td>
+              <td class="py-3.5 px-4 max-w-[120px] truncate text-slate-200 dark:text-slate-200 light:text-slate-800 font-mono" title="${l.new_value || ''}">${l.new_value || '-'}</td>
+              <td class="py-3.5 px-4 font-medium text-white dark:text-white light:text-slate-900">${userLabel}</td>
+              <td class="py-3.5 px-4 text-right text-slate-500 font-mono text-[10px]">${l.ip_address || 'System Internal'}</td>
+            </tr>
+          `;
+        }).join('');
+
+      } catch (err) {
+        console.error('Failed to load audit trail:', err);
+        tbody.innerHTML = '<tr><td colspan="8" class="text-center py-6 text-rose-400">Failed to load audit trail</td></tr>';
+      }
+    }
+
+    // ----------------------------------------------------
+    // Load Signature Manifestations
+    // ----------------------------------------------------
+    async function loadSignatureManifestations() {
+      const tbody = document.getElementById('table-signatures-body');
+      tbody.innerHTML = '<tr><td colspan="7" class="text-center py-6 text-slate-500">Loading signatures registry...</td></tr>';
+
+      try {
+        const supabase = getSupabase();
+        
+        const { data: list, error } = await supabase
+          .from('document_signatures')
+          .select(`
+            *,
+            signer:profiles(full_name),
+            version:document_versions(
+              version_no,
+              document:documents(name)
+            )
+          `)
+          .order('signed_at', { ascending: false });
+
+        if (error) throw error;
+
+        if (!list || list.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="7" class="text-center py-8 text-slate-500">No compliant signatures recorded in the system yet.</td></tr>';
+          return;
+        }
+
+        tbody.innerHTML = list.map(s => {
+          const date = new Date(s.signed_at).toLocaleDateString(undefined, {
+            month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit'
+          });
+
+          return `
+            <tr class="border-b border-white/5 hover:bg-white/5 dark:hover:bg-white/5 light:hover:bg-black/5 transition duration-150 text-slate-300 dark:text-slate-300 light:text-slate-700">
+              <td class="py-3.5 px-4 text-slate-500 font-mono text-[10px]">${date}</td>
+              <td class="py-3.5 px-4 font-semibold text-white dark:text-white light:text-slate-800">${s.version?.document?.name || 'Document Record'}</td>
+              <td class="py-3.5 px-4 text-center font-bold">v${s.version?.version_no || 1}</td>
+              <td class="py-3.5 px-4 font-medium text-slate-200 dark:text-slate-200 light:text-slate-700">${s.signer?.full_name || 'System User'}</td>
+              <td class="py-3.5 px-4 uppercase text-[10px] font-bold text-brand-secondary">${s.meaning}</td>
+              <td class="py-3.5 px-4 font-mono text-[9px] text-slate-500 select-all">${s.signature_hash}</td>
+              <td class="py-3.5 px-4 text-right uppercase text-[9px] font-semibold text-slate-400">${s.method}</td>
+            </tr>
+          `;
+        }).join('');
+
+      } catch (err) {
+        console.error('Failed to load signatures manifestations:', err);
+        tbody.innerHTML = '<tr><td colspan="7" class="text-center py-6 text-rose-400">Failed to load signatures registry</td></tr>';
+      }
+    }
+
+    // ----------------------------------------------------
+    // Compliance Certificate Wizard
+    // ----------------------------------------------------
+    let wizardDropdownLoaded = false;
+    async function loadWizardDropdown() {
+      if (wizardDropdownLoaded) return;
+      try {
+        const supabase = getSupabase();
+        const { data: list } = await supabase
+          .from('ecm_requests')
+          .select('id, ecm_number, title')
+          .eq('is_deleted', false)
+          .order('created_at', { ascending: false });
+
+        const select = document.getElementById('cert-ecm');
+        if (list) {
+          select.innerHTML = list.map(r => `
+            <option value="${r.id}">${r.ecm_number || 'EC-xxxx'} - ${r.title}</option>
+          `).join('');
+          wizardDropdownLoaded = true;
+        }
+      } catch (err) {
+        console.error('Failed to load certificate dropdown:', err);
+      }
+    }
+
+    // Compile Certificate Form Submit
+    document.getElementById('form-compliance-cert').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const reqId = document.getElementById('cert-ecm').value;
+      certModal.close();
+
+      toast.info('Compiling records...');
+      try {
+        const supabase = getSupabase();
+        
+        // 1. Fetch ECM Request Details
+        const { data: ecm } = await supabase
+          .from('ecm_requests')
+          .select(`
+            *,
+            plant:plants(name)
+          `)
+          .eq('id', reqId)
+          .single();
+
+        if (!ecm) throw new Error('ECM record not found');
+
+        // 2. Fetch associated Document Signatures
+        // In the schema, documents belong to the ecm_request_id denormalized link
+        const { data: docs } = await supabase
+          .from('documents')
+          .select('id');
+
+        const docIds = (docs || []).map(d => d.id);
+        
+        let signatures = [];
+        if (docIds.length > 0) {
+          // Fetch current versions
+          const { data: versions } = await supabase
+            .from('document_versions')
+            .select('id')
+            .in('document_id', docIds);
+
+          const verIds = (versions || []).map(v => v.id);
+          
+          if (verIds.length > 0) {
+            const { data: sigs } = await supabase
+              .from('document_signatures')
+              .select(`
+                *,
+                signer:profiles(full_name),
+                version:document_versions(
+                  version_no,
+                  document:documents(name)
+                )
+              `)
+              .in('document_version_id', verIds);
+            
+            signatures = sigs || [];
+          }
+        }
+
+        // 3. Populate Certificate template fields
+        document.getElementById('cert-print-number').textContent = ecm.ecm_number || 'EC-xxxx';
+        document.getElementById('cert-print-title').textContent = ecm.title;
+        document.getElementById('cert-print-type').textContent = `${ecm.change_type} Change / Priority: ${ecm.priority}`;
+        document.getElementById('cert-print-date').textContent = new Date().toLocaleDateString(undefined, {
+          year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit'
+        });
+
+        // Bind signatures table
+        const certTbody = document.getElementById('cert-print-signatures-body');
+        if (signatures.length === 0) {
+          certTbody.innerHTML = '<tr><td colspan="4" class="py-4 text-center text-slate-400 italic">No document electronic signatures recorded for this change scope.</td></tr>';
+        } else {
+          certTbody.innerHTML = signatures.map(s => {
+            const date = new Date(s.signed_at).toLocaleDateString(undefined, {
+              month: 'short', day: 'numeric', year: 'numeric'
+            });
+            return `
+              <tr class="border-b border-slate-100 text-slate-800 py-2">
+                <td class="py-3 font-semibold text-slate-900">${s.signer?.full_name || 'System user'}</td>
+                <td class="py-3 uppercase text-[10px] font-bold text-slate-600">${s.meaning}</td>
+                <td class="py-3 text-slate-500">${date}</td>
+                <td class="py-3 text-right font-mono text-[9px] text-slate-600 select-all">${s.signature_hash}</td>
+              </tr>
+            `;
+          }).join('');
+        }
+
+        // Show print area
+        document.getElementById('print-certificate-area').classList.remove('hidden');
+        lucide.createIcons();
+
+      } catch (err) {
+        console.error('Failed to compile certificate:', err);
+        toast.error('Failed to compile compliance record.');
+      }
+    });
+
+    // Filter Listeners
+    document.getElementById('filter-table').addEventListener('change', loadAuditTrail);
+    document.getElementById('filter-action').addEventListener('change', loadAuditTrail);
+    document.getElementById('filter-search').addEventListener('input', () => {
+      // Debounce search input
+      clearTimeout(globalThis.searchTimer);
+      globalThis.searchTimer = setTimeout(loadAuditTrail, 300);
+    });
+
+    // Startup Load
+    loadUserProfile();
+    loadAuditTrail();
+  </script>
+</body>
+</html>
