@@ -1,0 +1,699 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tasks Board - HydraSpecma ECM Portal</title>
+  <!-- Route Guard -->
+  <script type="module" src="/js/auth-guard.js"></script>
+  <!-- Initialize Theme -->
+  <script type="module" src="/js/theme.js"></script>
+  <!-- Modern Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            display: ['Outfit', 'sans-serif'],
+          },
+          colors: {
+            brand: {
+              primary: '#003A70',
+              secondary: '#00A3E0',
+              accent: '#0EA5E9',
+              background: '#0B0F19',
+              card: '#161F30',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@0.462.0/dist/umd/lucide.min.js"></script>
+  <style>
+    body {
+      background: radial-gradient(circle at top right, rgba(0, 163, 224, 0.08), transparent 45%),
+                  radial-gradient(circle at bottom left, rgba(0, 58, 112, 0.15), transparent 50%),
+                  #0B0F19;
+      transition: background-color 0.3s ease;
+    }
+    html.light body {
+      background: radial-gradient(circle at top right, rgba(0, 163, 224, 0.06), transparent 45%),
+                  radial-gradient(circle at bottom left, rgba(0, 58, 112, 0.08), transparent 50%),
+                  #F8FAFC;
+    }
+    .glass {
+      background: rgba(22, 31, 48, 0.65);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      transition: background-color 0.3s, border-color 0.3s;
+    }
+    html.light .glass {
+      background: rgba(255, 255, 255, 0.75);
+      border: 1px solid rgba(0, 0, 0, 0.06);
+    }
+    .kanban-col {
+      min-height: 500px;
+    }
+    .drag-over {
+      background: rgba(0, 163, 224, 0.08) !important;
+      border-color: rgba(0, 163, 224, 0.3) !important;
+    }
+  </style>
+</head>
+<body class="text-slate-200 dark:text-slate-200 light:text-slate-700 min-h-screen flex flex-col font-sans selection:bg-brand-secondary/30 selection:text-white">
+
+  <!-- Header -->
+  <header class="w-full max-w-7xl mx-auto px-6 py-6 flex justify-between items-center border-b border-white/5 dark:border-white/5 light:border-black/5">
+    <div class="flex items-center space-x-3">
+      <a href="/" class="h-10 w-10 rounded-xl bg-gradient-to-tr from-brand-primary to-brand-secondary flex items-center justify-center shadow-lg shadow-brand-secondary/20 hover:scale-105 transition-transform">
+        <i data-lucide="arrow-left" class="h-5 w-5 text-white"></i>
+      </a>
+      <div>
+        <h1 class="text-lg font-bold font-display tracking-tight text-white dark:text-white light:text-slate-900">Task Management</h1>
+        <p class="text-[10px] text-slate-400">Engineering Work Item Kanban Board</p>
+      </div>
+    </div>
+    
+    <div class="flex items-center space-x-6">
+      <div id="user-badge" class="hidden flex items-center space-x-3">
+        <div class="h-8 w-8 rounded-full bg-brand-secondary/20 border border-brand-secondary/30 flex items-center justify-center text-xs font-semibold text-brand-secondary font-display" id="user-avatar-placeholder">U</div>
+        <div class="text-left">
+          <p class="text-xs font-semibold text-white dark:text-white light:text-slate-900 leading-tight" id="user-name">Loading...</p>
+          <p class="text-[10px] text-slate-400 dark:text-slate-400 light:text-slate-500 leading-none" id="user-role">Viewer</p>
+        </div>
+        <div id="theme-toggle-container"></div>
+        <button id="btn-signout" class="h-8 w-8 rounded-lg hover:bg-white/5 dark:hover:bg-white/5 light:hover:bg-black/5 border border-transparent hover:border-white/10 flex items-center justify-center text-slate-400 hover:text-slate-700 transition duration-200" title="Sign Out">
+          <i data-lucide="log-out" class="h-4 w-4"></i>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Workspace -->
+  <main class="flex-grow w-full max-w-7xl mx-auto px-6 py-10 flex flex-col space-y-6">
+    
+    <!-- Filter Row Panel -->
+    <div class="glass rounded-2xl p-4 flex flex-col md:flex-row gap-4 items-center justify-between">
+      <div class="flex flex-wrap items-center gap-4 w-full md:w-auto">
+        
+        <!-- Filter by ECM Request -->
+        <div class="flex flex-col space-y-1 w-full sm:w-64">
+          <label for="filter-ecm" class="text-[9px] font-semibold text-slate-400 uppercase">Change Request</label>
+          <select id="filter-ecm" class="px-3 py-2 rounded-lg bg-black/35 border border-white/5 text-xs text-white focus:border-brand-secondary/50 outline-none">
+            <option value="all">All Change Requests</option>
+          </select>
+        </div>
+
+        <!-- Filter by Priority -->
+        <div class="flex flex-col space-y-1 w-full sm:w-40">
+          <label for="filter-priority" class="text-[9px] font-semibold text-slate-400 uppercase">Priority</label>
+          <select id="filter-priority" class="px-3 py-2 rounded-lg bg-black/35 border border-white/5 text-xs text-white focus:border-brand-secondary/50 outline-none">
+            <option value="all">All Priorities</option>
+            <option value="low">Low</option>
+            <option value="medium">Medium</option>
+            <option value="high">High</option>
+            <option value="critical">Critical</option>
+          </select>
+        </div>
+
+      </div>
+
+      <div class="text-[10px] text-slate-500 font-medium shrink-0 flex items-center">
+        <i data-lucide="info" class="h-3.5 w-3.5 mr-1.5 text-brand-secondary"></i>
+        <span>Drag & drop cards to update status instantly</span>
+      </div>
+    </div>
+
+    <!-- Kanban Board Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 items-start">
+      
+      <!-- 1. TO DO -->
+      <div class="flex flex-col space-y-3">
+        <div class="flex items-center justify-between px-2">
+          <div class="flex items-center space-x-2">
+            <span class="h-2 w-2 rounded-full bg-slate-400"></span>
+            <h3 class="text-xs font-bold text-white dark:text-white light:text-slate-800 uppercase tracking-wider">To Do</h3>
+          </div>
+          <span id="count-todo" class="text-[10px] font-bold text-slate-400 bg-white/5 border border-white/5 px-2 py-0.5 rounded-full">0</span>
+        </div>
+        <div id="col-todo" data-status="todo" class="kanban-col flex flex-col space-y-3 p-3 bg-black/10 rounded-2xl border border-white/5 min-h-[450px] transition-colors duration-200">
+          <!-- Cards -->
+        </div>
+      </div>
+
+      <!-- 2. IN PROGRESS -->
+      <div class="flex flex-col space-y-3">
+        <div class="flex items-center justify-between px-2">
+          <div class="flex items-center space-x-2">
+            <span class="h-2 w-2 rounded-full bg-brand-secondary"></span>
+            <h3 class="text-xs font-bold text-white dark:text-white light:text-slate-800 uppercase tracking-wider">In Progress</h3>
+          </div>
+          <span id="count-in-progress" class="text-[10px] font-bold text-slate-400 bg-white/5 border border-white/5 px-2 py-0.5 rounded-full">0</span>
+        </div>
+        <div id="col-in-progress" data-status="in_progress" class="kanban-col flex flex-col space-y-3 p-3 bg-black/10 rounded-2xl border border-white/5 min-h-[450px] transition-colors duration-200">
+          <!-- Cards -->
+        </div>
+      </div>
+
+      <!-- 3. BLOCKED -->
+      <div class="flex flex-col space-y-3">
+        <div class="flex items-center justify-between px-2">
+          <div class="flex items-center space-x-2">
+            <span class="h-2 w-2 rounded-full bg-amber-400"></span>
+            <h3 class="text-xs font-bold text-white dark:text-white light:text-slate-800 uppercase tracking-wider">Blocked</h3>
+          </div>
+          <span id="count-blocked" class="text-[10px] font-bold text-slate-400 bg-white/5 border border-white/5 px-2 py-0.5 rounded-full">0</span>
+        </div>
+        <div id="col-blocked" data-status="blocked" class="kanban-col flex flex-col space-y-3 p-3 bg-black/10 rounded-2xl border border-white/5 min-h-[450px] transition-colors duration-200">
+          <!-- Cards -->
+        </div>
+      </div>
+
+      <!-- 4. COMPLETED -->
+      <div class="flex flex-col space-y-3">
+        <div class="flex items-center justify-between px-2">
+          <div class="flex items-center space-x-2">
+            <span class="h-2 w-2 rounded-full bg-emerald-500"></span>
+            <h3 class="text-xs font-bold text-white dark:text-white light:text-slate-800 uppercase tracking-wider">Completed</h3>
+          </div>
+          <span id="count-done" class="text-[10px] font-bold text-slate-400 bg-white/5 border border-white/5 px-2 py-0.5 rounded-full">0</span>
+        </div>
+        <div id="col-done" data-status="done" class="kanban-col flex flex-col space-y-3 p-3 bg-black/10 rounded-2xl border border-white/5 min-h-[450px] transition-colors duration-200">
+          <!-- Cards -->
+        </div>
+      </div>
+
+    </div>
+
+  </main>
+
+  <!-- Task Details & Editor Modal -->
+  <div id="modal-task-editor" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm">
+    <div class="w-full max-w-lg glass rounded-3xl p-8 flex flex-col space-y-6 max-h-[90vh] overflow-y-auto">
+      
+      <div class="flex justify-between items-start border-b border-white/5 pb-4">
+        <div>
+          <h3 class="text-lg font-bold font-display text-white dark:text-white light:text-slate-900" id="editor-task-ecm">Task Details</h3>
+          <p class="text-xs text-slate-400 mt-1" id="editor-task-subtitle">Edit metadata, assignments, and reminders</p>
+        </div>
+        <button type="button" class="btn-close-modal text-slate-500 hover:text-white transition duration-200" data-modal-close>
+          <i data-lucide="x" class="h-5 w-5"></i>
+        </button>
+      </div>
+
+      <form id="form-task-editor" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <!-- Title (full width) -->
+        <div class="md:col-span-2 flex flex-col space-y-1.5">
+          <label for="editor-title" class="text-xs font-semibold text-slate-400">Task Title</label>
+          <input type="text" id="editor-title" required 
+                 class="w-full px-4 py-2.5 rounded-xl bg-black/35 border border-white/5 focus:border-brand-secondary/50 focus:ring-0 outline-none text-xs text-white transition duration-200">
+        </div>
+
+        <!-- Description (full width) -->
+        <div class="md:col-span-2 flex flex-col space-y-1.5">
+          <label for="editor-desc" class="text-xs font-semibold text-slate-400">Description</label>
+          <textarea id="editor-desc" rows="3" 
+                    class="w-full px-4 py-2.5 rounded-xl bg-black/35 border border-white/5 focus:border-brand-secondary/50 focus:ring-0 outline-none text-xs text-white transition duration-200"></textarea>
+        </div>
+
+        <!-- Assignee & Due Date -->
+        <div class="flex flex-col space-y-1.5">
+          <label for="editor-assignee" class="text-xs font-semibold text-slate-400">Assignee</label>
+          <select id="editor-assignee" class="w-full px-4 py-2.5 rounded-xl bg-black/35 border border-white/5 text-xs text-white focus:border-brand-secondary/50 outline-none">
+            <!-- Populated dynamically -->
+          </select>
+        </div>
+        <div class="flex flex-col space-y-1.5">
+          <label for="editor-due" class="text-xs font-semibold text-slate-400">Due Date</label>
+          <input type="date" id="editor-due" 
+                 class="w-full px-4 py-2.5 rounded-xl bg-black/35 border border-white/5 focus:border-brand-secondary/50 focus:ring-0 outline-none text-xs text-white transition duration-200">
+        </div>
+
+        <!-- Status & Priority -->
+        <div class="flex flex-col space-y-1.5">
+          <label for="editor-status" class="text-xs font-semibold text-slate-400">Status</label>
+          <select id="editor-status" class="w-full px-4 py-2.5 rounded-xl bg-black/35 border border-white/5 text-xs text-white focus:border-brand-secondary/50 outline-none">
+            <option value="todo">To Do</option>
+            <option value="in_progress">In Progress</option>
+            <option value="blocked">Blocked</option>
+            <option value="done">Completed</option>
+          </select>
+        </div>
+        <div class="flex flex-col space-y-1.5">
+          <label for="editor-priority" class="text-xs font-semibold text-slate-400">Priority</label>
+          <select id="editor-priority" class="w-full px-4 py-2.5 rounded-xl bg-black/35 border border-white/5 text-xs text-white focus:border-brand-secondary/50 outline-none">
+            <option value="low">Low</option>
+            <option value="medium">Medium</option>
+            <option value="high">High</option>
+            <option value="critical">Critical</option>
+          </select>
+        </div>
+
+        <!-- Divider for Reminders -->
+        <div class="md:col-span-2 border-t border-white/5 pt-4 my-2">
+          <h4 class="text-xs font-semibold text-brand-secondary font-display uppercase tracking-wide">Schedule Reminder</h4>
+          <p class="text-[10px] text-slate-500 mt-0.5">Send a notification reminder prior to the task due date.</p>
+        </div>
+
+        <!-- Reminder Channel & Time -->
+        <div class="flex flex-col space-y-1.5">
+          <label for="remind-time" class="text-xs font-semibold text-slate-400">Remind Date & Time</label>
+          <input type="datetime-local" id="remind-time" 
+                 class="w-full px-4 py-2.5 rounded-xl bg-black/35 border border-white/5 focus:border-brand-secondary/50 focus:ring-0 outline-none text-xs text-white transition duration-200">
+        </div>
+        <div class="flex flex-col space-y-1.5">
+          <label for="remind-channel" class="text-xs font-semibold text-slate-400">Channel</label>
+          <select id="remind-channel" class="w-full px-4 py-2.5 rounded-xl bg-black/35 border border-white/5 text-xs text-white focus:border-brand-secondary/50 outline-none">
+            <option value="in_app">In-App Notification</option>
+            <option value="email">Email</option>
+            <option value="teams">Microsoft Teams</option>
+          </select>
+        </div>
+
+        <button type="submit" id="btn-editor-save" class="md:col-span-2 w-full py-3 mt-4 rounded-xl bg-gradient-to-r from-brand-primary to-brand-secondary font-semibold text-xs text-white transition duration-200 flex items-center justify-center">
+          <span>Save Changes</span>
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="w-full max-w-7xl mx-auto px-6 py-6 border-t border-white/5 dark:border-white/5 light:border-black/5 text-center text-xs text-slate-500">
+    <p>&copy; 2026 HydraSpecma India. Secure Kanban workflow process.</p>
+  </footer>
+
+  <script src="/env.js"></script>
+  <script type="module">
+    import { getSupabase } from '../config/supabase.config.js';
+    import { authService } from '../services/auth/authService.js';
+    import { mountThemeToggle } from '../components/theme-toggle.js';
+    import { toast } from '../components/toast.js';
+    import { Modal } from '../components/modal.js';
+
+    // Initialize Lucide Icons
+    lucide.createIcons();
+
+    // Mount theme toggle
+    mountThemeToggle('theme-toggle-container');
+
+    // Modal References
+    const taskModal = new Modal('modal-task-editor');
+    let activeTaskId = null;
+    let cachedTasks = [];
+
+    // User Profile
+    async function loadUserProfile() {
+      try {
+        const session = await authService.getSession();
+        if (session) {
+          const profileData = await authService.me();
+          const profile = profileData?.profile || {};
+          const roles = profileData?.roles || ['VIEWER'];
+
+          document.getElementById('user-badge').classList.remove('hidden');
+          document.getElementById('user-name').textContent = profile.full_name || session.user.email;
+          document.getElementById('user-role').textContent = roles.join(', ');
+          
+          if (profile.avatar_url) {
+            const avatarDiv = document.getElementById('user-avatar-placeholder');
+            avatarDiv.innerHTML = `<img src="${profile.avatar_url}" class="h-full w-full rounded-full object-cover">`;
+          } else {
+            const initial = (profile.full_name || session.user.email)[0].toUpperCase();
+            document.getElementById('user-avatar-placeholder').textContent = initial;
+          }
+        }
+      } catch (err) {
+        console.error('Failed to load profile:', err);
+      }
+    }
+
+    // Sign out
+    document.getElementById('btn-signout').addEventListener('click', async () => {
+      try {
+        await authService.signOut();
+        globalThis.location.href = '/login.html';
+      } catch (err) {
+        console.error('Sign out failed:', err);
+      }
+    });
+
+    // ----------------------------------------------------
+    // Load Filters Dropdown Metadata
+    // ----------------------------------------------------
+    async function loadFilters() {
+      try {
+        const supabase = getSupabase();
+        
+        // Fetch all active ECM requests
+        const { data: requests } = await supabase
+          .from('ecm_requests')
+          .select('id, ecm_number, title')
+          .eq('is_deleted', false)
+          .order('created_at', { ascending: false });
+
+        const filterSelect = document.getElementById('filter-ecm');
+        if (requests) {
+          filterSelect.innerHTML = '<option value="all">All Change Requests</option>' + 
+            requests.map(r => `
+              <option value="${r.id}">${r.ecm_number || 'EC-xxxx'} - ${r.title}</option>
+            `).join('');
+        }
+
+      } catch (err) {
+        console.error('Failed to load filters:', err);
+      }
+    }
+
+    // ----------------------------------------------------
+    // Fetch and Render Kanban Board Tasks
+    // ----------------------------------------------------
+    async function loadKanbanBoard() {
+      // Clear column boards & load loading message
+      const cols = ['todo', 'in_progress', 'blocked', 'done'];
+      cols.forEach(status => {
+        document.getElementById(`col-${status.replace('_', '-')}`).innerHTML = `
+          <p class="text-[10px] text-slate-500 text-center py-6">Loading tasks...</p>
+        `;
+      });
+
+      try {
+        const supabase = getSupabase();
+        const ecmFilter = document.getElementById('filter-ecm').value;
+        const priorityFilter = document.getElementById('filter-priority').value;
+
+        // Query active tasks
+        let query = supabase
+          .from('ecm_tasks')
+          .select(`
+            *,
+            assignee:profiles(full_name),
+            ecm:ecm_requests(ecm_number, title)
+          `);
+
+        if (ecmFilter !== 'all') {
+          query = query.eq('ecm_request_id', ecmFilter);
+        }
+        if (priorityFilter !== 'all') {
+          query = query.eq('priority', priorityFilter);
+        }
+
+        const { data: tasks, error } = await query;
+        if (error) throw error;
+
+        cachedTasks = tasks || [];
+        renderBoard(cachedTasks);
+
+      } catch (err) {
+        console.error('Failed to load board tasks:', err);
+        toast.error('Failed to refresh tasks board.');
+      }
+    }
+
+    // Distribute tasks to columns
+    function renderBoard(tasks) {
+      const statuses = ['todo', 'in_progress', 'blocked', 'done'];
+      const columns = { todo: [], in_progress: [], blocked: [], done: [] };
+      
+      tasks.forEach(t => {
+        if (columns[t.status]) {
+          columns[t.status].push(t);
+        }
+      });
+
+      const priorityColors = {
+        'low': 'text-slate-400 border-slate-500/10',
+        'medium': 'text-sky-400 border-sky-500/10',
+        'high': 'text-amber-400 border-amber-500/10',
+        'critical': 'text-rose-400 border-rose-500/10'
+      };
+
+      statuses.forEach(status => {
+        const list = columns[status];
+        const colEl = document.getElementById(`col-${status.replace('_', '-')}`);
+        document.getElementById(`count-${status.replace('_', '-')}`).textContent = list.length;
+
+        if (list.length === 0) {
+          colEl.innerHTML = `
+            <div class="text-[10px] text-slate-500 text-center py-8 border border-dashed border-white/5 rounded-xl">
+              No tasks
+            </div>
+          `;
+          return;
+        }
+
+        colEl.innerHTML = list.map(t => {
+          const isOverdue = t.due_date && new Date(t.due_date) < new Date() && t.status !== 'done';
+          const pStyle = priorityColors[t.priority.toLowerCase()] || '';
+          
+          return `
+            <div class="glass p-4 rounded-xl shadow-sm border border-white/5 cursor-pointer hover:border-brand-secondary/30 transition-all duration-200 shrink-0" 
+                 draggable="true" data-task-id="${t.id}">
+              <div class="flex justify-between items-start mb-2">
+                <span class="text-[9px] text-slate-500 font-semibold tracking-wider uppercase font-display">${t.ecm?.ecm_number || 'AD-HOC'}</span>
+                <span class="text-[8px] font-semibold uppercase px-2 py-0.5 rounded-full border bg-white/5 ${pStyle}">
+                  ${t.priority}
+                </span>
+              </div>
+              <h4 class="text-xs font-bold text-white dark:text-white light:text-slate-800 leading-tight">${t.title}</h4>
+              <p class="text-[10px] text-slate-400 dark:text-slate-400 light:text-slate-500 mt-1 max-h-[30px] overflow-hidden truncate">${t.description || ''}</p>
+              
+              <div class="flex items-center justify-between border-t border-white/5 pt-3 mt-3 text-[9px] text-slate-500">
+                <span class="font-medium">Assignee: ${t.assignee?.full_name || 'Unassigned'}</span>
+                ${t.due_date 
+                  ? `<span class="flex items-center ${isOverdue ? 'text-rose-400 font-bold bg-rose-500/10 px-2 py-0.5 rounded-full border border-rose-500/20' : ''}">
+                      <i data-lucide="calendar" class="h-3 w-3 mr-1"></i>${t.due_date}
+                    </span>` 
+                  : ''
+                }
+              </div>
+            </div>
+          `;
+        }).join('');
+      });
+
+      lucide.createIcons();
+
+      // Setup Drag and Drop events
+      setupDragEvents();
+    }
+
+    // HTML5 Drag and Drop Handlers
+    function setupDragEvents() {
+      const cards = document.querySelectorAll('.kanban-col [draggable="true"]');
+      const cols = document.querySelectorAll('.kanban-col');
+
+      cards.forEach(card => {
+        card.addEventListener('dragstart', (e) => {
+          e.dataTransfer.setData('text/plain', e.currentTarget.getAttribute('data-task-id'));
+          e.currentTarget.classList.add('opacity-50');
+        });
+
+        card.addEventListener('dragend', (e) => {
+          e.currentTarget.classList.remove('opacity-50');
+        });
+
+        // Open editor on card click
+        card.addEventListener('click', (e) => {
+          const taskId = e.currentTarget.getAttribute('data-task-id');
+          openTaskEditor(taskId);
+        });
+      });
+
+      cols.forEach(col => {
+        col.addEventListener('dragover', (e) => {
+          e.preventDefault();
+          e.currentTarget.classList.add('drag-over');
+        });
+
+        col.addEventListener('dragleave', (e) => {
+          e.currentTarget.classList.remove('drag-over');
+        });
+
+        col.addEventListener('drop', async (e) => {
+          e.preventDefault();
+          const colEl = e.currentTarget;
+          colEl.classList.remove('drag-over');
+          
+          const taskId = e.dataTransfer.getData('text/plain');
+          const newStatus = colEl.getAttribute('data-status');
+          
+          if (!taskId || !newStatus) return;
+
+          // Find task in local cache
+          const task = cachedTasks.find(t => t.id === taskId);
+          if (!task || task.status === newStatus) return;
+
+          try {
+            const supabase = getSupabase();
+            const profileData = await authService.me();
+            
+            // Perform DB update
+            const { error } = await supabase
+              .from('ecm_tasks')
+              .update({
+                status: newStatus,
+                completed_at: newStatus === 'done' ? new Date().toISOString() : null,
+                completed_by: newStatus === 'done' ? (profileData?.profile?.id || null) : null
+              })
+              .eq('id', taskId);
+
+            if (error) throw error;
+            toast.success(`Task status updated to ${newStatus.replace('_', ' ')}`);
+            
+            // Optimistic rendering
+            task.status = newStatus;
+            renderBoard(cachedTasks);
+
+          } catch (err) {
+            console.error('Failed to update task status:', err);
+            toast.error('Failed to move task.');
+            loadKanbanBoard(); // restore board
+          }
+        });
+      });
+    }
+
+    // ----------------------------------------------------
+    // Task Editor Modal
+    // ----------------------------------------------------
+    let assigneesLoaded = false;
+    async function openTaskEditor(taskId) {
+      activeTaskId = taskId;
+      const task = cachedTasks.find(t => t.id === taskId);
+      if (!task) return;
+
+      // Populate Title details
+      document.getElementById('editor-task-ecm').textContent = task.ecm?.ecm_number || 'Ad-hoc Task';
+      document.getElementById('editor-task-subtitle').textContent = `Associated with: ${task.ecm?.title || 'No change request'}`;
+      
+      // Populate fields
+      document.getElementById('editor-title').value = task.title;
+      document.getElementById('editor-desc').value = task.description || '';
+      document.getElementById('editor-status').value = task.status;
+      document.getElementById('editor-priority').value = task.priority;
+      document.getElementById('editor-due').value = task.due_date || '';
+
+      // Populate reminder inputs
+      document.getElementById('remind-time').value = '';
+      document.getElementById('remind-channel').value = 'in_app';
+
+      // Load assignee options
+      await loadAssigneesDropdown(task.assignee_id);
+      
+      taskModal.open();
+    }
+
+    // Fetch all profiles and populate assignee select options
+    async function loadAssigneesDropdown(currentAssigneeId) {
+      if (assigneesLoaded) {
+        document.getElementById('editor-assignee').value = currentAssigneeId || 'unassigned';
+        return;
+      }
+
+      try {
+        const supabase = getSupabase();
+        const { data: profiles } = await supabase.from('profiles').select('id, full_name').order('full_name');
+        
+        const assigneeSelect = document.getElementById('editor-assignee');
+        if (profiles) {
+          assigneeSelect.innerHTML = '<option value="unassigned">Unassigned</option>' + 
+            profiles.map(p => `
+              <option value="${p.id}">${p.name || p.full_name}</option>
+            `).join('');
+        }
+        
+        assigneeSelect.value = currentAssigneeId || 'unassigned';
+        assigneesLoaded = true;
+      } catch (err) {
+        console.error('Failed to load profiles:', err);
+      }
+    }
+
+    // Task Form Save handler
+    document.getElementById('form-task-editor').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      if (!activeTaskId) return;
+
+      const title = document.getElementById('editor-title').value.trim();
+      const description = document.getElementById('editor-desc').value.trim();
+      const status = document.getElementById('editor-status').value;
+      const priority = document.getElementById('editor-priority').value;
+      const due_date = document.getElementById('editor-due').value || null;
+      const assignee_val = document.getElementById('editor-assignee').value;
+      const assignee_id = assignee_val === 'unassigned' ? null : assignee_val;
+
+      const remindTimeVal = document.getElementById('remind-time').value;
+      const remindChannel = document.getElementById('remind-channel').value;
+
+      try {
+        const supabase = getSupabase();
+        const profileData = await authService.me();
+
+        // 1. Update task values
+        const { error: updateErr } = await supabase
+          .from('ecm_tasks')
+          .update({
+            title,
+            description,
+            status,
+            priority,
+            due_date,
+            assignee_id,
+            completed_at: status === 'done' ? new Date().toISOString() : null,
+            completed_by: status === 'done' ? (profileData?.profile?.id || null) : null
+          })
+          .eq('id', activeTaskId);
+
+        if (updateErr) throw updateErr;
+
+        // 2. Schedule reminder (if reminder datetime is input)
+        if (remindTimeVal) {
+          const remind_at = new Date(remindTimeVal).toISOString();
+          const { error: remindErr } = await supabase
+            .from('task_reminders')
+            .insert({
+              task_id: activeTaskId,
+              remind_at,
+              channel: remindChannel,
+              created_by: profileData?.profile?.id
+            });
+
+          if (remindErr) throw remindErr;
+          toast.success('Reminder scheduled successfully.');
+        }
+
+        toast.success('Task details updated!');
+        taskModal.close();
+        
+        // Reload board
+        loadKanbanBoard();
+
+      } catch (err) {
+        console.error('Failed to save task updates:', err);
+        toast.error(err.message || 'Update failed.');
+      }
+    });
+
+    // ----------------------------------------------------
+    // Change Filter Listeners
+    // ----------------------------------------------------
+    document.getElementById('filter-ecm').addEventListener('change', loadKanbanBoard);
+    document.getElementById('filter-priority').addEventListener('change', loadKanbanBoard);
+
+    // Initial Load on startup
+    loadUserProfile();
+    loadFilters();
+    loadKanbanBoard();
+  </script>
+</body>
+</html>
