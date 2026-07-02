@@ -51,7 +51,7 @@ export const FEATURES = Object.freeze({
 export const CDN = Object.freeze({
   tailwind: 'https://cdn.tailwindcss.com',
   chartjs: 'https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.3/chart.umd.min.js',
-  lucide: 'https://cdnjs.cloudflare.com/ajax/libs/lucide/0.462.0/lucide.min.js',
+  lucide: 'https://unpkg.com/lucide@0.462.0/dist/umd/lucide.min.js',
   gsap: 'https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js',
   sortable: 'https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.2/Sortable.min.js',
   fullcalendar: 'https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js',
