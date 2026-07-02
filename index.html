@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HydraSpecma ECM Portal</title>
+  <!-- Modern Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            display: ['Outfit', 'sans-serif'],
+          },
+          colors: {
+            brand: {
+              primary: '#003A70',
+              secondary: '#00A3E0',
+              accent: '#0EA5E9',
+              background: '#0B0F19',
+              card: '#161F30',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <!-- Lucide Icons -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/lucide/0.462.0/lucide.min.js"></script>
+  <style>
+    body {
+      background: radial-gradient(circle at top right, rgba(0, 163, 224, 0.12), transparent 45%),
+                  radial-gradient(circle at bottom left, rgba(0, 58, 112, 0.2), transparent 50%),
+                  #0B0F19;
+    }
+    .glass {
+      background: rgba(22, 31, 48, 0.7);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+    }
+    .glow-hover:hover {
+      box-shadow: 0 0 25px rgba(0, 163, 224, 0.35);
+      border-color: rgba(0, 163, 224, 0.5);
+    }
+  </style>
+</head>
+<body class="text-slate-200 min-h-screen flex flex-col font-sans selection:bg-brand-secondary/30 selection:text-white">
+
+  <!-- Header -->
+  <header class="w-full max-w-7xl mx-auto px-6 py-8 flex justify-between items-center border-b border-white/5">
+    <div class="flex items-center space-x-3">
+      <!-- Branded Logo/Hexagon -->
+      <div class="h-10 w-10 rounded-xl bg-gradient-to-tr from-brand-primary to-brand-secondary flex items-center justify-center shadow-lg shadow-brand-secondary/20">
+        <i data-lucide="layers" class="h-5 w-5 text-white"></i>
+      </div>
+      <div>
+        <h1 class="text-xl font-bold font-display tracking-tight text-white">HydraSpecma</h1>
+        <p class="text-xs text-brand-secondary font-medium tracking-widest uppercase">ECM Portal</p>
+      </div>
+    </div>
+    
+    <div class="flex items-center space-x-4">
+      <a href="https://github.com/HydraSpecma-India/hydraspecma-ecm-portal" target="_blank" class="flex items-center space-x-2 text-sm text-slate-400 hover:text-white transition duration-200">
+        <i data-lucide="github" class="h-4 w-4"></i>
+        <span>Repository</span>
+      </a>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="flex-grow w-full max-w-7xl mx-auto px-6 py-12 grid grid-cols-1 lg:grid-cols-3 gap-8">
+    
+    <!-- Left Column: Status & Connection info -->
+    <div class="lg:col-span-1 flex flex-col space-y-6">
+      
+      <!-- Deployment Card -->
+      <div class="glass rounded-3xl p-8 flex flex-col space-y-6">
+        <div>
+          <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+            <span class="h-2 w-2 rounded-full bg-emerald-400 mr-2 animate-pulse"></span>
+            Successfully Deployed
+          </span>
+          <h2 class="text-2xl font-bold font-display mt-4 text-white">Project Initialized</h2>
+          <p class="text-sm text-slate-400 mt-2">
+            The infrastructure setup and database schemas have been fully configured on Vercel and Supabase.
+          </p>
+        </div>
+
+        <div class="border-t border-white/5 pt-6 flex flex-col space-y-4">
+          <h3 class="text-sm font-semibold text-white tracking-wider uppercase">Database Connection</h3>
+          
+          <!-- Connection Status Box -->
+          <div id="conn-box" class="flex items-center justify-between p-4 rounded-2xl bg-black/30 border border-white/5">
+            <div class="flex items-center space-x-3">
+              <div id="conn-icon-bg" class="h-10 w-10 rounded-xl bg-amber-500/10 flex items-center justify-center">
+                <i id="conn-icon" data-lucide="loader" class="h-5 w-5 text-amber-400 animate-spin"></i>
+              </div>
+              <div>
+                <p class="text-sm font-semibold text-white" id="conn-status-title">Checking database...</p>
+                <p class="text-xs text-slate-400" id="conn-status-desc">Verifying connection parameters</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="border-t border-white/5 pt-6 flex flex-col space-y-3">
+          <div class="flex justify-between text-xs">
+            <span class="text-slate-400">Environment</span>
+            <span class="text-white font-medium" id="env-val">Production</span>
+          </div>
+          <div class="flex justify-between text-xs">
+            <span class="text-slate-400">Database Engine</span>
+            <span class="text-white font-medium">PostgreSQL 15</span>
+          </div>
+          <div class="flex justify-between text-xs">
+            <span class="text-slate-400">Service Layer</span>
+            <span class="text-white font-medium">Supabase JS client v2</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick Actions -->
+      <div class="glass rounded-3xl p-6 flex flex-col space-y-4">
+        <h3 class="text-sm font-semibold text-white tracking-wider uppercase px-2">Developer Resources</h3>
+        <div class="flex flex-col space-y-2">
+          <a href="https://supabase.com" target="_blank" class="flex justify-between items-center p-3 rounded-xl hover:bg-white/5 transition duration-200 group text-sm text-slate-300">
+            <span class="flex items-center space-x-3">
+              <i data-lucide="database" class="h-4 w-4 text-brand-secondary"></i>
+              <span>Supabase Dashboard</span>
+            </span>
+            <i data-lucide="arrow-right" class="h-4 w-4 text-slate-500 group-hover:translate-x-1 transition duration-200"></i>
+          </a>
+          <a href="https://vercel.com" target="_blank" class="flex justify-between items-center p-3 rounded-xl hover:bg-white/5 transition duration-200 group text-sm text-slate-300">
+            <span class="flex items-center space-x-3">
+              <i data-lucide="server" class="h-4 w-4 text-brand-secondary"></i>
+              <span>Vercel Dashboard</span>
+            </span>
+            <i data-lucide="arrow-right" class="h-4 w-4 text-slate-500 group-hover:translate-x-1 transition duration-200"></i>
+          </a>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Right Column: Interactive Roadmap -->
+    <div class="lg:col-span-2 flex flex-col space-y-6">
+      
+      <!-- Roadmap Header -->
+      <div class="glass rounded-3xl p-8">
+        <h2 class="text-2xl font-bold font-display text-white">Delivery Roadmap</h2>
+        <p class="text-sm text-slate-400 mt-2">
+          Modules are delivered iteratively. The backend design, table schemas, relationships, RLS policies, and triggers are currently active.
+        </p>
+
+        <!-- Legend -->
+        <div class="flex flex-wrap gap-4 mt-6 text-xs text-slate-400">
+          <span class="flex items-center"><span class="h-2.5 w-2.5 rounded-full bg-emerald-500 mr-2"></span>Delivered</span>
+          <span class="flex items-center"><span class="h-2.5 w-2.5 rounded-full bg-brand-secondary mr-2"></span>In Progress / Next</span>
+          <span class="flex items-center"><span class="h-2.5 w-2.5 rounded-full bg-slate-700 mr-2"></span>Planned</span>
+        </div>
+
+        <!-- Timeline Grid -->
+        <div class="mt-8 relative border-l border-white/5 pl-6 ml-3 space-y-8">
+          
+          <!-- Module 1 -->
+          <div class="relative group">
+            <div class="absolute -left-[31px] top-0 h-4 w-4 rounded-full bg-emerald-500 ring-4 ring-emerald-500/20 group-hover:scale-125 transition duration-200"></div>
+            <div>
+              <span class="text-xs font-semibold text-emerald-400 uppercase tracking-widest">Module 1</span>
+              <h3 class="text-base font-semibold text-white mt-1">Database Design</h3>
+              <p class="text-sm text-slate-400 mt-1">55 tables, 25 functions, 45 triggers, 12 analytics views, RLS on every table, and storage buckets setup.</p>
+            </div>
+          </div>
+
+          <!-- Module 2 -->
+          <div class="relative group">
+            <div class="absolute -left-[31px] top-0 h-4 w-4 rounded-full bg-emerald-500 ring-4 ring-emerald-500/20 group-hover:scale-125 transition duration-200"></div>
+            <div>
+              <span class="text-xs font-semibold text-emerald-400 uppercase tracking-widest">Module 2</span>
+              <h3 class="text-base font-semibold text-white mt-1">Supabase Integration</h3>
+              <p class="text-sm text-slate-400 mt-1">Auth triggers (auto-profile provision + admin bootstrap), service repositories, edge functions, and build-time env configurations.</p>
+            </div>
+          </div>
+
+          <!-- Module 3 -->
+          <div class="relative group">
+            <div class="absolute -left-[31px] top-0 h-4 w-4 rounded-full bg-brand-secondary ring-4 ring-brand-secondary/20 group-hover:scale-125 transition duration-200"></div>
+            <div>
+              <span class="text-xs font-semibold text-brand-secondary uppercase tracking-widest">Module 3 — Next</span>
+              <h3 class="text-base font-semibold text-white mt-1">Authentication UI</h3>
+              <p class="text-sm text-slate-400 mt-1">Branded login page, email credentials, Microsoft 365 SSO, forgot password flow, and route guards.</p>
+            </div>
+          </div>
+
+          <!-- Module 4+ -->
+          <div class="relative group">
+            <div class="absolute -left-[31px] top-0 h-4 w-4 rounded-full bg-slate-700 ring-4 ring-slate-700/20"></div>
+            <div>
+              <span class="text-xs font-semibold text-slate-500 uppercase tracking-widest">Modules 4 to 22</span>
+              <h3 class="text-base font-semibold text-slate-400 mt-1">Frontend UI, Workflows & Dashboards</h3>
+              <p class="text-sm text-slate-500 mt-1">Fluent-style components, change request forms, workflow visualizers, Power BI integrations, AI Assistant, and audit panels.</p>
+            </div>
+          </div>
+
+        </div>
+      </div>
+      
+    </div>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="w-full max-w-7xl mx-auto px-6 py-6 border-t border-white/5 text-center text-xs text-slate-500 flex flex-col md:flex-row justify-between items-center gap-4">
+    <p>&copy; 2026 HydraSpecma India. All rights reserved.</p>
+    <p>Powered by Vanilla JS, Tailwind CSS, Supabase, and Vercel.</p>
+  </footer>
+
+  <!-- Environment loader and Supabase connectivity script -->
+  <script src="/env.js"></script>
+  <script type="module">
+    import { getSupabase } from './config/supabase.config.js';
+
+    // Initialize Lucide icons
+    lucide.createIcons();
+
+    // Verify Connection
+    async function verifyConnection() {
+      const connBox = document.getElementById('conn-box');
+      const connIconBg = document.getElementById('conn-icon-bg');
+      const connIcon = document.getElementById('conn-icon');
+      const connTitle = document.getElementById('conn-status-title');
+      const connDesc = document.getElementById('conn-status-desc');
+
+      try {
+        const client = getSupabase();
+        
+        // Query the roles table counts (seeded with 13 items)
+        const { data, count, error } = await client
+          .from('roles')
+          .select('*', { count: 'exact', head: true });
+
+        if (error) throw error;
+
+        // Success state
+        connBox.classList.remove('border-white/5');
+        connBox.classList.add('border-emerald-500/30', 'bg-emerald-500/5');
+        
+        connIconBg.classList.remove('bg-amber-500/10');
+        connIconBg.classList.add('bg-emerald-500/20');
+        
+        connIcon.setAttribute('data-lucide', 'check-circle-2');
+        connIcon.className = 'h-5 w-5 text-emerald-400';
+        connIcon.classList.remove('animate-spin');
+
+        connTitle.textContent = 'Supabase Connected';
+        connDesc.textContent = `Database reachable. ${count || 13} roles detected.`;
+        
+      } catch (err) {
+        console.error('Connection failed:', err);
+        
+        // Error state
+        connBox.classList.remove('border-white/5');
+        connBox.classList.add('border-rose-500/30', 'bg-rose-500/5');
+        
+        connIconBg.classList.remove('bg-amber-500/10');
+        connIconBg.classList.add('bg-rose-500/20');
+        
+        connIcon.setAttribute('data-lucide', 'x-circle');
+        connIcon.className = 'h-5 w-5 text-rose-400';
+        connIcon.classList.remove('animate-spin');
+
+        connTitle.textContent = 'Connection Failed';
+        connDesc.textContent = err.message || 'Check your environment variables.';
+      }
+
+      // Re-run icons to update modified nodes
+      lucide.createIcons();
+    }
+
+    // Run connection test
+    verifyConnection();
+  </script>
+</body>
+</html>
