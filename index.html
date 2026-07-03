@@ -796,28 +796,53 @@
         return d.toLocaleDateString('default', { month: 'short', year: '2-digit' });
       });
 
+      // Generate high-end professional vertical gradients
+      const gradCreated = ctx.createLinearGradient(0, 0, 0, 260);
+      gradCreated.addColorStop(0, 'rgba(255, 204, 0, 0.4)');
+      gradCreated.addColorStop(1, 'rgba(255, 204, 0, 0.0)');
+
+      const gradCompleted = ctx.createLinearGradient(0, 0, 0, 260);
+      gradCompleted.addColorStop(0, 'rgba(22, 163, 74, 0.4)');
+      gradCompleted.addColorStop(1, 'rgba(22, 163, 74, 0.0)');
+
       chartMonthly = new Chart(ctx, {
         type: 'line',
         data: {
           labels,
           datasets: [
             {
-              label: 'Created',
+              label: 'Created Requests',
               data: list.map(item => item.created),
-              borderColor: '#0EA5E9',
-              backgroundColor: 'rgba(14, 165, 233, 0.1)',
+              borderColor: '#FFCC00', // Branded gold
+              backgroundColor: gradCreated,
               fill: true,
-              tension: 0.35,
-              borderWidth: 2,
+              tension: 0.4,
+              borderWidth: 3,
+              pointBackgroundColor: '#FFCC00',
+              pointBorderColor: '#575757',
+              pointBorderWidth: 1.5,
+              pointRadius: 4,
+              pointHoverRadius: 7,
+              pointHoverBackgroundColor: '#FFCC00',
+              pointHoverBorderColor: '#FFFFFF',
+              pointHoverBorderWidth: 2
             },
             {
-              label: 'Completed',
+              label: 'Completed Requests',
               data: list.map(item => item.completed),
-              borderColor: '#16A34A',
-              backgroundColor: 'rgba(22, 163, 74, 0.1)',
+              borderColor: '#16A34A', // Success green
+              backgroundColor: gradCompleted,
               fill: true,
-              tension: 0.35,
-              borderWidth: 2,
+              tension: 0.4,
+              borderWidth: 3,
+              pointBackgroundColor: '#16A34A',
+              pointBorderColor: '#575757',
+              pointBorderWidth: 1.5,
+              pointRadius: 4,
+              pointHoverRadius: 7,
+              pointHoverBackgroundColor: '#16A34A',
+              pointHoverBorderColor: '#FFFFFF',
+              pointHoverBorderWidth: 2
             }
           ]
         },
@@ -828,17 +853,31 @@
             legend: {
               labels: {
                 color: colors.text,
-                font: { family: 'Inter', size: 10 }
+                font: { family: 'Inter', size: 10, weight: '600' }
               }
+            },
+            tooltip: {
+              backgroundColor: '#575757',
+              titleColor: '#FFFFFF',
+              titleFont: { family: 'Inter', size: 11, weight: 'bold' },
+              bodyColor: '#E2E8F0',
+              bodyFont: { family: 'Inter', size: 11 },
+              borderColor: '#FFCC00',
+              borderWidth: 1,
+              cornerRadius: 8,
+              padding: 10,
+              displayColors: true,
+              boxWidth: 8,
+              boxHeight: 8
             }
           },
           scales: {
             x: {
-              grid: { color: colors.grid },
+              grid: { color: colors.grid, drawBorder: false },
               ticks: { color: colors.text, font: { family: 'Inter', size: 9 } }
             },
             y: {
-              grid: { color: colors.grid },
+              grid: { color: colors.grid, drawBorder: false },
               ticks: { color: colors.text, font: { family: 'Inter', size: 9 }, stepSize: 1 }
             }
           }

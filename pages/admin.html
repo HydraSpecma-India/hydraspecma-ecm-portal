@@ -113,8 +113,12 @@
         <div class="flex justify-between items-center">
           <div>
             <h3 class="text-sm font-bold font-display text-white dark:text-white light:text-slate-900">User Profiles & Security Roles</h3>
-            <p class="text-[10px] text-slate-400 mt-1">Assign and revoke RBAC roles for system access.</p>
+            <p class="text-[10px] text-slate-400 mt-1">Create, edit, and assign RBAC roles for system access.</p>
           </div>
+          <button onclick="globalThis.openUserModal()" class="py-2 px-4 rounded-xl bg-brand-secondary text-slate-900 hover:bg-brand-secondary/80 font-bold text-xs flex items-center space-x-1.5 transition">
+            <i data-lucide="plus" class="h-3.5 w-3.5"></i>
+            <span>Create User</span>
+          </button>
         </div>
 
         <div class="overflow-x-auto">
@@ -167,18 +171,58 @@
     <div id="tab-settings" class="hidden flex flex-col space-y-6">
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
         
+        <!-- Customers (Companies) -->
+        <div class="glass rounded-3xl p-6 flex flex-col space-y-4">
+          <div class="flex justify-between items-center">
+            <h3 class="text-sm font-bold font-display text-white dark:text-white light:text-slate-900">Customers (Companies)</h3>
+            <button onclick="globalThis.openCompanyModal('customer')" class="py-1.5 px-3 rounded-xl bg-brand-secondary text-slate-900 hover:bg-brand-secondary/80 font-bold text-[10px] flex items-center space-x-1 transition">
+              <i data-lucide="plus" class="h-3 w-3"></i>
+              <span>Add Customer</span>
+            </button>
+          </div>
+          <div class="overflow-y-auto max-h-[250px] space-y-2 pr-1" id="list-customers-container">
+            <!-- Dynamically populated customers -->
+          </div>
+        </div>
+
+        <!-- Suppliers (Companies) -->
+        <div class="glass rounded-3xl p-6 flex flex-col space-y-4">
+          <div class="flex justify-between items-center">
+            <h3 class="text-sm font-bold font-display text-white dark:text-white light:text-slate-900">Suppliers (Companies)</h3>
+            <button onclick="globalThis.openCompanyModal('supplier')" class="py-1.5 px-3 rounded-xl bg-brand-secondary text-slate-900 hover:bg-brand-secondary/80 font-bold text-[10px] flex items-center space-x-1 transition">
+              <i data-lucide="plus" class="h-3 w-3"></i>
+              <span>Add Supplier</span>
+            </button>
+          </div>
+          <div class="overflow-y-auto max-h-[250px] space-y-2 pr-1" id="list-suppliers-container">
+            <!-- Dynamically populated suppliers -->
+          </div>
+        </div>
+
         <!-- Plants parameters -->
         <div class="glass rounded-3xl p-6 flex flex-col space-y-4">
-          <h3 class="text-sm font-bold font-display text-white dark:text-white light:text-slate-900">Manufacturing Plants / Sites</h3>
-          <div class="overflow-y-auto max-h-[300px] space-y-2 pr-1" id="list-plants-container">
+          <div class="flex justify-between items-center">
+            <h3 class="text-sm font-bold font-display text-white dark:text-white light:text-slate-900">Manufacturing Plants / Sites</h3>
+            <button onclick="globalThis.openPredefinedModal('plant')" class="py-1.5 px-3 rounded-xl bg-brand-secondary text-slate-900 hover:bg-brand-secondary/80 font-bold text-[10px] flex items-center space-x-1 transition">
+              <i data-lucide="plus" class="h-3 w-3"></i>
+              <span>Add Plant</span>
+            </button>
+          </div>
+          <div class="overflow-y-auto max-h-[250px] space-y-2 pr-1" id="list-plants-container">
             <!-- Dynamically populated plants -->
           </div>
         </div>
 
         <!-- Departments parameters -->
         <div class="glass rounded-3xl p-6 flex flex-col space-y-4">
-          <h3 class="text-sm font-bold font-display text-white dark:text-white light:text-slate-900">Internal Departments</h3>
-          <div class="overflow-y-auto max-h-[300px] space-y-2 pr-1" id="list-depts-container">
+          <div class="flex justify-between items-center">
+            <h3 class="text-sm font-bold font-display text-white dark:text-white light:text-slate-900">Internal Departments</h3>
+            <button onclick="globalThis.openPredefinedModal('dept')" class="py-1.5 px-3 rounded-xl bg-brand-secondary text-slate-900 hover:bg-brand-secondary/80 font-bold text-[10px] flex items-center space-x-1 transition">
+              <i data-lucide="plus" class="h-3 w-3"></i>
+              <span>Add Dept</span>
+            </button>
+          </div>
+          <div class="overflow-y-auto max-h-[250px] space-y-2 pr-1" id="list-depts-container">
             <!-- Dynamically populated departments -->
           </div>
         </div>
@@ -188,28 +232,132 @@
 
   </main>
 
-  <!-- Edit Roles Modal -->
-  <div id="modal-edit-roles" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm">
+  <!-- Edit User Modal (RBAC Profile & Role) -->
+  <div id="modal-edit-user" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm">
     <div class="w-full max-w-md glass rounded-3xl p-8 flex flex-col space-y-6">
       <div class="flex justify-between items-start">
         <div>
-          <h3 class="text-lg font-bold font-display text-white">Assign User Roles</h3>
-          <p class="text-xs text-slate-400 mt-1" id="edit-roles-subtitle">Modifying roles for...</p>
+          <h3 class="text-lg font-bold font-display text-white" id="user-modal-title">Create User Profile</h3>
+          <p class="text-xs text-slate-400 mt-1" id="user-modal-subtitle">Add a new user profile to the portal</p>
         </div>
-        <button type="button" class="text-slate-500 hover:text-white transition duration-200" onclick="closeRolesModal()">
+        <button type="button" class="text-slate-400 hover:text-white transition duration-200" onclick="globalThis.closeUserModal()">
           <i data-lucide="x" class="h-5 w-5"></i>
         </button>
       </div>
 
-      <form id="form-edit-roles" class="flex flex-col space-y-4">
-        <input type="hidden" id="edit-user-id" value="">
+      <form id="form-edit-user" class="flex flex-col space-y-4 text-xs">
+        <input type="hidden" id="edit-user-id">
         
-        <div class="space-y-2 max-h-[250px] overflow-y-auto" id="roles-checkboxes-container">
-          <!-- Dynamically populated checkboxes -->
+        <div class="flex flex-col space-y-1.5">
+          <label for="edit-user-name" class="font-semibold text-slate-400">Full Name</label>
+          <input type="text" id="edit-user-name" required placeholder="John Doe" 
+                 class="px-3.5 py-2.5 rounded-xl bg-black/35 border border-white/5 outline-none text-white focus:border-brand-secondary/50">
         </div>
 
-        <button type="submit" class="w-full py-2.5 px-4 rounded-xl bg-gradient-to-r from-brand-primary to-brand-secondary font-semibold text-xs text-white transition duration-200">
-          Save Role Assignments
+        <div class="flex flex-col space-y-1.5">
+          <label for="edit-user-email" class="font-semibold text-slate-400">Email Address</label>
+          <input type="email" id="edit-user-email" required placeholder="john.doe@hydraspecma.com" 
+                 class="px-3.5 py-2.5 rounded-xl bg-black/35 border border-white/5 outline-none text-white focus:border-brand-secondary/50">
+        </div>
+
+        <div class="flex flex-col space-y-1.5">
+          <label for="edit-user-title" class="font-semibold text-slate-400">Job Title</label>
+          <input type="text" id="edit-user-title" required placeholder="Quality Manager" 
+                 class="px-3.5 py-2.5 rounded-xl bg-black/35 border border-white/5 outline-none text-white focus:border-brand-secondary/50">
+        </div>
+
+        <div class="grid grid-cols-2 gap-4">
+          <div class="flex flex-col space-y-1.5">
+            <label for="edit-user-dept" class="font-semibold text-slate-400">Department</label>
+            <select id="edit-user-dept" required
+                    class="px-3.5 py-2.5 rounded-xl bg-black/35 border border-white/5 outline-none text-white focus:border-brand-secondary/50">
+              <!-- Dynamically loaded departments -->
+            </select>
+          </div>
+
+          <div class="flex flex-col space-y-1.5">
+            <label for="edit-user-role" class="font-semibold text-slate-400">Security Role</label>
+            <select id="edit-user-role" required
+                    class="px-3.5 py-2.5 rounded-xl bg-black/35 border border-white/5 outline-none text-white focus:border-brand-secondary/50">
+              <!-- Dynamically loaded roles -->
+            </select>
+          </div>
+        </div>
+
+        <button type="submit" class="w-full py-3 mt-2 rounded-xl bg-gradient-to-r from-brand-primary to-brand-secondary font-semibold text-xs text-white transition duration-200">
+          <span id="btn-save-user-text">Save User</span>
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Create/Edit Company Modal -->
+  <div id="modal-edit-company" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm">
+    <div class="w-full max-w-md glass rounded-3xl p-8 flex flex-col space-y-6">
+      <div class="flex justify-between items-start">
+        <div>
+          <h3 class="text-lg font-bold font-display text-white" id="company-modal-title">Create Company</h3>
+          <p class="text-xs text-slate-400 mt-1">Add a new customer or supplier company</p>
+        </div>
+        <button type="button" class="text-slate-400 hover:text-white transition duration-200" onclick="globalThis.closeCompanyModal()">
+          <i data-lucide="x" class="h-5 w-5"></i>
+        </button>
+      </div>
+
+      <form id="form-edit-company" class="flex flex-col space-y-4 text-xs">
+        <input type="hidden" id="edit-company-id">
+        <input type="hidden" id="edit-company-mode">
+        
+        <div class="flex flex-col space-y-1.5">
+          <label for="edit-company-name" class="font-semibold text-slate-400">Company Name</label>
+          <input type="text" id="edit-company-name" required placeholder="Acme Corp" 
+                 class="px-3.5 py-2.5 rounded-xl bg-black/35 border border-white/5 outline-none text-white focus:border-brand-secondary/50">
+        </div>
+
+        <div class="flex flex-col space-y-1.5">
+          <label for="edit-company-code" class="font-semibold text-slate-400">Account Code / D365 ID</label>
+          <input type="text" id="edit-company-code" required placeholder="CUST-009" 
+                 class="px-3.5 py-2.5 rounded-xl bg-black/35 border border-white/5 outline-none text-white focus:border-brand-secondary/50">
+        </div>
+
+        <button type="submit" class="w-full py-3 mt-2 rounded-xl bg-gradient-to-r from-brand-primary to-brand-secondary font-semibold text-xs text-white transition duration-200">
+          <span>Save Company</span>
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Create/Edit Predefined Parameter Modal -->
+  <div id="modal-edit-predefined" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm">
+    <div class="w-full max-w-md glass rounded-3xl p-8 flex flex-col space-y-6">
+      <div class="flex justify-between items-start">
+        <div>
+          <h3 class="text-lg font-bold font-display text-white" id="predefined-modal-title">Create Parameter</h3>
+          <p class="text-xs text-slate-400 mt-1" id="predefined-modal-subtitle">Add a system parameter</p>
+        </div>
+        <button type="button" class="text-slate-400 hover:text-white transition duration-200" onclick="globalThis.closePredefinedModal()">
+          <i data-lucide="x" class="h-5 w-5"></i>
+        </button>
+      </div>
+
+      <form id="form-edit-predefined" class="flex flex-col space-y-4 text-xs">
+        <input type="hidden" id="edit-predefined-id">
+        <input type="hidden" id="edit-predefined-type">
+        
+        <div class="flex flex-col space-y-1.5">
+          <label for="edit-predefined-name" class="font-semibold text-slate-400">Name</label>
+          <input type="text" id="edit-predefined-name" required placeholder="Value name" 
+                 class="px-3.5 py-2.5 rounded-xl bg-black/35 border border-white/5 outline-none text-white focus:border-brand-secondary/50">
+        </div>
+
+        <div class="flex flex-col space-y-1.5" id="predefined-code-group">
+          <label for="edit-predefined-code" class="font-semibold text-slate-400">Code</label>
+          <input type="text" id="edit-predefined-code" placeholder="Value code" 
+                 class="px-3.5 py-2.5 rounded-xl bg-black/35 border border-white/5 outline-none text-white focus:border-brand-secondary/50">
+        </div>
+
+        <button type="submit" class="w-full py-3 mt-2 rounded-xl bg-gradient-to-r from-brand-primary to-brand-secondary font-semibold text-xs text-white transition duration-200">
+          <span>Save Parameter</span>
         </button>
       </form>
     </div>
@@ -264,11 +412,6 @@
       tabWorkflowBtn.className = 'px-4 py-2.5 rounded-xl text-xs font-semibold text-slate-400 hover:text-white hover:bg-white/5 transition duration-200';
       loadSettingsData();
     });
-
-    // Modal helpers
-    window.closeRolesModal = function() {
-      document.getElementById('modal-edit-roles').classList.add('hidden');
-    };
 
     // User profile
     async function loadUserProfile() {
@@ -334,7 +477,9 @@
           .from('profiles')
           .select(`
             id,
+            email,
             full_name,
+            department_id,
             department:departments!fk_profiles_department (
               name
             ),
@@ -368,8 +513,8 @@
               <td class="py-3.5 px-4 text-slate-400">${u.job_title || 'N/A'}</td>
               <td class="py-3.5 px-4"><div class="flex flex-wrap gap-1.5">${rolesStr}</div></td>
               <td class="py-3.5 px-4 text-right">
-                <button onclick="openEditRoles('${u.id}', '${u.full_name?.replace(/'/g, "\\'")}', [${u.user_roles?.map(ur => `'${ur.role_id}'`).join(',')}])" class="py-1 px-2.5 rounded-lg border border-brand-secondary/35 hover:bg-brand-secondary/15 font-semibold text-[10px] text-brand-secondary transition">
-                  Edit Roles
+                <button onclick="globalThis.openUserModal('${u.id}', '${u.full_name?.replace(/'/g, "\\'")}', '${u.email || ''}', '${u.job_title?.replace(/'/g, "\\'") || ''}', '${u.department_id || ''}', '${u.user_roles?.[0]?.role_id || ''}')" class="py-1 px-2.5 rounded-lg border border-brand-secondary/35 hover:bg-brand-secondary/15 font-semibold text-[10px] text-brand-secondary transition">
+                  Edit
                 </button>
               </td>
             </tr>
@@ -382,66 +527,206 @@
       }
     }
 
-    // Open Role Assign Modal
-    window.openEditRoles = function(userId, name, assignedRoleIds) {
-      document.getElementById('edit-user-id').value = userId;
-      document.getElementById('edit-roles-subtitle').textContent = `Modifying roles for ${name}`;
-      
-      const container = document.getElementById('roles-checkboxes-container');
-      container.innerHTML = allRoles.map(r => {
-        const checked = assignedRoleIds.includes(r.id) ? 'checked' : '';
-        return `
-          <label class="flex items-center space-x-3 bg-white/5 p-3 rounded-xl border border-white/5 cursor-pointer hover:bg-white/10 transition">
-            <input type="checkbox" name="user_role" value="${r.id}" ${checked} class="h-4 w-4 rounded bg-black/30 border border-white/10 text-brand-secondary focus:ring-0 cursor-pointer">
-            <div class="text-xs">
-              <p class="font-bold text-white uppercase tracking-wider">${r.name}</p>
-              <p class="text-[10px] text-slate-400 mt-0.5">${r.description || ''}</p>
-            </div>
-          </label>
-        `;
-      }).join('');
+    // Load dropdown selections once
+    let departmentsCached = [];
+    async function loadDropdownData() {
+      try {
+        const supabase = getSupabase();
+        
+        // Departments dropdown
+        const { data: depts } = await supabase.from('departments').select('id, name').eq('is_active', true).order('name');
+        departmentsCached = depts || [];
+        const deptSelect = document.getElementById('edit-user-dept');
+        if (deptSelect) {
+          deptSelect.innerHTML = departmentsCached.map(d => `<option value="${d.id}">${d.name}</option>`).join('');
+        }
 
-      document.getElementById('modal-edit-roles').classList.remove('hidden');
+        // Roles dropdown
+        const { data: roles } = await supabase.from('roles').select('id, name').order('name');
+        const roleSelect = document.getElementById('edit-user-role');
+        if (roleSelect) {
+          roleSelect.innerHTML = (roles || []).map(r => `<option value="${r.id}">${r.name}</option>`).join('');
+        }
+      } catch (err) {
+        console.error('Failed to load dropdown selections:', err);
+      }
+    }
+
+    // Open User Modal handler
+    globalThis.openUserModal = function (userId = '', fullName = '', email = '', jobTitle = '', departmentId = '', roleId = '') {
+      document.getElementById('edit-user-id').value = userId;
+      document.getElementById('edit-user-name').value = fullName;
+      document.getElementById('edit-user-email').value = email;
+      document.getElementById('edit-user-title').value = jobTitle;
+      
+      const deptSelect = document.getElementById('edit-user-dept');
+      const roleSelect = document.getElementById('edit-user-role');
+      
+      if (departmentId) deptSelect.value = departmentId;
+      if (roleId) roleSelect.value = roleId;
+
+      document.getElementById('user-modal-title').textContent = userId ? 'Edit User Profile' : 'Create User Profile';
+      document.getElementById('user-modal-subtitle').textContent = userId ? 'Update user details and access role' : 'Add a new user profile to the portal';
+      document.getElementById('btn-save-user-text').textContent = userId ? 'Save Changes' : 'Create User';
+
+      document.getElementById('modal-edit-user').classList.remove('hidden');
     };
 
-    // Save Roles Form Submit
-    document.getElementById('form-edit-roles').addEventListener('submit', async (e) => {
+    globalThis.closeUserModal = function () {
+      document.getElementById('modal-edit-user').classList.add('hidden');
+    };
+
+    // Submit user form
+    document.getElementById('form-edit-user').addEventListener('submit', async (e) => {
       e.preventDefault();
       const userId = document.getElementById('edit-user-id').value;
-      const checkedBoxes = Array.from(document.querySelectorAll('input[name="user_role"]:checked')).map(cb => cb.value);
+      const fullName = document.getElementById('edit-user-name').value;
+      const email = document.getElementById('edit-user-email').value;
+      const jobTitle = document.getElementById('edit-user-title').value;
+      const departmentId = document.getElementById('edit-user-dept').value;
+      const roleId = document.getElementById('edit-user-role').value;
+      
+      const isEdit = !!userId;
+      const targetUserId = userId || crypto.randomUUID();
 
       try {
         const supabase = getSupabase();
         
-        // 1. Delete all existing roles for this user
+        // 1. Upsert profile
+        const { error: profileErr } = await supabase
+          .from('profiles')
+          .upsert({
+            id: targetUserId,
+            full_name: fullName,
+            email: email,
+            job_title: jobTitle,
+            department_id: departmentId,
+            is_active: true
+          });
+
+        if (profileErr) throw profileErr;
+
+        // 2. Clear old roles and insert new one
         const { error: delErr } = await supabase
           .from('user_roles')
           .delete()
-          .eq('user_id', userId);
+          .eq('user_id', targetUserId);
 
         if (delErr) throw delErr;
 
-        // 2. Insert new role configurations
-        if (checkedBoxes.length > 0) {
-          const insertPayload = checkedBoxes.map(rId => ({
-            user_id: userId,
-            role_id: rId
-          }));
+        const { error: insErr } = await supabase
+          .from('user_roles')
+          .insert({
+            user_id: targetUserId,
+            role_id: roleId
+          });
 
-          const { error: insErr } = await supabase
-            .from('user_roles')
-            .insert(insertPayload);
+        if (insErr) throw insErr;
 
-          if (insErr) throw insErr;
-        }
-
-        toast.success('Roles assigned successfully.');
-        closeRolesModal();
+        toast.success(isEdit ? 'User profile updated.' : 'User profile created.');
+        globalThis.closeUserModal();
         loadUsers();
 
       } catch (err) {
-        console.error('Failed to save roles:', err);
-        toast.error('Failed to update role parameters.');
+        console.error('Failed to save user:', err);
+        toast.error('Failed to save user profile.');
+      }
+    });
+
+    // Company Modal triggers
+    globalThis.openCompanyModal = function (mode, id = '', name = '', code = '') {
+      document.getElementById('edit-company-id').value = id;
+      document.getElementById('edit-company-mode').value = mode;
+      document.getElementById('edit-company-name').value = name;
+      document.getElementById('edit-company-code').value = code;
+
+      document.getElementById('company-modal-title').textContent = id ? 'Edit Company' : `Create ${mode === 'customer' ? 'Customer' : 'Supplier'}`;
+      document.getElementById('modal-edit-company').classList.remove('hidden');
+    };
+
+    globalThis.closeCompanyModal = function () {
+      document.getElementById('modal-edit-company').classList.add('hidden');
+    };
+
+    document.getElementById('form-edit-company').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const id = document.getElementById('edit-company-id').value;
+      const mode = document.getElementById('edit-company-mode').value;
+      const name = document.getElementById('edit-company-name').value;
+      const code = document.getElementById('edit-company-code').value;
+      
+      const targetId = id || crypto.randomUUID();
+      const table = mode === 'customer' ? 'customers' : 'suppliers';
+
+      try {
+        const supabase = getSupabase();
+        const { error } = await supabase
+          .from(table)
+          .upsert({
+            id: targetId,
+            name,
+            code,
+            is_active: true
+          });
+
+        if (error) throw error;
+
+        toast.success(`${mode === 'customer' ? 'Customer' : 'Supplier'} company saved.`);
+        globalThis.closeCompanyModal();
+        loadSettingsData();
+
+      } catch (err) {
+        console.error('Failed to save company:', err);
+        toast.error('Failed to save company details.');
+      }
+    });
+
+    // Predefined Modal triggers
+    globalThis.openPredefinedModal = function (type, id = '', name = '', code = '') {
+      document.getElementById('edit-predefined-id').value = id;
+      document.getElementById('edit-predefined-type').value = type;
+      document.getElementById('edit-predefined-name').value = name;
+      document.getElementById('edit-predefined-code').value = code;
+
+      document.getElementById('predefined-modal-title').textContent = id ? 'Edit Parameter' : `Create ${type === 'plant' ? 'Plant' : 'Department'}`;
+      document.getElementById('modal-edit-predefined').classList.remove('hidden');
+    };
+
+    globalThis.closePredefinedModal = function () {
+      document.getElementById('modal-edit-predefined').classList.add('hidden');
+    };
+
+    document.getElementById('form-edit-predefined').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const id = document.getElementById('edit-predefined-id').value;
+      const type = document.getElementById('edit-predefined-type').value;
+      const name = document.getElementById('edit-predefined-name').value;
+      const code = document.getElementById('edit-predefined-code').value;
+      
+      const targetId = id || crypto.randomUUID();
+      const table = type === 'plant' ? 'plants' : 'departments';
+
+      try {
+        const supabase = getSupabase();
+        const { error } = await supabase
+          .from(table)
+          .upsert({
+            id: targetId,
+            name,
+            code,
+            is_active: true
+          });
+
+        if (error) throw error;
+
+        toast.success(`${type === 'plant' ? 'Plant' : 'Department'} parameter saved.`);
+        globalThis.closePredefinedModal();
+        loadSettingsData();
+        loadDropdownData();
+
+      } catch (err) {
+        console.error('Failed to save predefined parameter:', err);
+        toast.error('Failed to save predefined parameter.');
       }
     });
 
@@ -492,16 +777,52 @@
     // Load Settings Data (Tab 3)
     // ----------------------------------------------------
     async function loadSettingsData() {
+      const customersContainer = document.getElementById('list-customers-container');
+      const suppliersContainer = document.getElementById('list-suppliers-container');
       const plantsContainer = document.getElementById('list-plants-container');
       const deptsContainer = document.getElementById('list-depts-container');
 
+      customersContainer.innerHTML = '<p class="text-xs text-slate-500">Loading customers...</p>';
+      suppliersContainer.innerHTML = '<p class="text-xs text-slate-500">Loading suppliers...</p>';
       plantsContainer.innerHTML = '<p class="text-xs text-slate-500">Loading plants...</p>';
       deptsContainer.innerHTML = '<p class="text-xs text-slate-500">Loading departments...</p>';
 
       try {
         const supabase = getSupabase();
         
-        // 1. Fetch plants
+        // 1. Fetch Customers
+        const { data: customers } = await supabase.from('customers').select('*').order('name');
+        if (customers && customers.length > 0) {
+          customersContainer.innerHTML = customers.map(c => `
+            <div class="flex items-center justify-between bg-white/5 p-3 rounded-xl border border-white/5 text-xs text-slate-300 dark:text-slate-300 light:text-slate-700">
+              <div>
+                <p class="font-bold text-white dark:text-white light:text-slate-800">${c.name}</p>
+                <p class="text-[9px] text-slate-500 font-medium">Code: ${c.code}</p>
+              </div>
+              <button onclick="globalThis.openCompanyModal('customer', '${c.id}', '${c.name.replace(/'/g, "\\'")}', '${c.code || ''}')" class="py-1 px-2.5 rounded bg-brand-primary/20 border border-brand-primary/30 font-mono text-[9px] text-slate-400 hover:text-white hover:border-brand-secondary/40 transition">Edit</button>
+            </div>
+          `).join('');
+        } else {
+          customersContainer.innerHTML = '<p class="text-xs text-slate-500 italic">No customers defined.</p>';
+        }
+
+        // 2. Fetch Suppliers
+        const { data: suppliers } = await supabase.from('suppliers').select('*').order('name');
+        if (suppliers && suppliers.length > 0) {
+          suppliersContainer.innerHTML = suppliers.map(s => `
+            <div class="flex items-center justify-between bg-white/5 p-3 rounded-xl border border-white/5 text-xs text-slate-300 dark:text-slate-300 light:text-slate-700">
+              <div>
+                <p class="font-bold text-white dark:text-white light:text-slate-800">${s.name}</p>
+                <p class="text-[9px] text-slate-500 font-medium">Code: ${s.code}</p>
+              </div>
+              <button onclick="globalThis.openCompanyModal('supplier', '${s.id}', '${s.name.replace(/'/g, "\\'")}', '${s.code || ''}')" class="py-1 px-2.5 rounded bg-brand-primary/20 border border-brand-primary/30 font-mono text-[9px] text-slate-400 hover:text-white hover:border-brand-secondary/40 transition">Edit</button>
+            </div>
+          `).join('');
+        } else {
+          suppliersContainer.innerHTML = '<p class="text-xs text-slate-500 italic">No suppliers defined.</p>';
+        }
+
+        // 3. Fetch Plants
         const { data: plants } = await supabase.from('plants').select('*').order('name');
         if (plants && plants.length > 0) {
           plantsContainer.innerHTML = plants.map(p => `
@@ -510,14 +831,14 @@
                 <p class="font-bold text-white dark:text-white light:text-slate-800">${p.name}</p>
                 <p class="text-[9px] text-slate-500 font-medium">Country: ${p.country || 'N/A'}</p>
               </div>
-              <span class="px-2 py-0.5 bg-brand-primary/20 border border-brand-primary/30 rounded font-mono text-[9px] text-slate-400">${p.code}</span>
+              <button onclick="globalThis.openPredefinedModal('plant', '${p.id}', '${p.name.replace(/'/g, "\\'")}', '${p.code || ''}')" class="py-1 px-2.5 rounded bg-brand-primary/20 border border-brand-primary/30 font-mono text-[9px] text-slate-400 hover:text-white hover:border-brand-secondary/40 transition">Edit</button>
             </div>
           `).join('');
         } else {
           plantsContainer.innerHTML = '<p class="text-xs text-slate-500 italic">No plants defined.</p>';
         }
 
-        // 2. Fetch departments
+        // 4. Fetch Departments
         const { data: depts } = await supabase.from('departments').select('*').order('name');
         if (depts && depts.length > 0) {
           deptsContainer.innerHTML = depts.map(d => `
@@ -525,7 +846,7 @@
               <div>
                 <p class="font-bold text-white dark:text-white light:text-slate-800">${d.name}</p>
               </div>
-              <span class="px-2 py-0.5 bg-brand-primary/20 border border-brand-primary/30 rounded font-mono text-[9px] text-slate-400">${d.code}</span>
+              <button onclick="globalThis.openPredefinedModal('dept', '${d.id}', '${d.name.replace(/'/g, "\\'")}', '${d.code || ''}')" class="py-1 px-2.5 rounded bg-brand-primary/20 border border-brand-primary/30 font-mono text-[9px] text-slate-400 hover:text-white hover:border-brand-secondary/40 transition">Edit</button>
             </div>
           `).join('');
         } else {
@@ -537,9 +858,10 @@
       }
     }
 
-    // Init
+    // Init page load
     loadUserProfile();
     loadUsers();
+    loadDropdownData();
   </script>
 </body>
 </html>
