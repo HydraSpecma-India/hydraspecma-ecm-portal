@@ -588,10 +588,18 @@
       try {
         const supabase = getSupabase();
 
-        // 1. Delete assigned roles first
+        // 1. Delete associated approval assignments to prevent check constraint violation
+        await supabase.from('approval_assignments').delete().eq('approver_id', userId);
+        await supabase.from('approval_assignments').delete().eq('delegated_to', userId);
+        await supabase.from('approval_assignments').delete().eq('escalated_to', userId);
+
+        // 2. Clear task assignments
+        await supabase.from('ecm_tasks').update({ assignee_id: null }).eq('assignee_id', userId);
+
+        // 3. Delete assigned roles
         await supabase.from('user_roles').delete().eq('user_id', userId);
 
-        // 2. Delete user profile
+        // 4. Delete user profile
         const { error } = await supabase.from('profiles').delete().eq('id', userId);
         if (error) throw error;
 
