@@ -45,7 +45,7 @@
                   #F1F5F9;
       transition: background-color 0.3s ease;
     }
-    html.light body {
+    body {
       background: radial-gradient(circle at top right, rgba(37, 99, 235, 0.04), transparent 45%),
                   radial-gradient(circle at bottom left, rgba(30, 58, 95, 0.05), transparent 50%),
                   #F8FAFC;
@@ -57,7 +57,7 @@
       border: 1px solid rgba(255, 255, 255, 0.05);
       transition: background-color 0.3s, border-color 0.3s;
     }
-    html.light .glass {
+    .glass {
       background: rgba(255, 255, 255, 0.75);
       border: 1px solid rgba(0, 0, 0, 0.06);
     }
@@ -99,16 +99,16 @@
     }
   </style>
 </head>
-<body class="text-slate-200 dark:text-slate-200 light:text-slate-700 min-h-screen flex flex-col font-sans selection:bg-brand-secondary/30 selection:text-white">
+<body class="text-slate-200  min-h-screen flex flex-col font-sans selection:bg-brand-secondary/30 selection:text-white">
 
   <!-- Header -->
-  <header class="w-full max-w-7xl mx-auto px-6 py-6 flex justify-between items-center border-b border-white/5 dark:border-white/5 light:border-black/5 no-print">
+  <header class="w-full max-w-7xl mx-auto px-6 py-6 flex justify-between items-center border-b border-white/5   no-print">
     <div class="flex items-center space-x-3">
       <a href="/" class="h-10 w-10 rounded-xl bg-gradient-to-tr from-brand-primary to-brand-secondary flex items-center justify-center shadow-lg shadow-brand-secondary/20 hover:scale-105 transition-transform">
         <i data-lucide="arrow-left" class="h-5 w-5 text-white"></i>
       </a>
       <div>
-        <h1 class="text-lg font-bold font-display tracking-tight text-white dark:text-white light:text-slate-900">Reporting & Analytics</h1>
+        <h1 class="text-lg font-bold font-display tracking-tight text-white  ">Reporting & Analytics</h1>
         <p class="text-[10px] text-slate-400">Lead Times, Bottlenecks, and Engineer Performance</p>
       </div>
     </div>
@@ -117,11 +117,11 @@
       <div id="user-badge" class="hidden flex items-center space-x-3">
         <div class="h-8 w-8 rounded-full bg-brand-secondary/20 border border-brand-secondary/30 flex items-center justify-center text-xs font-semibold text-brand-secondary font-display" id="user-avatar-placeholder">U</div>
         <div class="text-left">
-          <p class="text-xs font-semibold text-white dark:text-white light:text-slate-900 leading-tight" id="user-name">Loading...</p>
-          <p class="text-[10px] text-slate-400 dark:text-slate-400 light:text-slate-500 leading-none" id="user-role">Viewer</p>
+          <p class="text-xs font-semibold text-white   leading-tight" id="user-name">Loading...</p>
+          <p class="text-[10px] text-slate-400 dark:text-slate-400  leading-none" id="user-role">Viewer</p>
         </div>
         <div id="theme-toggle-container"></div>
-        <button id="btn-signout" class="h-8 w-8 rounded-lg hover:bg-white/5 dark:hover:bg-white/5 light:hover:bg-black/5 border border-transparent hover:border-white/10 flex items-center justify-center text-slate-400 hover:text-slate-700 transition duration-200" title="Sign Out">
+        <button id="btn-signout" class="h-8 w-8 rounded-lg hover:bg-white/5   border border-transparent hover:border-white/10 flex items-center justify-center text-slate-400 hover:text-slate-700 transition duration-200" title="Sign Out">
           <i data-lucide="log-out" class="h-4 w-4"></i>
         </button>
       </div>
@@ -137,14 +137,14 @@
       <!-- Avg Cycle Time -->
       <div class="glass p-5 rounded-3xl border border-white/5">
         <span class="text-[9px] font-bold text-slate-500 uppercase">Avg Cycle Time</span>
-        <h3 class="text-2xl font-extrabold font-display text-white dark:text-white light:text-slate-900 mt-1" id="kpi-avg-cycle">0.0 days</h3>
+        <h3 class="text-2xl font-extrabold font-display text-white   mt-1" id="kpi-avg-cycle">0.0 days</h3>
         <p class="text-[9px] text-slate-400 mt-1">Creation-to-closure duration</p>
       </div>
 
       <!-- Closed ECRs -->
       <div class="glass p-5 rounded-3xl border border-white/5">
         <span class="text-[9px] font-bold text-slate-500 uppercase">Resolved Changes</span>
-        <h3 class="text-2xl font-extrabold font-display text-white dark:text-white light:text-slate-900 mt-1" id="kpi-closed-ecrs">0</h3>
+        <h3 class="text-2xl font-extrabold font-display text-white   mt-1" id="kpi-closed-ecrs">0</h3>
         <p class="text-[9px] text-slate-400 mt-1">Total completed requests</p>
       </div>
 
@@ -158,7 +158,7 @@
       <!-- Average Dwell Hours -->
       <div class="glass p-5 rounded-3xl border border-white/5">
         <span class="text-[9px] font-bold text-slate-500 uppercase">Avg State Dwell</span>
-        <h3 class="text-2xl font-extrabold font-display text-white dark:text-white light:text-slate-900 mt-1" id="kpi-avg-dwell">0.0 hrs</h3>
+        <h3 class="text-2xl font-extrabold font-display text-white   mt-1" id="kpi-avg-dwell">0.0 hrs</h3>
         <p class="text-[9px] text-slate-400 mt-1">Average dwell duration per state</p>
       </div>
 
@@ -194,7 +194,7 @@
     <div id="tab-bottlenecks" class="flex flex-col space-y-6">
       <div class="glass rounded-3xl p-6 flex flex-col space-y-4">
         <div>
-          <h3 class="text-sm font-bold font-display text-white dark:text-white light:text-slate-900">Workflow Bottleneck & SLA Analysis</h3>
+          <h3 class="text-sm font-bold font-display text-white  ">Workflow Bottleneck & SLA Analysis</h3>
           <p class="text-[10px] text-slate-400 mt-1">Average state dwell hours compared against SLA targets (pulled from `vw_bottleneck_analysis`).</p>
         </div>
 
@@ -223,7 +223,7 @@
     <div id="tab-cycle" class="hidden flex flex-col space-y-6">
       <div class="glass rounded-3xl p-6 flex flex-col space-y-4">
         <div>
-          <h3 class="text-sm font-bold font-display text-white dark:text-white light:text-slate-900">Completed Cycle Times Report</h3>
+          <h3 class="text-sm font-bold font-display text-white  ">Completed Cycle Times Report</h3>
           <p class="text-[10px] text-slate-400 mt-1">Duration summary (in days) of all closed Engineering Change Requests (`vw_cycle_time`).</p>
         </div>
 
@@ -250,7 +250,7 @@
     <div id="tab-engineer" class="hidden flex flex-col space-y-6">
       <div class="glass rounded-3xl p-6 flex flex-col space-y-4">
         <div>
-          <h3 class="text-sm font-bold font-display text-white dark:text-white light:text-slate-900">Engineer Throughput & Speed</h3>
+          <h3 class="text-sm font-bold font-display text-white  ">Engineer Throughput & Speed</h3>
           <p class="text-[10px] text-slate-400 mt-1">Completions, averages, and overdue task items per assignee (`vw_engineer_performance`).</p>
         </div>
 
@@ -490,8 +490,8 @@
             : '<span class="px-2.5 py-0.5 rounded-full border border-emerald-500/20 bg-emerald-500/10 text-[9px] font-bold text-emerald-400 uppercase">Compliant</span>';
 
           return `
-            <tr class="border-b border-white/5 hover:bg-white/5 dark:hover:bg-white/5 light:hover:bg-black/5 transition duration-150 text-slate-300 dark:text-slate-300 light:text-slate-700">
-              <td class="py-3.5 px-4 font-bold text-white dark:text-white light:text-slate-800">${b.state_name}</td>
+            <tr class="border-b border-white/5 hover:bg-white/5   transition duration-150 text-slate-300  ">
+              <td class="py-3.5 px-4 font-bold text-white  ">${b.state_name}</td>
               <td class="py-3.5 px-4 text-slate-400 font-medium">${b.stage_name}</td>
               <td class="py-3.5 px-4 text-center font-mono text-slate-500 font-semibold">${slaLimit}</td>
               <td class="py-3.5 px-4 text-center font-mono font-semibold text-slate-200">${dwell}</td>
@@ -537,9 +537,9 @@
           });
 
           return `
-            <tr class="border-b border-white/5 hover:bg-white/5 dark:hover:bg-white/5 light:hover:bg-black/5 transition duration-150 text-slate-300 dark:text-slate-300 light:text-slate-700">
+            <tr class="border-b border-white/5 hover:bg-white/5   transition duration-150 text-slate-300  ">
               <td class="py-3.5 px-4 font-mono font-bold text-brand-secondary">${c.ecm_number || 'EC-xxxx'}</td>
-              <td class="py-3.5 px-4 font-semibold text-white dark:text-white light:text-slate-800">${c.title}</td>
+              <td class="py-3.5 px-4 font-semibold text-white  ">${c.title}</td>
               <td class="py-3.5 px-4 text-slate-500">${created}</td>
               <td class="py-3.5 px-4 text-slate-500">${closed}</td>
               <td class="py-3.5 px-4 text-right font-mono font-bold text-emerald-400">${c.cycle_days} days</td>
@@ -580,8 +580,8 @@
             : '<span class="text-slate-500">None</span>';
 
           return `
-            <tr class="border-b border-white/5 hover:bg-white/5 dark:hover:bg-white/5 light:hover:bg-black/5 transition duration-150 text-slate-300 dark:text-slate-300 light:text-slate-700">
-              <td class="py-3.5 px-4 font-bold text-white dark:text-white light:text-slate-800">${e.full_name}</td>
+            <tr class="border-b border-white/5 hover:bg-white/5   transition duration-150 text-slate-300  ">
+              <td class="py-3.5 px-4 font-bold text-white  ">${e.full_name}</td>
               <td class="py-3.5 px-4 text-center font-mono font-semibold text-slate-200">${e.completed_tasks || 0}</td>
               <td class="py-3.5 px-4 text-center font-mono text-slate-400">${avgHours}</td>
               <td class="py-3.5 px-4 text-right">${overdue}</td>

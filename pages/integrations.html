@@ -45,7 +45,7 @@
                   #F1F5F9;
       transition: background-color 0.3s ease;
     }
-    html.light body {
+    body {
       background: radial-gradient(circle at top right, rgba(37, 99, 235, 0.04), transparent 45%),
                   radial-gradient(circle at bottom left, rgba(30, 58, 95, 0.05), transparent 50%),
                   #F8FAFC;
@@ -57,22 +57,22 @@
       border: 1px solid rgba(255, 255, 255, 0.05);
       transition: background-color 0.3s, border-color 0.3s;
     }
-    html.light .glass {
+    .glass {
       background: rgba(255, 255, 255, 0.75);
       border: 1px solid rgba(0, 0, 0, 0.06);
     }
   </style>
 </head>
-<body class="text-slate-200 dark:text-slate-200 light:text-slate-700 min-h-screen flex flex-col font-sans selection:bg-brand-secondary/30 selection:text-white">
+<body class="text-slate-200  min-h-screen flex flex-col font-sans selection:bg-brand-secondary/30 selection:text-white">
 
   <!-- Header -->
-  <header class="w-full max-w-7xl mx-auto px-6 py-6 flex justify-between items-center border-b border-white/5 dark:border-white/5 light:border-black/5">
+  <header class="w-full max-w-7xl mx-auto px-6 py-6 flex justify-between items-center border-b border-white/5  ">
     <div class="flex items-center space-x-3">
       <a href="/" class="h-10 w-10 rounded-xl bg-gradient-to-tr from-brand-primary to-brand-secondary flex items-center justify-center shadow-lg shadow-brand-secondary/20 hover:scale-105 transition-transform">
         <i data-lucide="arrow-left" class="h-5 w-5 text-white"></i>
       </a>
       <div>
-        <h1 class="text-lg font-bold font-display tracking-tight text-white dark:text-white light:text-slate-900">Integrations & Sync</h1>
+        <h1 class="text-lg font-bold font-display tracking-tight text-white  ">Integrations & Sync</h1>
         <p class="text-[10px] text-slate-400">Dynamics 365 ERP Outbound Queues & API Logs</p>
       </div>
     </div>
@@ -96,11 +96,11 @@
       <div id="user-badge" class="hidden flex items-center space-x-3">
         <div class="h-8 w-8 rounded-full bg-brand-secondary/20 border border-brand-secondary/30 flex items-center justify-center text-xs font-semibold text-brand-secondary font-display" id="user-avatar-placeholder">U</div>
         <div class="text-left">
-          <p class="text-xs font-semibold text-white dark:text-white light:text-slate-900 leading-tight" id="user-name">Loading...</p>
-          <p class="text-[10px] text-slate-400 dark:text-slate-400 light:text-slate-500 leading-none" id="user-role">Viewer</p>
+          <p class="text-xs font-semibold text-white   leading-tight" id="user-name">Loading...</p>
+          <p class="text-[10px] text-slate-400 dark:text-slate-400  leading-none" id="user-role">Viewer</p>
         </div>
         <div id="theme-toggle-container"></div>
-        <button id="btn-signout" class="h-8 w-8 rounded-lg hover:bg-white/5 dark:hover:bg-white/5 light:hover:bg-black/5 border border-transparent hover:border-white/10 flex items-center justify-center text-slate-400 hover:text-slate-700 transition duration-200" title="Sign Out">
+        <button id="btn-signout" class="h-8 w-8 rounded-lg hover:bg-white/5   border border-transparent hover:border-white/10 flex items-center justify-center text-slate-400 hover:text-slate-700 transition duration-200" title="Sign Out">
           <i data-lucide="log-out" class="h-4 w-4"></i>
         </button>
       </div>
@@ -116,7 +116,7 @@
       <div class="glass p-5 rounded-3xl flex items-center justify-between border border-white/5">
         <div class="space-y-1">
           <span class="text-[9px] font-bold text-slate-500 uppercase">System Endpoint</span>
-          <h4 class="text-xs font-bold text-white dark:text-white light:text-slate-800">Dynamics 365 F&O</h4>
+          <h4 class="text-xs font-bold text-white  ">Dynamics 365 F&O</h4>
           <span class="inline-flex items-center text-[9px] text-emerald-400 font-semibold mt-1">
             <span class="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse mr-1"></span>Connected
           </span>
@@ -130,7 +130,7 @@
       <div class="glass p-5 rounded-3xl flex items-center justify-between border border-white/5">
         <div class="space-y-1">
           <span class="text-[9px] font-bold text-slate-500 uppercase">CAD Webhook</span>
-          <h4 class="text-xs font-bold text-white dark:text-white light:text-slate-800">SOLIDWORKS</h4>
+          <h4 class="text-xs font-bold text-white  ">SOLIDWORKS</h4>
           <span class="inline-flex items-center text-[9px] text-emerald-400 font-semibold mt-1">
             <span class="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse mr-1"></span>Active Webhooks
           </span>
@@ -144,7 +144,7 @@
       <div class="glass p-5 rounded-3xl flex items-center justify-between border border-white/5">
         <div class="space-y-1">
           <span class="text-[9px] font-bold text-slate-500 uppercase">Azure Directory</span>
-          <h4 class="text-xs font-bold text-white dark:text-white light:text-slate-800">Microsoft Graph</h4>
+          <h4 class="text-xs font-bold text-white  ">Microsoft Graph</h4>
           <span class="inline-flex items-center text-[9px] text-emerald-400 font-semibold mt-1">
             <span class="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse mr-1"></span>Active Sync
           </span>
@@ -158,7 +158,7 @@
       <div class="glass p-5 rounded-3xl flex items-center justify-between border border-white/5">
         <div class="space-y-1">
           <span class="text-[9px] font-bold text-slate-500 uppercase">Data Workspace</span>
-          <h4 class="text-xs font-bold text-white dark:text-white light:text-slate-800">Power BI Reporting</h4>
+          <h4 class="text-xs font-bold text-white  ">Power BI Reporting</h4>
           <span class="inline-flex items-center text-[9px] text-emerald-400 font-semibold mt-1">
             <span class="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse mr-1"></span>Active Embeds
           </span>
@@ -194,7 +194,7 @@
       <!-- Outbound Queue Table -->
       <div class="glass rounded-3xl p-6 flex flex-col space-y-4">
         <div>
-          <h3 class="text-sm font-bold font-display text-white dark:text-white light:text-slate-900">Dynamics Outbound Transaction Queue</h3>
+          <h3 class="text-sm font-bold font-display text-white  ">Dynamics Outbound Transaction Queue</h3>
           <p class="text-[10px] text-slate-400 mt-1">Pending Outbound engineering item releases scheduled to sync with D365 F&O.</p>
         </div>
 
@@ -226,7 +226,7 @@
       <!-- API Logs Table -->
       <div class="glass rounded-3xl p-6 flex flex-col space-y-4">
         <div>
-          <h3 class="text-sm font-bold font-display text-white dark:text-white light:text-slate-900">Integration API logs</h3>
+          <h3 class="text-sm font-bold font-display text-white  ">Integration API logs</h3>
           <p class="text-[10px] text-slate-400 mt-1">Full transaction details of all outbound and inbound OData / REST API integrations.</p>
         </div>
 
@@ -261,7 +261,7 @@
       
       <div class="flex justify-between items-start border-b border-white/5 pb-4">
         <div>
-          <h3 class="text-base font-bold font-display text-white dark:text-white light:text-slate-900">API Transaction Payloads</h3>
+          <h3 class="text-base font-bold font-display text-white  ">API Transaction Payloads</h3>
           <p class="text-[10px] text-slate-400 mt-1" id="inspector-corr-id">Correlation ID: -</p>
         </div>
         <button type="button" class="btn-close-modal text-slate-500 hover:text-white transition duration-200" data-modal-close>
@@ -288,7 +288,7 @@
   </div>
 
   <!-- Footer -->
-  <footer class="w-full max-w-7xl mx-auto px-6 py-6 border-t border-white/5 dark:border-white/5 light:border-black/5 text-center text-xs text-slate-500">
+  <footer class="w-full max-w-7xl mx-auto px-6 py-6 border-t border-white/5   text-center text-xs text-slate-500">
     <p>&copy; 2026 HydraSpecma India. Secure ERP integration channel.</p>
   </footer>
 
@@ -404,9 +404,9 @@
             : `<span class="text-[10px] text-slate-500">No action</span>`;
           
           return `
-            <tr class="border-b border-white/5 hover:bg-white/5 dark:hover:bg-white/5 light:hover:bg-black/5 transition duration-150 text-slate-300 dark:text-slate-300 light:text-slate-700">
+            <tr class="border-b border-white/5 hover:bg-white/5   transition duration-150 text-slate-300  ">
               <td class="py-3 px-4 font-mono text-[10px] text-slate-500 select-all">${q.id.substring(0, 8)}...</td>
-              <td class="py-3 px-4 font-bold text-white dark:text-white light:text-slate-800 uppercase tracking-wide text-[10px]">${q.operation}</td>
+              <td class="py-3 px-4 font-bold text-white   uppercase tracking-wide text-[10px]">${q.operation}</td>
               <td class="py-3 px-4 uppercase text-[10px]">${q.entity_type || '-'}</td>
               <td class="py-3 px-4">
                 <span class="px-2.5 py-0.5 rounded-full border text-[9px] font-bold uppercase ${statusStyle[q.status] || ''}">${q.status}</span>
@@ -488,10 +488,10 @@
           };
           
           return `
-            <tr class="border-b border-white/5 hover:bg-white/5 dark:hover:bg-white/5 light:hover:bg-black/5 transition duration-150 cursor-pointer text-slate-300 dark:text-slate-300 light:text-slate-700"
+            <tr class="border-b border-white/5 hover:bg-white/5   transition duration-150 cursor-pointer text-slate-300  "
                 onclick="globalThis.openInspector('${l.id}')">
               <td class="py-3 px-4 font-mono text-[10px] text-slate-500">${date}</td>
-              <td class="py-3 px-4 font-bold text-white dark:text-white light:text-slate-800 uppercase tracking-wide text-[10px]">${l.system}</td>
+              <td class="py-3 px-4 font-bold text-white   uppercase tracking-wide text-[10px]">${l.system}</td>
               <td class="py-3 px-4 max-w-[150px] truncate text-slate-400 font-medium" title="${l.endpoint}">${l.endpoint}</td>
               <td class="py-3 px-4">
                 <span class="px-2 py-0.5 border text-[9px] font-bold rounded-full uppercase ${methodColors[l.method] || ''}">${l.method}</span>

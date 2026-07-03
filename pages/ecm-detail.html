@@ -47,7 +47,7 @@
                   #F1F5F9;
       transition: background-color 0.3s ease;
     }
-    html.light body {
+    body {
       background: radial-gradient(circle at top right, rgba(37, 99, 235, 0.04), transparent 45%),
                   radial-gradient(circle at bottom left, rgba(30, 58, 95, 0.05), transparent 50%),
                   #F8FAFC;
@@ -59,22 +59,22 @@
       border: 1px solid rgba(255, 255, 255, 0.05);
       transition: background-color 0.3s, border-color 0.3s;
     }
-    html.light .glass {
+    .glass {
       background: rgba(255, 255, 255, 0.75);
       border: 1px solid rgba(0, 0, 0, 0.06);
     }
   </style>
 </head>
-<body class="text-slate-200 dark:text-slate-200 light:text-slate-700 min-h-screen flex flex-col font-sans selection:bg-brand-secondary/30 selection:text-white">
+<body class="text-slate-200  min-h-screen flex flex-col font-sans selection:bg-brand-secondary/30 selection:text-white">
 
   <!-- Header -->
-  <header class="w-full max-w-7xl mx-auto px-6 py-6 flex justify-between items-center border-b border-white/5 dark:border-white/5 light:border-black/5">
+  <header class="w-full max-w-7xl mx-auto px-6 py-6 flex justify-between items-center border-b border-white/5  ">
     <div class="flex items-center space-x-3">
       <a href="/" class="h-10 w-10 rounded-xl bg-gradient-to-tr from-brand-primary to-brand-secondary flex items-center justify-center shadow-lg shadow-brand-secondary/20 hover:scale-105 transition-transform">
         <i data-lucide="arrow-left" class="h-5 w-5 text-white"></i>
       </a>
       <div>
-        <h1 class="text-lg font-bold font-display tracking-tight text-white dark:text-white light:text-slate-900" id="header-ecm-number">ECM Request</h1>
+        <h1 class="text-lg font-bold font-display tracking-tight text-white  " id="header-ecm-number">ECM Request</h1>
         <p class="text-[10px] text-slate-400">Engineering Change Detail Portal</p>
       </div>
     </div>
@@ -113,11 +113,11 @@
       <div id="user-badge" class="hidden flex items-center space-x-3 border-l border-white/10 dark:border-white/10 light:border-black/10 pl-6">
         <div class="h-8 w-8 rounded-full bg-brand-secondary/20 border border-brand-secondary/30 flex items-center justify-center text-xs font-semibold text-brand-secondary font-display" id="user-avatar-placeholder">U</div>
         <div class="text-left">
-          <p class="text-xs font-semibold text-white dark:text-white light:text-slate-900 leading-tight" id="user-name">Loading...</p>
-          <p class="text-[10px] text-slate-400 dark:text-slate-400 light:text-slate-500 leading-none" id="user-role">Viewer</p>
+          <p class="text-xs font-semibold text-white   leading-tight" id="user-name">Loading...</p>
+          <p class="text-[10px] text-slate-400 dark:text-slate-400  leading-none" id="user-role">Viewer</p>
         </div>
         <div id="theme-toggle-container"></div>
-        <button id="btn-signout" class="h-8 w-8 rounded-lg hover:bg-white/5 dark:hover:bg-white/5 light:hover:bg-black/5 border border-transparent hover:border-white/10 flex items-center justify-center text-slate-400 hover:text-slate-700 transition duration-200" title="Sign Out">
+        <button id="btn-signout" class="h-8 w-8 rounded-lg hover:bg-white/5   border border-transparent hover:border-white/10 flex items-center justify-center text-slate-400 hover:text-slate-700 transition duration-200" title="Sign Out">
           <i data-lucide="log-out" class="h-4 w-4"></i>
         </button>
       </div>
@@ -136,34 +136,34 @@
           <span id="badge-category" class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold border">
             <!-- Dynamic Status Badge -->
           </span>
-          <h2 class="text-xl font-bold font-display mt-4 text-white dark:text-white light:text-slate-900" id="ecm-title">Loading...</h2>
+          <h2 class="text-xl font-bold font-display mt-4 text-white  " id="ecm-title">Loading...</h2>
           <p class="text-xs text-slate-400 mt-2" id="ecm-desc">Description...</p>
         </div>
 
-        <div class="border-t border-white/5 dark:border-white/5 light:border-black/5 pt-4 space-y-3 text-xs">
+        <div class="border-t border-white/5   pt-4 space-y-3 text-xs">
           <div class="flex justify-between">
             <span class="text-slate-400">Change Type</span>
-            <span class="font-semibold text-white dark:text-white light:text-slate-900 uppercase" id="param-change-type">-</span>
+            <span class="font-semibold text-white   uppercase" id="param-change-type">-</span>
           </div>
           <div class="flex justify-between">
             <span class="text-slate-400">Priority</span>
-            <span class="font-semibold text-white dark:text-white light:text-slate-900 uppercase" id="param-priority">-</span>
+            <span class="font-semibold text-white   uppercase" id="param-priority">-</span>
           </div>
           <div class="flex justify-between">
             <span class="text-slate-400">Risk Level</span>
-            <span class="font-semibold text-white dark:text-white light:text-slate-900 uppercase" id="param-risk">-</span>
+            <span class="font-semibold text-white   uppercase" id="param-risk">-</span>
           </div>
           <div class="flex justify-between">
             <span class="text-slate-400">Plant / Site</span>
-            <span class="font-semibold text-white dark:text-white light:text-slate-900" id="param-plant">-</span>
+            <span class="font-semibold text-white  " id="param-plant">-</span>
           </div>
           <div class="flex justify-between">
             <span class="text-slate-400">Department</span>
-            <span class="font-semibold text-white dark:text-white light:text-slate-900" id="param-dept">-</span>
+            <span class="font-semibold text-white  " id="param-dept">-</span>
           </div>
           <div class="flex justify-between">
             <span class="text-slate-400">Reason</span>
-            <span class="text-right text-slate-300 dark:text-slate-300 light:text-slate-600 max-w-[150px] truncate" id="param-reason">-</span>
+            <span class="text-right text-slate-300   max-w-[150px] truncate" id="param-reason">-</span>
           </div>
         </div>
       </div>
@@ -171,7 +171,7 @@
       <!-- Action Transition Panel Card -->
       <div class="glass rounded-3xl p-6 flex flex-col space-y-4">
         <div>
-          <h3 class="text-sm font-bold font-display text-white dark:text-white light:text-slate-900">Workflow Transitions</h3>
+          <h3 class="text-sm font-bold font-display text-white  ">Workflow Transitions</h3>
           <p class="text-[10px] text-slate-400 mt-1">Available actions for the current state</p>
         </div>
 
@@ -186,7 +186,7 @@
     <div class="lg:col-span-2 flex flex-col space-y-6">
       
       <!-- Tab Headers -->
-      <div class="flex space-x-2 border-b border-white/5 dark:border-white/5 light:border-black/5 pb-2">
+      <div class="flex space-x-2 border-b border-white/5   pb-2">
         <button id="tab-workflow-btn" class="px-4 py-2 rounded-xl text-xs font-semibold bg-white/5 border border-brand-secondary/30 text-white transition duration-200">
           Workflow & Progress
         </button>
@@ -213,7 +213,7 @@
         <div class="glass rounded-3xl p-6 flex flex-col space-y-4">
           <div class="flex justify-between items-center">
             <div>
-              <h3 class="text-sm font-bold font-display text-white dark:text-white light:text-slate-900">Live Workflow Visualizer</h3>
+              <h3 class="text-sm font-bold font-display text-white  ">Live Workflow Visualizer</h3>
               <p class="text-[10px] text-slate-400 mt-1">Status node tracking in the data-driven engine (Click nodes for details)</p>
             </div>
             <!-- Zoom Toolbar -->
@@ -263,7 +263,7 @@
         <!-- State Tasks Checklist -->
         <div class="glass rounded-3xl p-6 flex flex-col space-y-4">
           <div>
-            <h3 class="text-sm font-bold font-display text-white dark:text-white light:text-slate-900">State Tasks Checklist</h3>
+            <h3 class="text-sm font-bold font-display text-white  ">State Tasks Checklist</h3>
             <p class="text-[10px] text-slate-400 mt-1">Items required to transition out of the current state</p>
           </div>
           <div class="divide-y divide-white/5 dark:divide-white/5 light:divide-black/5" id="checklist-container">
@@ -274,7 +274,7 @@
         <!-- History Timeline Audit Log -->
         <div class="glass rounded-3xl p-6 flex flex-col space-y-4">
           <div>
-            <h3 class="text-sm font-bold font-display text-white dark:text-white light:text-slate-900">Workflow History</h3>
+            <h3 class="text-sm font-bold font-display text-white  ">Workflow History</h3>
             <p class="text-[10px] text-slate-400 mt-1">Audit log of all transitions, comments, and actors</p>
           </div>
           <div class="relative border-l border-white/10 pl-6 ml-3 space-y-6 text-xs text-slate-400" id="history-timeline">
@@ -291,7 +291,7 @@
         <div class="glass rounded-3xl p-6 flex flex-col space-y-4">
           <div class="flex justify-between items-center">
             <div>
-              <h3 class="text-sm font-bold font-display text-white dark:text-white light:text-slate-900">Controlled Documents</h3>
+              <h3 class="text-sm font-bold font-display text-white  ">Controlled Documents</h3>
               <p class="text-[10px] text-slate-400 mt-1">Drawings, specs, and CAD files linked to this request</p>
             </div>
             <button id="btn-upload-doc" class="py-2 px-4 rounded-xl bg-gradient-to-r from-brand-primary to-brand-secondary font-semibold text-xs text-white transition duration-200 flex items-center space-x-1.5">
@@ -328,7 +328,7 @@
         <!-- Header status bar -->
         <div class="flex justify-between items-center">
           <div>
-            <h3 class="text-sm font-bold font-display text-white dark:text-white light:text-slate-900">AI Copilot Insights</h3>
+            <h3 class="text-sm font-bold font-display text-white  ">AI Copilot Insights</h3>
             <p class="text-[10px] text-slate-400 mt-1">Autonomous analysis, risk evaluations, and smart recommendations</p>
           </div>
           <button id="btn-regenerate-ai" class="py-2 px-4 rounded-xl bg-gradient-to-r from-brand-primary to-brand-secondary font-semibold text-xs text-white transition duration-200 flex items-center space-x-1.5">
@@ -491,7 +491,7 @@
     <div class="w-full max-w-md glass rounded-3xl p-8 flex flex-col space-y-6">
       <div class="flex justify-between items-start">
         <div>
-          <h3 class="text-lg font-bold font-display text-white dark:text-white light:text-slate-900">Transition Comment</h3>
+          <h3 class="text-lg font-bold font-display text-white  ">Transition Comment</h3>
           <p class="text-xs text-slate-400 mt-1" id="comment-modal-subtitle">A comment is required for this action.</p>
         </div>
         <button type="button" class="btn-close-modal text-slate-500 hover:text-white transition duration-200" data-modal-close>
@@ -518,7 +518,7 @@
     <div class="w-full max-w-md glass rounded-3xl p-8 flex flex-col space-y-6">
       <div class="flex justify-between items-start">
         <div>
-          <h3 class="text-lg font-bold font-display text-white dark:text-white light:text-slate-900">Upload Document</h3>
+          <h3 class="text-lg font-bold font-display text-white  ">Upload Document</h3>
           <p class="text-xs text-slate-400 mt-1">Upload a drawing, specification, or CAD model.</p>
         </div>
         <button type="button" class="btn-close-modal text-slate-500 hover:text-white transition duration-200" data-modal-close>
@@ -578,7 +578,7 @@
     <div class="w-full max-w-md glass rounded-3xl p-8 flex flex-col space-y-6">
       <div class="flex justify-between items-start">
         <div>
-          <h3 class="text-lg font-bold font-display text-white dark:text-white light:text-slate-900">Check In Document</h3>
+          <h3 class="text-lg font-bold font-display text-white  ">Check In Document</h3>
           <p class="text-xs text-slate-400 mt-1">Upload a newer file version and release the lock.</p>
         </div>
         <button type="button" class="btn-close-modal text-slate-500 hover:text-white transition duration-200" data-modal-close>
@@ -613,7 +613,7 @@
       
       <div class="flex justify-between items-start border-b border-white/5 pb-4">
         <div>
-          <h3 class="text-lg font-bold font-display text-white dark:text-white light:text-slate-900">Sign Off Document</h3>
+          <h3 class="text-lg font-bold font-display text-white  ">Sign Off Document</h3>
           <p class="text-xs text-slate-400 mt-1">Formal electronic signature capture (21 CFR Part 11 compliant).</p>
         </div>
         <button type="button" class="btn-close-modal text-slate-500 hover:text-white transition duration-200" data-modal-close>
@@ -664,7 +664,7 @@
       
       <div class="flex justify-between items-start border-b border-white/5 pb-4">
         <div>
-          <h3 class="text-lg font-bold font-display text-white dark:text-white light:text-slate-900" id="preview-doc-title">Drawing Preview</h3>
+          <h3 class="text-lg font-bold font-display text-white  " id="preview-doc-title">Drawing Preview</h3>
           <p class="text-[10px] text-slate-400 mt-1" id="preview-doc-subtitle">File details, checksum verification, and certified signatures</p>
         </div>
         <button type="button" class="btn-close-modal text-slate-500 hover:text-white transition duration-200" data-modal-close>
@@ -722,7 +722,7 @@
     <div class="w-full max-w-sm glass rounded-3xl p-8 flex flex-col space-y-6">
       <div class="flex justify-between items-start">
         <div>
-          <h3 class="text-sm font-bold font-display text-white dark:text-white light:text-slate-900">Delegate Approval</h3>
+          <h3 class="text-sm font-bold font-display text-white  ">Delegate Approval</h3>
           <p class="text-[10px] text-slate-400 mt-1">Re-route your active approval vote to another engineer.</p>
         </div>
         <button type="button" class="btn-close-modal text-slate-500 hover:text-white transition duration-200" data-modal-close>
@@ -783,7 +783,7 @@
       <div class="flex justify-between items-start">
         <div>
           <span class="text-[9px] font-bold uppercase tracking-wider text-brand-secondary bg-brand-secondary/10 px-2.5 py-1 rounded-full border border-brand-secondary/20" id="state-modal-category">Category</span>
-          <h3 class="text-lg font-bold font-display text-white dark:text-white light:text-slate-900 mt-2" id="state-modal-title">State Name</h3>
+          <h3 class="text-lg font-bold font-display text-white   mt-2" id="state-modal-title">State Name</h3>
         </div>
         <button type="button" class="btn-close-modal text-slate-400 hover:text-white transition duration-200" data-modal-close id="btn-close-state-modal">
           <i data-lucide="x" class="h-5 w-5"></i>
@@ -793,17 +793,17 @@
       <div class="flex flex-col space-y-4 text-xs">
         <div class="flex flex-col space-y-1">
           <span class="font-bold text-slate-400">Description</span>
-          <p class="text-slate-200 dark:text-slate-200 light:text-slate-700 font-medium" id="state-modal-desc">No description available for this state.</p>
+          <p class="text-slate-200  font-medium" id="state-modal-desc">No description available for this state.</p>
         </div>
 
         <div class="grid grid-cols-2 gap-4">
           <div class="flex flex-col space-y-1">
             <span class="font-bold text-slate-400">SLA Limit</span>
-            <span class="font-semibold text-white dark:text-white light:text-slate-900" id="state-modal-sla">N/A</span>
+            <span class="font-semibold text-white  " id="state-modal-sla">N/A</span>
           </div>
           <div class="flex flex-col space-y-1">
             <span class="font-bold text-slate-400">Mandatory Checklist</span>
-            <span class="font-semibold text-white dark:text-white light:text-slate-900" id="state-modal-checklist">No checklist items</span>
+            <span class="font-semibold text-white  " id="state-modal-checklist">No checklist items</span>
           </div>
         </div>
 
@@ -823,7 +823,7 @@
   </button>
 
   <!-- Sliding AI Chat Tray -->
-  <div id="ai-chat-tray" class="hidden fixed bottom-20 right-6 w-96 h-[500px] glass rounded-3xl shadow-2xl border border-white/5 dark:border-white/5 light:border-black/5 flex flex-col z-[99] overflow-hidden no-print">
+  <div id="ai-chat-tray" class="hidden fixed bottom-20 right-6 w-96 h-[500px] glass rounded-3xl shadow-2xl border border-white/5   flex flex-col z-[99] overflow-hidden no-print">
     <!-- Header -->
     <div class="p-4 bg-gradient-to-r from-brand-primary/45 to-brand-secondary/35 border-b border-white/5 flex justify-between items-center shrink-0">
       <div class="flex items-center space-x-2">
@@ -1779,11 +1779,11 @@
         }
 
         container.innerHTML = list.map(item => `
-          <div class="flex items-center space-x-3 p-4 hover:bg-white/5 dark:hover:bg-white/5 light:hover:bg-black/5 transition duration-150 rounded-xl">
+          <div class="flex items-center space-x-3 p-4 hover:bg-white/5   transition duration-150 rounded-xl">
             <input type="checkbox" id="task-${item.id}" data-item-id="${item.id}" ${item.is_completed ? 'checked' : ''} 
                    class="h-4 w-4 rounded bg-black/30 border border-white/10 text-brand-secondary focus:ring-0 outline-none cursor-pointer">
             <div class="flex-grow">
-              <label for="task-${item.id}" class="text-xs font-semibold text-slate-200 dark:text-slate-200 light:text-slate-800 cursor-pointer select-none ${item.is_completed ? 'line-through text-slate-500' : ''}">
+              <label for="task-${item.id}" class="text-xs font-semibold text-slate-200  cursor-pointer select-none ${item.is_completed ? 'line-through text-slate-500' : ''}">
                 ${item.description}
               </label>
               <div class="flex items-center space-x-3 text-[9px] text-slate-500 mt-1">
@@ -1865,7 +1865,7 @@
                 H
               </div>
               <div class="flex justify-between text-xs">
-                <h5 class="font-semibold text-white dark:text-white light:text-slate-800">
+                <h5 class="font-semibold text-white  ">
                   Moved to <span class="text-brand-secondary">${h.to_state?.name || 'Unknown'}</span>
                 </h5>
                 <span class="text-[10px] text-slate-500 font-medium">${date}</span>
@@ -1875,7 +1875,7 @@
                 By: <span class="text-slate-400">${h.actor?.full_name || 'System'}</span>
                 ${hoursSpent ? ` &bull; Time spent: <span class="text-slate-400">${hoursSpent} hrs</span>` : ''}
               </p>
-              ${h.comment ? `<p class="mt-2 text-slate-300 dark:text-slate-300 light:text-slate-600 italic bg-white/5 p-2.5 rounded-xl border border-white/5 font-sans">"${h.comment}"</p>` : ''}
+              ${h.comment ? `<p class="mt-2 text-slate-300   italic bg-white/5 p-2.5 rounded-xl border border-white/5 font-sans">"${h.comment}"</p>` : ''}
             </div>
           `;
         }).join('');
@@ -2028,7 +2028,7 @@
             <div class="flex items-center space-x-2 py-1.5 bg-white/5 px-2.5 rounded-lg border border-white/5">
               <span class="font-bold text-brand-secondary">${t.action_label}</span>
               <span class="text-slate-500">&rarr;</span>
-              <span class="text-slate-300 dark:text-slate-300 light:text-slate-700 font-semibold">${targetState?.name || 'Next State'}</span>
+              <span class="text-slate-300   font-semibold">${targetState?.name || 'Next State'}</span>
             </div>
           `;
         }).join('');
@@ -2182,8 +2182,8 @@
           }
 
           return `
-            <tr class="border-b border-white/5 hover:bg-white/5 dark:hover:bg-white/5 light:hover:bg-black/5 transition duration-150 text-slate-300 dark:text-slate-300 light:text-slate-700">
-              <td class="py-3 px-4 font-semibold text-white dark:text-white light:text-slate-900 font-display">${d.doc_number || 'DOC-xxxx'}</td>
+            <tr class="border-b border-white/5 hover:bg-white/5   transition duration-150 text-slate-300  ">
+              <td class="py-3 px-4 font-semibold text-white   font-display">${d.doc_number || 'DOC-xxxx'}</td>
               <td class="py-3 px-4 font-medium max-w-[150px] truncate" title="${d.name}">${d.name}</td>
               <td class="py-3 px-4 uppercase text-[10px]">${d.doc_type}</td>
               <td class="py-3 px-4 text-center font-bold text-slate-200">v${v.version_no || 1}</td>

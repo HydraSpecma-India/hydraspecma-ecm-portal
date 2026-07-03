@@ -45,7 +45,7 @@
                   #F1F5F9;
       transition: background-color 0.3s ease;
     }
-    html.light body {
+    body {
       background: radial-gradient(circle at top right, rgba(37, 99, 235, 0.04), transparent 45%),
                   radial-gradient(circle at bottom left, rgba(30, 58, 95, 0.05), transparent 50%),
                   #F8FAFC;
@@ -57,7 +57,7 @@
       border: 1px solid rgba(255, 255, 255, 0.05);
       transition: background-color 0.3s, border-color 0.3s;
     }
-    html.light .glass {
+    .glass {
       background: rgba(255, 255, 255, 0.75);
       border: 1px solid rgba(0, 0, 0, 0.06);
     }
@@ -70,16 +70,16 @@
     }
   </style>
 </head>
-<body class="text-slate-200 dark:text-slate-200 light:text-slate-700 min-h-screen flex flex-col font-sans selection:bg-brand-secondary/30 selection:text-white">
+<body class="text-slate-200  min-h-screen flex flex-col font-sans selection:bg-brand-secondary/30 selection:text-white">
 
   <!-- Header -->
-  <header class="w-full max-w-7xl mx-auto px-6 py-6 flex justify-between items-center border-b border-white/5 dark:border-white/5 light:border-black/5">
+  <header class="w-full max-w-7xl mx-auto px-6 py-6 flex justify-between items-center border-b border-white/5  ">
     <div class="flex items-center space-x-3">
       <a href="/" class="h-10 w-10 rounded-xl bg-gradient-to-tr from-brand-primary to-brand-secondary flex items-center justify-center shadow-lg shadow-brand-secondary/20 hover:scale-105 transition-transform">
         <i data-lucide="arrow-left" class="h-5 w-5 text-white"></i>
       </a>
       <div>
-        <h1 class="text-lg font-bold font-display tracking-tight text-white dark:text-white light:text-slate-900">Task Management</h1>
+        <h1 class="text-lg font-bold font-display tracking-tight text-white  ">Task Management</h1>
         <p class="text-[10px] text-slate-400">Engineering Work Item Kanban Board</p>
       </div>
     </div>
@@ -113,11 +113,11 @@
       <div id="user-badge" class="hidden flex items-center space-x-3">
         <div class="h-8 w-8 rounded-full bg-brand-secondary/20 border border-brand-secondary/30 flex items-center justify-center text-xs font-semibold text-brand-secondary font-display" id="user-avatar-placeholder">U</div>
         <div class="text-left">
-          <p class="text-xs font-semibold text-white dark:text-white light:text-slate-900 leading-tight" id="user-name">Loading...</p>
-          <p class="text-[10px] text-slate-400 dark:text-slate-400 light:text-slate-500 leading-none" id="user-role">Viewer</p>
+          <p class="text-xs font-semibold text-white   leading-tight" id="user-name">Loading...</p>
+          <p class="text-[10px] text-slate-400 dark:text-slate-400  leading-none" id="user-role">Viewer</p>
         </div>
         <div id="theme-toggle-container"></div>
-        <button id="btn-signout" class="h-8 w-8 rounded-lg hover:bg-white/5 dark:hover:bg-white/5 light:hover:bg-black/5 border border-transparent hover:border-white/10 flex items-center justify-center text-slate-400 hover:text-slate-700 transition duration-200" title="Sign Out">
+        <button id="btn-signout" class="h-8 w-8 rounded-lg hover:bg-white/5   border border-transparent hover:border-white/10 flex items-center justify-center text-slate-400 hover:text-slate-700 transition duration-200" title="Sign Out">
           <i data-lucide="log-out" class="h-4 w-4"></i>
         </button>
       </div>
@@ -167,7 +167,7 @@
         <div class="flex items-center justify-between px-2">
           <div class="flex items-center space-x-2">
             <span class="h-2 w-2 rounded-full bg-slate-400"></span>
-            <h3 class="text-xs font-bold text-white dark:text-white light:text-slate-800 uppercase tracking-wider">To Do</h3>
+            <h3 class="text-xs font-bold text-white   uppercase tracking-wider">To Do</h3>
           </div>
           <span id="count-todo" class="text-[10px] font-bold text-slate-400 bg-white/5 border border-white/5 px-2 py-0.5 rounded-full">0</span>
         </div>
@@ -181,7 +181,7 @@
         <div class="flex items-center justify-between px-2">
           <div class="flex items-center space-x-2">
             <span class="h-2 w-2 rounded-full bg-brand-secondary"></span>
-            <h3 class="text-xs font-bold text-white dark:text-white light:text-slate-800 uppercase tracking-wider">In Progress</h3>
+            <h3 class="text-xs font-bold text-white   uppercase tracking-wider">In Progress</h3>
           </div>
           <span id="count-in-progress" class="text-[10px] font-bold text-slate-400 bg-white/5 border border-white/5 px-2 py-0.5 rounded-full">0</span>
         </div>
@@ -195,7 +195,7 @@
         <div class="flex items-center justify-between px-2">
           <div class="flex items-center space-x-2">
             <span class="h-2 w-2 rounded-full bg-amber-400"></span>
-            <h3 class="text-xs font-bold text-white dark:text-white light:text-slate-800 uppercase tracking-wider">Blocked</h3>
+            <h3 class="text-xs font-bold text-white   uppercase tracking-wider">Blocked</h3>
           </div>
           <span id="count-blocked" class="text-[10px] font-bold text-slate-400 bg-white/5 border border-white/5 px-2 py-0.5 rounded-full">0</span>
         </div>
@@ -209,7 +209,7 @@
         <div class="flex items-center justify-between px-2">
           <div class="flex items-center space-x-2">
             <span class="h-2 w-2 rounded-full bg-emerald-500"></span>
-            <h3 class="text-xs font-bold text-white dark:text-white light:text-slate-800 uppercase tracking-wider">Completed</h3>
+            <h3 class="text-xs font-bold text-white   uppercase tracking-wider">Completed</h3>
           </div>
           <span id="count-done" class="text-[10px] font-bold text-slate-400 bg-white/5 border border-white/5 px-2 py-0.5 rounded-full">0</span>
         </div>
@@ -228,7 +228,7 @@
       
       <div class="flex justify-between items-start border-b border-white/5 pb-4">
         <div>
-          <h3 class="text-lg font-bold font-display text-white dark:text-white light:text-slate-900" id="editor-task-ecm">Task Details</h3>
+          <h3 class="text-lg font-bold font-display text-white  " id="editor-task-ecm">Task Details</h3>
           <p class="text-xs text-slate-400 mt-1" id="editor-task-subtitle">Edit metadata, assignments, and reminders</p>
         </div>
         <button type="button" class="btn-close-modal text-slate-500 hover:text-white transition duration-200" data-modal-close>
@@ -313,7 +313,7 @@
   </div>
 
   <!-- Footer -->
-  <footer class="w-full max-w-7xl mx-auto px-6 py-6 border-t border-white/5 dark:border-white/5 light:border-black/5 text-center text-xs text-slate-500">
+  <footer class="w-full max-w-7xl mx-auto px-6 py-6 border-t border-white/5   text-center text-xs text-slate-500">
     <p>&copy; 2026 HydraSpecma India. Secure Kanban workflow process.</p>
   </footer>
 
@@ -490,8 +490,8 @@
                   ${t.priority}
                 </span>
               </div>
-              <h4 class="text-xs font-bold text-white dark:text-white light:text-slate-800 leading-tight">${t.title}</h4>
-              <p class="text-[10px] text-slate-400 dark:text-slate-400 light:text-slate-500 mt-1 max-h-[30px] overflow-hidden truncate">${t.description || ''}</p>
+              <h4 class="text-xs font-bold text-white   leading-tight">${t.title}</h4>
+              <p class="text-[10px] text-slate-400 dark:text-slate-400  mt-1 max-h-[30px] overflow-hidden truncate">${t.description || ''}</p>
               
               <div class="flex items-center justify-between border-t border-white/5 pt-3 mt-3 text-[9px] text-slate-500">
                 <span class="font-medium">Assignee: ${t.assignee?.full_name || 'Unassigned'}</span>

@@ -42,33 +42,27 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
   <style>
     body {
-      background: radial-gradient(circle at top right, rgba(37, 99, 235, 0.06), transparent 45%),
-                  radial-gradient(circle at bottom left, rgba(30, 58, 95, 0.08), transparent 50%),
-                  #F1F5F9;
-      transition: background-color 0.3s ease;
-    }
-    html.light body {
       background: radial-gradient(circle at top right, rgba(37, 99, 235, 0.04), transparent 45%),
-                  radial-gradient(circle at bottom left, rgba(30, 58, 95, 0.05), transparent 50%),
-                  #F8FAFC;
+                  radial-gradient(circle at bottom left, rgba(30, 58, 95, 0.06), transparent 50%),
+                  #F1F5F9 !important;
+      transition: background-color 0.3s ease;
     }
     .glass {
       background: rgba(255, 255, 255, 0.85);
       backdrop-filter: blur(16px);
       -webkit-backdrop-filter: blur(16px);
-      border: 1px solid rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(30, 58, 95, 0.1);
       transition: background-color 0.3s, border-color 0.3s;
     }
-    html.light .glass {
-      background: rgba(255, 255, 255, 0.75);
-      border: 1px solid rgba(0, 0, 0, 0.06);
+    .glass:hover {
+      border-color: rgba(37, 99, 235, 0.3);
     }
   </style>
 </head>
-<body class="text-slate-200 dark:text-slate-200 light:text-slate-700 min-h-screen flex flex-col font-sans selection:bg-brand-secondary/30 selection:text-white">
+<body class="text-slate-200  min-h-screen flex flex-col font-sans selection:bg-brand-secondary/30 selection:text-white">
 
   <!-- Header -->
-  <header class="w-full max-w-7xl mx-auto px-6 py-6 flex justify-between items-center border-b border-white/5 dark:border-white/5 light:border-black/5">
+  <header class="w-full max-w-7xl mx-auto px-6 py-6 flex justify-between items-center border-b border-white/5  ">
     <div class="flex items-center space-x-4">
       <img src="https://www.hydraspecma.com/javax.faces.resource/2019/HydraSpecma_Logo.png.xhtml?ln=images" alt="HydraSpecma" class="h-8 object-contain">
       <span class="text-xs font-semibold tracking-widest uppercase text-brand-secondary bg-white/5 px-2.5 py-1 rounded-xl border border-white/5">ECM Portal</span>
@@ -113,11 +107,11 @@
       <div id="user-badge" class="hidden flex items-center space-x-3 border-l border-white/10 dark:border-white/10 light:border-black/10 pl-6">
         <div class="h-8 w-8 rounded-full bg-brand-secondary/20 border border-brand-secondary/30 flex items-center justify-center text-xs font-semibold text-brand-secondary font-display" id="user-avatar-placeholder">U</div>
         <div class="text-left">
-          <p class="text-xs font-semibold text-white dark:text-white light:text-slate-900 leading-tight" id="user-name">Loading...</p>
-          <p class="text-[10px] text-slate-400 dark:text-slate-400 light:text-slate-500 leading-none" id="user-role">Viewer</p>
+          <p class="text-xs font-semibold text-white   leading-tight" id="user-name">Loading...</p>
+          <p class="text-[10px] text-slate-400 dark:text-slate-400  leading-none" id="user-role">Viewer</p>
         </div>
         <div id="theme-toggle-container"></div>
-        <button id="btn-signout" class="h-8 w-8 rounded-lg hover:bg-white/5 dark:hover:bg-white/5 light:hover:bg-black/5 border border-transparent hover:border-white/10 flex items-center justify-center text-slate-400 hover:text-slate-700 transition duration-200" title="Sign Out">
+        <button id="btn-signout" class="h-8 w-8 rounded-lg hover:bg-white/5   border border-transparent hover:border-white/10 flex items-center justify-center text-slate-400 hover:text-slate-700 transition duration-200" title="Sign Out">
           <i data-lucide="log-out" class="h-4 w-4"></i>
         </button>
       </div>
@@ -130,8 +124,8 @@
     <!-- Title / Dashboard Welcome -->
     <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
       <div>
-        <h2 class="text-2xl font-bold font-display text-white dark:text-white light:text-slate-900">Executive KPI Dashboard</h2>
-        <p class="text-xs text-slate-400 dark:text-slate-400 light:text-slate-500 mt-1">Real-time Engineering Change Management portfolio analytics</p>
+        <h2 class="text-2xl font-bold font-display text-white  ">Executive KPI Dashboard</h2>
+        <p class="text-xs text-slate-400 dark:text-slate-400  mt-1">Real-time Engineering Change Management portfolio analytics</p>
       </div>
       <div class="flex items-center space-x-4 shrink-0">
         <button id="btn-create-ecm" class="py-2.5 px-5 rounded-xl bg-gradient-to-r from-brand-primary to-brand-secondary hover:shadow-lg hover:shadow-brand-secondary/20 font-semibold text-xs text-white transition duration-200 flex items-center space-x-2">
@@ -155,8 +149,8 @@
       <!-- Chart 1: Monthly Trends -->
       <div class="glass rounded-3xl p-6 lg:col-span-2 flex flex-col justify-between space-y-4">
         <div>
-          <h3 class="text-sm font-bold text-white dark:text-white light:text-slate-900 font-display">ECM Monthly Trends</h3>
-          <p class="text-[10px] text-slate-400 dark:text-slate-400 light:text-slate-500 mt-1">Changes created vs changes completed per month</p>
+          <h3 class="text-sm font-bold text-white   font-display">ECM Monthly Trends</h3>
+          <p class="text-[10px] text-slate-400 dark:text-slate-400  mt-1">Changes created vs changes completed per month</p>
         </div>
         <div class="h-64 relative">
           <canvas id="chart-monthly-trends"></canvas>
@@ -166,8 +160,8 @@
       <!-- Chart 2: Priority Split -->
       <div class="glass rounded-3xl p-6 lg:col-span-1 flex flex-col justify-between space-y-4">
         <div>
-          <h3 class="text-sm font-bold text-white dark:text-white light:text-slate-900 font-display">Priority Distribution</h3>
-          <p class="text-[10px] text-slate-400 dark:text-slate-400 light:text-slate-500 mt-1">Breakdown of current open requests</p>
+          <h3 class="text-sm font-bold text-white   font-display">Priority Distribution</h3>
+          <p class="text-[10px] text-slate-400 dark:text-slate-400  mt-1">Breakdown of current open requests</p>
         </div>
         <div class="h-64 relative flex items-center justify-center">
           <canvas id="chart-priority-distribution"></canvas>
@@ -177,8 +171,8 @@
       <!-- Chart 3: Workload Distribution -->
       <div class="glass rounded-3xl p-6 lg:col-span-1 flex flex-col justify-between space-y-4">
         <div>
-          <h3 class="text-sm font-bold text-white dark:text-white light:text-slate-900 font-display">Workload Distribution</h3>
-          <p class="text-[10px] text-slate-400 dark:text-slate-400 light:text-slate-500 mt-1">Assigned requests per active engineer</p>
+          <h3 class="text-sm font-bold text-white   font-display">Workload Distribution</h3>
+          <p class="text-[10px] text-slate-400 dark:text-slate-400  mt-1">Assigned requests per active engineer</p>
         </div>
         <div class="h-64 relative flex items-center justify-center">
           <canvas id="chart-workload-distribution"></canvas>
@@ -193,8 +187,8 @@
       <!-- Table: Recent ECM Requests -->
       <div class="glass rounded-3xl p-6 lg:col-span-2 flex flex-col space-y-4">
         <div>
-          <h3 class="text-sm font-bold text-white dark:text-white light:text-slate-900 font-display">Recent Change Requests</h3>
-          <p class="text-[10px] text-slate-400 dark:text-slate-400 light:text-slate-500 mt-1">Engineering Change requests submitted to the system</p>
+          <h3 class="text-sm font-bold text-white   font-display">Recent Change Requests</h3>
+          <p class="text-[10px] text-slate-400 dark:text-slate-400  mt-1">Engineering Change requests submitted to the system</p>
         </div>
         <div class="overflow-x-auto">
           <table class="w-full text-left text-xs border-collapse">
@@ -217,8 +211,8 @@
       <!-- Funnel Chart: Workflow funnel stages -->
       <div class="glass rounded-3xl p-6 lg:col-span-1 flex flex-col justify-between space-y-4">
         <div>
-          <h3 class="text-sm font-bold text-white dark:text-white light:text-slate-900 font-display">Workflow Funnel</h3>
-          <p class="text-[10px] text-slate-400 dark:text-slate-400 light:text-slate-500 mt-1">Count of records currently moving in each stage</p>
+          <h3 class="text-sm font-bold text-white   font-display">Workflow Funnel</h3>
+          <p class="text-[10px] text-slate-400 dark:text-slate-400  mt-1">Count of records currently moving in each stage</p>
         </div>
         <div id="funnel-container" class="space-y-4 flex-grow flex flex-col justify-center">
           <!-- Funnel Progress bars dynamic -->
@@ -232,8 +226,8 @@
       <!-- Table: User Workload Leaderboard -->
       <div class="glass rounded-3xl p-6 lg:col-span-2 flex flex-col space-y-4">
         <div>
-          <h3 class="text-sm font-bold text-white dark:text-white light:text-slate-900 font-display">Task Leaderboard</h3>
-          <p class="text-[10px] text-slate-400 dark:text-slate-400 light:text-slate-500 mt-1">Workload status per engineer (open, overdue, and done tasks)</p>
+          <h3 class="text-sm font-bold text-white   font-display">Task Leaderboard</h3>
+          <p class="text-[10px] text-slate-400 dark:text-slate-400  mt-1">Workload status per engineer (open, overdue, and done tasks)</p>
         </div>
         <div class="overflow-x-auto">
           <table class="w-full text-left text-xs border-collapse">
@@ -274,7 +268,7 @@
     <div class="w-full max-w-xl glass rounded-3xl p-8 flex flex-col space-y-6 max-h-[90vh] overflow-y-auto">
       <div class="flex justify-between items-start">
         <div>
-          <h3 class="text-lg font-bold font-display text-white dark:text-white light:text-slate-900">Create ECM Request</h3>
+          <h3 class="text-lg font-bold font-display text-white  ">Create ECM Request</h3>
           <p class="text-xs text-slate-400 mt-1">Submit a new Engineering Change Management record.</p>
         </div>
         <button type="button" class="btn-close-modal text-slate-500 hover:text-white transition duration-200" data-modal-close>
@@ -352,7 +346,7 @@
     <div class="w-full max-w-4xl glass rounded-3xl p-8 flex flex-col space-y-6 max-h-[85vh] overflow-y-auto">
       <div class="flex justify-between items-start">
         <div>
-          <h3 class="text-lg font-bold font-display text-white dark:text-white light:text-slate-900">System Details</h3>
+          <h3 class="text-lg font-bold font-display text-white  ">System Details</h3>
           <p class="text-xs text-slate-400 mt-1">Remote connection checks and delivery roadmap status.</p>
         </div>
         <button type="button" class="btn-close-modal text-slate-500 hover:text-white transition duration-200" data-modal-close>
@@ -365,7 +359,7 @@
         <!-- Left: Connection Status Card -->
         <div class="md:col-span-1 flex flex-col space-y-6">
           <div class="glass rounded-2xl p-6 flex flex-col space-y-4 bg-black/10">
-            <h4 class="text-xs font-semibold text-white dark:text-white light:text-slate-900 tracking-wider uppercase">Database Connection</h4>
+            <h4 class="text-xs font-semibold text-white   tracking-wider uppercase">Database Connection</h4>
             
             <div id="conn-box" class="flex items-center justify-between p-4 rounded-xl bg-black/30 border border-white/5">
               <div class="flex items-center space-x-3">
@@ -373,7 +367,7 @@
                   <i id="conn-icon" data-lucide="loader" class="h-5 w-5 text-amber-400 animate-spin"></i>
                 </div>
                 <div>
-                  <p class="text-xs font-semibold text-white dark:text-white light:text-slate-900" id="conn-status-title">Checking database...</p>
+                  <p class="text-xs font-semibold text-white  " id="conn-status-title">Checking database...</p>
                   <p class="text-[10px] text-slate-400" id="conn-status-desc">Verifying connection parameters</p>
                 </div>
               </div>
@@ -382,11 +376,11 @@
             <div class="space-y-2 text-[10px] text-slate-400">
               <div class="flex justify-between">
                 <span>Database Engine</span>
-                <span class="text-white dark:text-white light:text-slate-900 font-medium">PostgreSQL 15</span>
+                <span class="text-white   font-medium">PostgreSQL 15</span>
               </div>
               <div class="flex justify-between">
                 <span>Service Layer</span>
-                <span class="text-white dark:text-white light:text-slate-900 font-medium">Supabase JS client v2</span>
+                <span class="text-white   font-medium">Supabase JS client v2</span>
               </div>
             </div>
           </div>
@@ -394,27 +388,27 @@
 
         <!-- Right: Roadmap Details -->
         <div class="md:col-span-2 glass rounded-2xl p-6 bg-black/10">
-          <h4 class="text-xs font-semibold text-white dark:text-white light:text-slate-900 tracking-wider uppercase mb-4">Delivery Roadmap</h4>
+          <h4 class="text-xs font-semibold text-white   tracking-wider uppercase mb-4">Delivery Roadmap</h4>
           
           <div class="relative border-l border-white/5 pl-6 ml-3 space-y-6 text-xs">
             <div class="relative">
               <div class="absolute -left-[31px] top-0 h-4 w-4 rounded-full bg-emerald-500 ring-4 ring-emerald-500/20"></div>
-              <h5 class="font-semibold text-white dark:text-white light:text-slate-900">Module 1 & 2: Infrastructure & Schema Setup</h5>
+              <h5 class="font-semibold text-white  ">Module 1 & 2: Infrastructure & Schema Setup</h5>
               <p class="text-slate-400 mt-0.5">55 tables and RLS fully deployed to remote Supabase instance.</p>
             </div>
             <div class="relative">
               <div class="absolute -left-[31px] top-0 h-4 w-4 rounded-full bg-emerald-500 ring-4 ring-emerald-500/20"></div>
-              <h5 class="font-semibold text-white dark:text-white light:text-slate-900">Module 3: Authentication Interface</h5>
+              <h5 class="font-semibold text-white  ">Module 3: Authentication Interface</h5>
               <p class="text-slate-400 mt-0.5">SSO and credential login gates with secure route guards.</p>
             </div>
             <div class="relative">
               <div class="absolute -left-[31px] top-0 h-4 w-4 rounded-full bg-emerald-500 ring-4 ring-emerald-500/20"></div>
-              <h5 class="font-semibold text-white dark:text-white light:text-slate-900">Module 4: UI Components & Theming</h5>
+              <h5 class="font-semibold text-white  ">Module 4: UI Components & Theming</h5>
               <p class="text-slate-400 mt-0.5">Theme switcher, stackable toasts, modals, and loaders.</p>
             </div>
             <div class="relative">
               <div class="absolute -left-[31px] top-0 h-4 w-4 rounded-full bg-emerald-500 ring-4 ring-emerald-500/20 animate-pulse"></div>
-              <h5 class="font-semibold text-white dark:text-white light:text-slate-900">Module 5: Executive Dashboard</h5>
+              <h5 class="font-semibold text-white  ">Module 5: Executive Dashboard</h5>
               <p class="text-slate-400 mt-0.5">Active analytical widgets bound to live data views.</p>
             </div>
           </div>
@@ -429,7 +423,7 @@
     <div class="w-full max-w-4xl glass rounded-3xl p-8 flex flex-col space-y-6 max-h-[85vh]">
       <div class="flex justify-between items-start shrink-0">
         <div>
-          <h3 class="text-lg font-bold font-display text-white dark:text-white light:text-slate-900" id="metric-modal-title">Metric Details</h3>
+          <h3 class="text-lg font-bold font-display text-white  " id="metric-modal-title">Metric Details</h3>
           <p class="text-[10px] text-slate-400 mt-1" id="metric-modal-desc">Detailed list of corresponding items</p>
         </div>
         <button type="button" class="btn-close-modal text-slate-400 hover:text-white transition duration-200" data-modal-close id="btn-close-metric-modal">
@@ -445,7 +439,7 @@
   </div>
 
   <!-- Footer -->
-  <footer class="w-full max-w-7xl mx-auto px-6 py-6 border-t border-white/5 dark:border-white/5 light:border-black/5 text-center text-xs text-slate-500 flex flex-col md:flex-row justify-between items-center gap-4">
+  <footer class="w-full max-w-7xl mx-auto px-6 py-6 border-t border-white/5   text-center text-xs text-slate-500 flex flex-col md:flex-row justify-between items-center gap-4">
     <p>&copy; 2026 HydraSpecma India. All rights reserved.</p>
     <p>Powered by Vanilla JS, Tailwind CSS, Supabase, and Vercel.</p>
   </footer>
@@ -536,7 +530,7 @@
                   return `
                     <tr class="hover:bg-white/5 transition">
                       <td class="py-3 px-4 font-bold text-brand-secondary">${item.ecm_number}</td>
-                      <td class="py-3 px-4 text-slate-200 dark:text-slate-200 light:text-slate-700">${item.title}</td>
+                      <td class="py-3 px-4 text-slate-200 ">${item.title}</td>
                       <td class="py-3 px-4"><span class="px-2 py-0.5 rounded-full border text-[10px] font-semibold uppercase ${priorityClass}">${item.priority}</span></td>
                       <td class="py-3 px-4"><span class="px-2 py-0.5 rounded-full border text-[10px] font-semibold bg-slate-100 text-slate-700 capitalize">${item.status_category.replace('_', ' ')}</span></td>
                       <td class="py-3 px-4 text-slate-400">${date}</td>
@@ -582,7 +576,7 @@
                 ${data.map(item => `
                   <tr class="hover:bg-white/5 transition">
                     <td class="py-3 px-4 font-bold text-brand-secondary">${item.ecm_number}</td>
-                    <td class="py-3 px-4 text-slate-200 dark:text-slate-200 light:text-slate-700">${item.title}</td>
+                    <td class="py-3 px-4 text-slate-200 ">${item.title}</td>
                     <td class="py-3 px-4 text-slate-400">${item.priority}</td>
                     <td class="py-3 px-4 text-emerald-400 font-semibold uppercase">Completed</td>
                     <td class="py-3 px-4 text-right">
@@ -635,8 +629,8 @@
                   return `
                     <tr class="hover:bg-white/5 transition">
                       <td class="py-3 px-4 font-bold text-brand-secondary">${item.ecm_requests?.ecm_number || 'N/A'}</td>
-                      <td class="py-3 px-4 text-slate-200 dark:text-slate-200 light:text-slate-700">${item.ecm_requests?.title || 'N/A'}</td>
-                      <td class="py-3 px-4 text-slate-200 dark:text-slate-200 light:text-slate-700 font-semibold">${item.profiles?.full_name || 'Unassigned'}</td>
+                      <td class="py-3 px-4 text-slate-200 ">${item.ecm_requests?.title || 'N/A'}</td>
+                      <td class="py-3 px-4 text-slate-200  font-semibold">${item.profiles?.full_name || 'Unassigned'}</td>
                       <td class="py-3 px-4 text-rose-400 font-bold">${deadline}</td>
                       <td class="py-3 px-4 text-right">
                         <a href="/pages/ecm-detail.html?id=${item.ecm_request_id}" class="text-brand-secondary hover:underline font-bold">Open Portal</a>
@@ -774,7 +768,7 @@
         <div onclick="globalThis.showMetricDetails('${c.type}')" class="glass rounded-3xl p-6 flex items-center justify-between shadow-sm hover:shadow-lg hover:border-brand-secondary/40 transition-all duration-200 cursor-pointer hover:scale-[1.02]">
           <div class="flex flex-col space-y-2">
             <span class="text-[10px] font-semibold text-slate-400 tracking-wider uppercase">${c.title}</span>
-            <span class="text-2xl font-bold font-display text-white dark:text-white light:text-slate-900">${c.val}</span>
+            <span class="text-2xl font-bold font-display text-white  ">${c.val}</span>
             <span class="text-[9px] text-slate-500">${c.desc}</span>
           </div>
           <div class="h-12 w-12 rounded-2xl bg-white/5 dark:bg-white/5 light:bg-black/5 flex items-center justify-center shrink-0 ${c.color}">
@@ -1015,10 +1009,10 @@
         const sStyle = statusMap[e.status_category?.toLowerCase()] || { style: 'text-slate-400 border-slate-500/10', label: e.status_category || 'Draft' };
         
         return `
-          <tr class="border-b border-white/5 hover:bg-white/5 dark:hover:bg-white/5 light:hover:bg-black/5 transition duration-150 cursor-pointer text-slate-300 dark:text-slate-300 light:text-slate-700" 
+          <tr class="border-b border-white/5 hover:bg-white/5   transition duration-150 cursor-pointer text-slate-300  " 
               onclick="globalThis.location.href='/pages/ecm-detail.html?id=${e.id}'">
-            <td class="py-3.5 px-4 font-semibold text-white dark:text-white light:text-slate-900 font-display">${e.ecm_number || 'EC-xxxx'}</td>
-            <td class="py-3.5 px-4 font-medium max-w-[200px] truncate text-slate-200 dark:text-slate-200 light:text-slate-800" title="${e.title}">${e.title}</td>
+            <td class="py-3.5 px-4 font-semibold text-white   font-display">${e.ecm_number || 'EC-xxxx'}</td>
+            <td class="py-3.5 px-4 font-medium max-w-[200px] truncate text-slate-200 " title="${e.title}">${e.title}</td>
             <td class="py-3.5 px-4">
               <span class="px-2 py-0.5 rounded-full border text-[10px] font-semibold uppercase ${pStyle}">
                 ${e.priority}
@@ -1049,14 +1043,14 @@
       }
 
       tbody.innerHTML = list.map(e => `
-        <tr class="border-b border-white/5 hover:bg-white/5 dark:hover:bg-white/5 light:hover:bg-black/5 transition duration-150 text-slate-300 dark:text-slate-300 light:text-slate-700">
+        <tr class="border-b border-white/5 hover:bg-white/5   transition duration-150 text-slate-300  ">
           <td class="py-3.5 px-4 font-medium flex items-center space-x-2">
             <div class="h-6 w-6 rounded-full bg-brand-primary/20 flex items-center justify-center text-[10px] font-semibold text-brand-secondary font-display uppercase">
               ${e.full_name[0]}
             </div>
             <span>${e.full_name}</span>
           </td>
-          <td class="py-3.5 px-4 text-center font-semibold text-white dark:text-white light:text-slate-900">${e.open_tasks}</td>
+          <td class="py-3.5 px-4 text-center font-semibold text-white  ">${e.open_tasks}</td>
           <td class="py-3.5 px-4 text-center">
             <span class="${e.overdue_tasks > 0 ? 'text-rose-400 font-bold bg-rose-500/10 border border-rose-500/20 px-2 py-0.5 rounded-full' : 'text-slate-500'}">
               ${e.overdue_tasks}
@@ -1080,8 +1074,8 @@
         return `
           <div class="flex flex-col space-y-1.5">
             <div class="flex justify-between text-xs font-medium">
-              <span class="text-white dark:text-white light:text-slate-900">${stage.stage_name}</span>
-              <span class="text-slate-400 dark:text-slate-400 light:text-slate-500 font-bold">${stage.in_stage} records</span>
+              <span class="text-white  ">${stage.stage_name}</span>
+              <span class="text-slate-400 dark:text-slate-400  font-bold">${stage.in_stage} records</span>
             </div>
             <div class="w-full bg-white/5 dark:bg-white/5 light:bg-black/5 h-2 rounded-full overflow-hidden">
               <div class="${color} h-full rounded-full transition-all duration-500" style="width: ${percentage}%"></div>
