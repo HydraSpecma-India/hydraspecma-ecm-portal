@@ -1,4 +1,4 @@
-/** Tailwind config — HydraSpecma brand tokens (Fluent-inspired). @type {import('tailwindcss').Config} */
+/** Tailwind config — Modern Professional Dashboard Brand. @type {import('tailwindcss').Config} */
 export default {
   content: ['./pages/**/*.html', './components/**/*.{js,html}', './js/**/*.js', './index.html'],
   darkMode: 'class',
@@ -6,10 +6,10 @@ export default {
     extend: {
       colors: {
         brand: {
-          primary: '#003A70',
-          secondary: '#00A3E0',
-          accent: '#0EA5E9',
-          bg: '#F8FAFC',
+          primary: '#1E3A5F',
+          secondary: '#2563EB',
+          accent: '#F59E0B',
+          bg: '#F1F5F9',
         },
       },
       fontFamily: { sans: ['Inter', 'system-ui', 'Segoe UI', 'sans-serif'] },
