@@ -484,6 +484,7 @@
               name
             ),
             job_title,
+            is_active,
             user_roles:user_roles!user_roles_user_id_fkey (
               role_id,
               roles (
@@ -506,9 +507,16 @@
             ? userRolesList.map(r => `<span class="px-2 py-0.5 bg-brand-secondary/10 border border-brand-secondary/20 rounded-md font-semibold text-[10px] text-brand-secondary uppercase">${r}</span>`).join(' ')
             : '<span class="text-slate-500 italic">No roles assigned</span>';
 
+          const statusBadge = u.is_active !== false
+            ? '<span class="ml-2 px-1.5 py-0.5 bg-emerald-500/10 border border-emerald-500/20 rounded text-[8px] font-bold text-emerald-600 uppercase tracking-wider">Active</span>'
+            : '<span class="ml-2 px-1.5 py-0.5 bg-slate-500/10 border border-slate-500/20 rounded text-[8px] font-bold text-slate-400 uppercase tracking-wider">Disabled</span>';
+
           return `
             <tr class="border-b border-white/5 hover:bg-white/5 dark:hover:bg-white/5 light:hover:bg-black/5 transition duration-150 text-slate-300 dark:text-slate-300 light:text-slate-700">
-              <td class="py-3.5 px-4 font-bold text-white dark:text-white light:text-slate-800">${u.full_name || 'System Account'}</td>
+              <td class="py-3.5 px-4 font-bold text-white dark:text-white light:text-slate-800 flex items-center">
+                <span>${u.full_name || 'System Account'}</span>
+                ${statusBadge}
+              </td>
               <td class="py-3.5 px-4 text-slate-400">${u.department?.name || 'N/A'}</td>
               <td class="py-3.5 px-4 text-slate-400">${u.job_title || 'N/A'}</td>
               <td class="py-3.5 px-4"><div class="flex flex-wrap gap-1.5">${rolesStr}</div></td>
@@ -579,9 +587,9 @@
       document.getElementById('modal-edit-user').classList.add('hidden');
     };
 
-    // Delete user handler
+    // Delete user handler with soft-deactivation fallback for historical audit preservation
     globalThis.deleteUser = async function (userId) {
-      if (!confirm('Are you sure you want to delete this user profile? This action cannot be undone.')) {
+      if (!confirm('Are you sure you want to delete this user profile? If this user has created requests or comments, they will be deactivated and disabled instead to preserve historical records.')) {
         return;
       }
 
@@ -595,15 +603,33 @@
 
         // 2. Clear task assignments
         await supabase.from('ecm_tasks').update({ assignee_id: null }).eq('assignee_id', userId);
+        await supabase.from('ecm_requests').update({ requestor_id: null }).eq('requestor_id', userId);
+        await supabase.from('ecm_requests').update({ owner_id: null }).eq('owner_id', userId);
 
         // 3. Delete assigned roles
         await supabase.from('user_roles').delete().eq('user_id', userId);
 
-        // 4. Delete user profile
+        // 4. Try hard delete user profile
         const { error } = await supabase.from('profiles').delete().eq('id', userId);
-        if (error) throw error;
+        
+        if (error) {
+          // If foreign key constraint blocks it (e.g. comments, documents, state history), fall back to soft-deactivation!
+          if (error.code === '23503') {
+            const { error: updateErr } = await supabase
+              .from('profiles')
+              .update({ is_active: false })
+              .eq('id', userId);
 
-        toast.success('User profile deleted successfully.');
+            if (updateErr) throw updateErr;
+
+            toast.info('User contains historical records. Profile deactivated instead.');
+          } else {
+            throw error;
+          }
+        } else {
+          toast.success('User profile deleted successfully.');
+        }
+
         loadUsers();
 
       } catch (err) {
