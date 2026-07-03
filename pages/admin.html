@@ -516,6 +516,9 @@
                 <button onclick="globalThis.openUserModal('${u.id}', '${u.full_name?.replace(/'/g, "\\'")}', '${u.email || ''}', '${u.job_title?.replace(/'/g, "\\'") || ''}', '${u.department_id || ''}', '${u.user_roles?.[0]?.role_id || ''}')" class="py-1 px-2.5 rounded-lg border border-brand-secondary/35 hover:bg-brand-secondary/15 font-semibold text-[10px] text-brand-secondary transition">
                   Edit
                 </button>
+                <button onclick="globalThis.deleteUser('${u.id}')" class="py-1 px-2.5 rounded-lg border border-rose-500/35 hover:bg-rose-500/15 font-semibold text-[10px] text-rose-400 transition ml-1.5">
+                  Delete
+                </button>
               </td>
             </tr>
           `;
@@ -574,6 +577,31 @@
 
     globalThis.closeUserModal = function () {
       document.getElementById('modal-edit-user').classList.add('hidden');
+    };
+
+    // Delete user handler
+    globalThis.deleteUser = async function (userId) {
+      if (!confirm('Are you sure you want to delete this user profile? This action cannot be undone.')) {
+        return;
+      }
+
+      try {
+        const supabase = getSupabase();
+
+        // 1. Delete assigned roles first
+        await supabase.from('user_roles').delete().eq('user_id', userId);
+
+        // 2. Delete user profile
+        const { error } = await supabase.from('profiles').delete().eq('id', userId);
+        if (error) throw error;
+
+        toast.success('User profile deleted successfully.');
+        loadUsers();
+
+      } catch (err) {
+        console.error('Failed to delete user:', err);
+        toast.error('Failed to delete user profile: ' + err.message);
+      }
     };
 
     // Submit user form

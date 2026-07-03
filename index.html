@@ -501,7 +501,7 @@
           
           const { data, error } = await supabase
             .from('ecm_requests')
-            .select('id, ecm_no, title, priority, status_category, created_at')
+            .select('id, ecm_number, title, priority, status_category, created_at')
             .eq('is_deleted', false)
             .neq('status_category', 'completed')
             .neq('status_category', 'cancelled')
@@ -528,16 +528,17 @@
               <tbody class="divide-y divide-white/5">
                 ${data.map(item => {
                   const date = new Date(item.created_at).toLocaleDateString();
-                  let priorityColor = 'text-slate-400';
-                  if (item.priority === 'CRITICAL') priorityColor = 'text-rose-400 font-bold';
-                  else if (item.priority === 'HIGH') priorityColor = 'text-amber-400 font-semibold';
+                  let priorityClass = 'priority-low';
+                  if (item.priority?.toUpperCase() === 'CRITICAL') priorityClass = 'priority-critical';
+                  else if (item.priority?.toUpperCase() === 'HIGH') priorityClass = 'priority-high';
+                  else if (item.priority?.toUpperCase() === 'MEDIUM') priorityClass = 'priority-medium';
                   
                   return `
                     <tr class="hover:bg-white/5 transition">
-                      <td class="py-3 px-4 font-bold text-brand-secondary">${item.ecm_no}</td>
+                      <td class="py-3 px-4 font-bold text-brand-secondary">${item.ecm_number}</td>
                       <td class="py-3 px-4 text-slate-200 dark:text-slate-200 light:text-slate-700">${item.title}</td>
-                      <td class="py-3 px-4 ${priorityColor}">${item.priority}</td>
-                      <td class="py-3 px-4 capitalize font-semibold">${item.status_category.replace('_', ' ')}</td>
+                      <td class="py-3 px-4"><span class="px-2 py-0.5 rounded-full border text-[10px] font-semibold uppercase ${priorityClass}">${item.priority}</span></td>
+                      <td class="py-3 px-4"><span class="px-2 py-0.5 rounded-full border text-[10px] font-semibold bg-slate-100 text-slate-700 capitalize">${item.status_category.replace('_', ' ')}</span></td>
                       <td class="py-3 px-4 text-slate-400">${date}</td>
                       <td class="py-3 px-4 text-right">
                         <a href="/pages/ecm-detail.html?id=${item.id}" class="text-brand-secondary hover:underline font-bold">Open Portal</a>
@@ -555,7 +556,7 @@
           
           const { data, error } = await supabase
             .from('ecm_requests')
-            .select('id, ecm_no, title, priority, status_category, created_at')
+            .select('id, ecm_number, title, priority, status_category, created_at')
             .eq('is_deleted', false)
             .eq('status_category', 'completed')
             .order('created_at', { ascending: false });
@@ -580,7 +581,7 @@
               <tbody class="divide-y divide-white/5">
                 ${data.map(item => `
                   <tr class="hover:bg-white/5 transition">
-                    <td class="py-3 px-4 font-bold text-brand-secondary">${item.ecm_no}</td>
+                    <td class="py-3 px-4 font-bold text-brand-secondary">${item.ecm_number}</td>
                     <td class="py-3 px-4 text-slate-200 dark:text-slate-200 light:text-slate-700">${item.title}</td>
                     <td class="py-3 px-4 text-slate-400">${item.priority}</td>
                     <td class="py-3 px-4 text-emerald-400 font-semibold uppercase">Completed</td>
@@ -598,18 +599,18 @@
           descEl.textContent = 'List of workflow tasks and actions that have passed their deadline dates';
           
           const { data, error } = await supabase
-            .from('ecm_approval_assignments')
+            .from('ecm_tasks')
             .select(`
               id,
-              deadline_date,
-              request_id,
+              due_date,
+              ecm_request_id,
               assignee_id,
-              profiles(full_name),
-              ecm_requests(ecm_no, title)
+              profiles:assignee_id(full_name),
+              ecm_requests:ecm_request_id(ecm_number, title)
             `)
-            .eq('is_completed', false)
-            .lt('deadline_date', new Date().toISOString().split('T')[0])
-            .order('deadline_date', { ascending: true });
+            .neq('status', 'completed')
+            .lt('due_date', new Date().toISOString().split('T')[0])
+            .order('due_date', { ascending: true });
 
           if (error) throw error;
           if (!data || data.length === 0) {
@@ -630,15 +631,15 @@
               </thead>
               <tbody class="divide-y divide-white/5">
                 ${data.map(item => {
-                  const deadline = new Date(item.deadline_date).toLocaleDateString();
+                  const deadline = new Date(item.due_date).toLocaleDateString();
                   return `
                     <tr class="hover:bg-white/5 transition">
-                      <td class="py-3 px-4 font-bold text-brand-secondary">${item.ecm_requests?.ecm_no || 'N/A'}</td>
+                      <td class="py-3 px-4 font-bold text-brand-secondary">${item.ecm_requests?.ecm_number || 'N/A'}</td>
                       <td class="py-3 px-4 text-slate-200 dark:text-slate-200 light:text-slate-700">${item.ecm_requests?.title || 'N/A'}</td>
                       <td class="py-3 px-4 text-slate-200 dark:text-slate-200 light:text-slate-700 font-semibold">${item.profiles?.full_name || 'Unassigned'}</td>
                       <td class="py-3 px-4 text-rose-400 font-bold">${deadline}</td>
                       <td class="py-3 px-4 text-right">
-                        <a href="/pages/ecm-detail.html?id=${item.request_id}" class="text-brand-secondary hover:underline font-bold">Open Portal</a>
+                        <a href="/pages/ecm-detail.html?id=${item.ecm_request_id}" class="text-brand-secondary hover:underline font-bold">Open Portal</a>
                       </td>
                     </tr>
                   `;
@@ -991,21 +992,21 @@
       }
 
       const priorityStyle = {
-        'low': 'text-slate-400 bg-slate-500/10 border-slate-500/20',
-        'medium': 'text-sky-400 bg-sky-500/10 border-sky-500/20',
-        'high': 'text-amber-400 bg-amber-500/10 border-amber-500/20',
-        'critical': 'text-rose-400 bg-rose-500/10 border-rose-500/20'
+        'low': 'priority-low',
+        'medium': 'priority-medium',
+        'high': 'priority-high',
+        'critical': 'priority-critical'
       };
 
       const statusMap = {
-        'draft': { style: 'text-slate-400 bg-slate-500/10 border-slate-500/20', label: 'Draft' },
-        'screening': { style: 'text-amber-400 bg-amber-500/10 border-amber-500/20', label: 'Screening' },
-        'in_progress': { style: 'text-sky-400 bg-sky-500/10 border-sky-500/20', label: 'In Progress' },
-        'approval': { style: 'text-violet-400 bg-violet-500/10 border-violet-500/20', label: 'Approval' },
-        'resolved': { style: 'text-emerald-400 bg-emerald-500/10 border-emerald-500/20', label: 'Resolved' },
-        'completed': { style: 'text-green-400 bg-green-500/10 border-green-500/20', label: 'Completed' },
-        'rejected': { style: 'text-rose-400 bg-rose-500/10 border-rose-500/20', label: 'Rejected' },
-        'cancelled': { style: 'text-pink-400 bg-pink-500/10 border-pink-500/20', label: 'Cancelled' }
+        'draft': { style: 'priority-low', label: 'Draft' },
+        'screening': { style: 'priority-high', label: 'Screening' },
+        'in_progress': { style: 'priority-medium', label: 'In Progress' },
+        'approval': { style: 'priority-medium', label: 'Approval' },
+        'resolved': { style: 'priority-medium', label: 'Resolved' },
+        'completed': { style: 'priority-medium bg-emerald-100 text-emerald-800 border-emerald-300', label: 'Completed' },
+        'rejected': { style: 'priority-critical', label: 'Rejected' },
+        'cancelled': { style: 'priority-critical', label: 'Cancelled' }
       };
 
       tbody.innerHTML = list.map(e => {
