@@ -605,8 +605,8 @@
               due_date,
               ecm_request_id,
               assignee_id,
-              profiles:assignee_id(full_name),
-              ecm_requests:ecm_request_id(ecm_number, title)
+              profiles!ecm_tasks_assignee_id_fkey(full_name),
+              ecm_requests(ecm_number, title)
             `)
             .neq('status', 'completed')
             .lt('due_date', new Date().toISOString().split('T')[0])
